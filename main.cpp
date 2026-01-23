@@ -129,17 +129,17 @@ namespace ECS {
     }
 
     template<typename T>
-    bool hasComponent(Entity ent, const T& component) {
+    bool hasComponent(Entity ent) {
         return getComponentPool<T>()->has(ent);
     }
 
     template<typename T>
-    T& getComponent(Entity ent, const T& component) {
+    T& getComponent(Entity ent) {
         return getComponentPool<T>()->get(ent);
     }
 
     template<typename T>
-    void removeComponent(Entity ent, const T& component) {
+    void removeComponent(Entity ent) {
         getComponentPool<T>()->remove(ent);
     }
 }
