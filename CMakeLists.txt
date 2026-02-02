@@ -2,12 +2,33 @@ cmake_minimum_required(VERSION 3.28...4.1)
 
 project(TestingGround)
 
+#set(CMAKE_CXX_COMPILER "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/Llvm/bin/clang++")
+set(CMAKE_CXX_FLAGS "-Wall")
+set(CMAKE_CXX_FLAGS "/EHsc")
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+find_package(OpenGL REQUIRED)
+add_subdirectory(ext)
+
 add_executable(Ecs
     main.cpp
+    ecs.h
+    window.h
+    window.cpp
+    renderSystem.h
+    renderSystem.cpp
+)
+
+# target_include_directories(Ecs
+#     PUBLIC ${PROJECT_SOURCE_DIR}/ext/glad/
+# )
+
+target_link_libraries(Ecs
+    PUBLIC glfw
+    PUBLIC glad
+    PRIVATE OpenGL::GL
 )
 
 # for copying compile_commands to root
