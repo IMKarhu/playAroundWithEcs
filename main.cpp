@@ -44,6 +44,10 @@ int main()
     auto entt = transformPool->entities();
     std::println("size of entities {}", entt.size());
     while(!window.shouldClose()) {
+        glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        window.swapBuffers();
         window.pollEvents();
     }
     return 0;

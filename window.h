@@ -18,9 +18,13 @@ public:
 
     bool shouldClose() const;
     void pollEvents();
+    void swapBuffers();
+    int initWindow(uint32_t width, uint32_t height, std::string title);
 private:
     GLFWwindow *m_window = nullptr;
     uint32_t m_width = 0;
     uint32_t m_height = 0;
     std::string m_title = "";
+
+    static void framebufferCallback(GLFWwindow *window, int width, int height);
 };

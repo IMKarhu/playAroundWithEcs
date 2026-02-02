@@ -1,4 +1,5 @@
 #include "window.h"
+#include "GLFW/glfw3.h"
 
 #include <print>
 
@@ -7,11 +8,7 @@ Window::Window()
     ,m_height(400)
     ,m_title("Ecs testing")
 {
-    if(!glfwInit()) {
-        std::println("you done fucked up");
-    }
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
+    initWindow(m_width, m_height, m_title);
 }
 
 Window::Window(uint32_t width, uint32_t height, std::string title)
@@ -19,15 +16,12 @@ Window::Window(uint32_t width, uint32_t height, std::string title)
     ,m_height(height)
     ,m_title(title)
 {
-    if(!glfwInit()) {
-        std::println("you done fucked up");
-    }
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
+    initWindow(m_width, m_height, m_title);
 }
 
 Window::~Window()
 {
+    glfwDestroyWindow(m_window);
     glfwTerminate();
 };
 
@@ -44,4 +38,52 @@ bool Window::shouldClose() const
 void Window::pollEvents()
 {
     glfwPollEvents();
+}
+
+void Window::swapBuffers()
+{
+    glfwSwapBuffers(m_window);
+}
+
+int Window::initWindow(uint32_t width, uint32_t height, std::string title)
+{
+    int result;
+    if(!glfwInit()) {
+        std::println("you done fucked up");
+        result = -1;
+        return result;
+    }
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_OPENGL_CORE_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
+    if(!m_window) {
+        std::println("failed to create window context");
+        glfwTerminate();
+        result = -1;
+        return result;
+    }
+
+    glfwMakeContextCurrent(m_window);
+    result = gladLoadGL();
+    if(result == 1) {
+        std::println("success on loading glad");
+    }else {
+        std::println("failed to load glad");
+    }
+
+    int w, h;
+    glfwGetFramebufferSize(m_window, &w, &h);
+    glViewport(0, 0, w, h);
+
+    glfwSetFramebufferSizeCallback(m_window, framebufferCallback);
+
+    return result;
+}
+
+void Window::framebufferCallback(GLFWwindow *window, int width, int height)
+{
+    glViewport(0, 0, width, height);
 }
