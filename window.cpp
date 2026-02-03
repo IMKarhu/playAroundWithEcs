@@ -1,5 +1,6 @@
 #include "window.h"
 
+#include "GLFW/glfw3.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -95,6 +96,7 @@ void Window::framebufferCallback(GLFWwindow *window, int width, int height)
 
 void Window::uiExperiment()
 {
+    float main_scale = ImGui_ImplGlfw_GetContentScaleForWindow(m_window);
     //everything is from glfw example
     //https://github.com/ocornut/imgui/blob/master/examples/example_glfw_opengl3/main.cpp
     IMGUI_CHECKVERSION();
@@ -102,7 +104,22 @@ void Window::uiExperiment()
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
+    style.ScaleAllSizes(main_scale);
+    style.FontScaleDpi = main_scale;
+    io.ConfigDpiScaleFonts = true;
+    io.ConfigDpiScaleViewports = true;
+
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
+
+    const char* glsl_version = "#version 460";
+    ImGui_ImplGlfw_InitForOpenGL(m_window, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
 }
