@@ -1,5 +1,8 @@
 #include "window.h"
-#include "GLFW/glfw3.h"
+
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 #include <print>
 
@@ -80,10 +83,26 @@ int Window::initWindow(uint32_t width, uint32_t height, std::string title)
 
     glfwSetFramebufferSizeCallback(m_window, framebufferCallback);
 
+    uiExperiment();
+
     return result;
 }
 
 void Window::framebufferCallback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
+}
+
+void Window::uiExperiment()
+{
+    //everything is from glfw example
+    //https://github.com/ocornut/imgui/blob/master/examples/example_glfw_opengl3/main.cpp
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    ImGui::StyleColorsDark();
+    ImGuiStyle& style = ImGui::GetStyle();
 }
