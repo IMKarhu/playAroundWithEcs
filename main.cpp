@@ -1,3 +1,8 @@
+#include "GLFW/glfw3.h"
+// #include "imgui.h"
+// #include "imgui_impl_glfw.h"
+// #include "imgui_impl_opengl3.h"
+#include "imgui.h"
 #include "window.h"
 #include "ecs.h"
 #include <cassert>
@@ -43,12 +48,39 @@ int main()
     auto transformPool = ECS::getComponentPool<Transform>();
     auto entt = transformPool->entities();
     std::println("size of entities {}", entt.size());
+
+    bool demoWindow = true;
     while(!window.shouldClose()) {
+        window.pollEvents();
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        ImGui::ShowDemoWindow(&demoWindow);
+        ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar; //| ImGuiWindowFlags_NoDocking;
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->Pos);
+        ImGui::SetNextWindowSize(viewport->Size);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+        windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+        ImGui::Begin("DockSpace demo", &demoWindow, windowFlags);
+        ImGui::PopStyleVar(3);
+        ImGui::DockSpace(ImGui::GetID("DockSpace"));
+        ImGui::End();
+        ImGui::Render();
+
         glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        GLFWwindow *backupcontext = glfwGetCurrentContext();
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+        glfwMakeContextCurrent(backupcontext);
+        // ImGui::EndFrame();
 
         window.swapBuffers();
-        window.pollEvents();
     }
     return 0;
 }
