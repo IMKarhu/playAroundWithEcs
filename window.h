@@ -1,10 +1,7 @@
 #pragma once
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
-// #include <glad/glad.h>
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
+#include <glad/glad.h>
 
 
 #include <string>
@@ -19,10 +16,13 @@ public:
     ~Window();
 
     GLFWwindow *handle() const;
+    uint32_t width() const;
+    uint32_t height() const;
 
     bool shouldClose() const;
     void pollEvents();
     void swapBuffers();
+    void makeCtxCurrent(GLFWwindow *ctx);
     int initWindow(uint32_t width, uint32_t height, std::string title);
     void uiExperiment();
 private:

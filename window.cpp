@@ -1,10 +1,7 @@
 #include "window.h"
-
-// #include "GLFW/glfw3.h"
-#include <glad/glad.h>
-// #include "imgui.h"
-// #include "imgui_impl_glfw.h"
-// #include "imgui_impl_opengl3.h"
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 #include <print>
 
@@ -35,6 +32,16 @@ GLFWwindow *Window::handle() const
     return m_window;
 }
 
+uint32_t Window::width() const
+{
+    return m_width;
+}
+
+uint32_t Window::height() const
+{
+    return m_height;
+}
+
 bool Window::shouldClose() const
 {
     return glfwWindowShouldClose(m_window);
@@ -48,6 +55,11 @@ void Window::pollEvents()
 void Window::swapBuffers()
 {
     glfwSwapBuffers(m_window);
+}
+
+void Window::makeCtxCurrent(GLFWwindow *ctx)
+{
+    glfwMakeContextCurrent(ctx);
 }
 
 int Window::initWindow(uint32_t width, uint32_t height, std::string title)
