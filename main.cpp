@@ -33,10 +33,71 @@ struct tex
     GLuint m_texID;
 };
 
+class FrameBuffer
+{
+public:
+    FrameBuffer(uint32_t width, uint32_t height)
+        : m_width(width)
+        , m_height(height)
+    {
+        create();
+    }
+
+    ~FrameBuffer()
+    {
+    }
+
+    //I am not really a fan of having these bind and unbind functions.. but it works for now..
+    void bind()
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+    }
+
+    void unbind()
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    void create()
+    {
+        glGenFramebuffers(1, &m_fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+
+        glCreateTextures(GL_TEXTURE_2D, 1, &m_colorAttachment);
+        glBindTexture(GL_TEXTURE_2D, m_colorAttachment);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_colorAttachment, 0);
+
+        // glCreateTextures(GL_TEXTURE_2D, 1, &m_depthAttachment);
+        // glBindTexture(GL_TEXTURE_2D, m_depthAttachment);
+        // glTextureStorage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_width, m_height);
+        // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_depthAttachment, 0);
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+            std::println("Framebuffer is not complete");
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    GLuint colorAttachment() const { return m_colorAttachment; }
+
+private:
+    uint32_t m_width;
+    uint32_t m_height;
+    GLuint m_fbo;
+    GLuint m_rbo;
+    GLuint m_colorAttachment;
+    GLuint m_depthAttachment;
+};
+
 
 int main()
 {
     Window window;
+    FrameBuffer framebuffer(window.width(), window.height());
     tex tex{};
     bool ok = ECS::registerComponentPool<Transform>();
     assert(ok);
@@ -56,43 +117,15 @@ int main()
     auto entt = transformPool->entities();
     std::println("size of entities {}", entt.size());
 
-    unsigned int indices[] =
-    {
-        0,1,2,
-        2,3,0
-    };
-
-    float vertices[] =
-    {
-        -1.0f,-1.0f, 0.0f,  0.0f, 0.0f,
-         1.0f,-1.0f, 0.0f,  1.0f, 0.0f,
-         1.0f, 1.0f, 0.0f,  1.0f, 1.0f,
-        -1.0f, 1.0f, 0.0f,  0.0f, 1.0f
-    };
-    glCreateVertexArrays(1, &tex.m_vao);
-    glCreateBuffers(1, &tex.m_vbo);
-    glCreateBuffers(1, &tex.m_ebo);
-    glNamedBufferData(tex.m_vbo, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glNamedBufferData(tex.m_ebo, sizeof(indices), indices, GL_STATIC_DRAW);
-    glEnableVertexArrayAttrib(tex.m_vao, 0);
-    glVertexArrayAttribBinding(tex.m_vao, 0, 0);
-    glVertexArrayAttribFormat(tex.m_vao, 0, 3, GL_FLOAT, GL_FALSE, 0);
-    glEnableVertexArrayAttrib(tex.m_vao, 1);
-    glVertexArrayAttribBinding(tex.m_vao, 1, 0);
-    glVertexArrayAttribFormat(tex.m_vao, 1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat));
-    glVertexArrayVertexBuffer(tex.m_vao, 0, tex.m_vbo, 0, 5 * sizeof(GLfloat));
-    glVertexArrayElementBuffer(tex.m_vao, tex.m_ebo);
-    glCreateTextures(GL_TEXTURE_2D, 1, &tex.m_texID);
-    glTextureParameteri(tex.m_texID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTextureParameteri(tex.m_texID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTextureParameteri(tex.m_texID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTextureParameteri(tex.m_texID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTextureStorage2D(tex.m_texID, 1, GL_RGBA32F, window.width(), window.height());
-    glBindImageTexture(0, tex.m_texID, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-
     bool demoWindow = true;
     while(!window.shouldClose()) {
-        window.pollEvents();
+
+        framebuffer.bind();
+
+        glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
+        framebuffer.unbind();
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -117,19 +150,17 @@ int main()
         ImGui::Begin("Viewport", &demoWindow, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         ImGui::PopStyleVar(2);
         ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-        ImGui::Image((void*)tex.m_texID, viewportSize, ImVec2{0,1},ImVec2{1,0});
+        ImGui::Image((void*)framebuffer.colorAttachment(), viewportSize, ImVec2{0,1},ImVec2{1,0});
         ImGui::End();
-
         ImGui::Render();
 
-        glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         GLFWwindow *backupcontext = glfwGetCurrentContext();
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
         window.makeCtxCurrent(backupcontext);
 
+        window.pollEvents();
         window.swapBuffers();
     }
     ImGui_ImplOpenGL3_Shutdown();
