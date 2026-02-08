@@ -19,6 +19,17 @@ add_executable(Ecs
     window.cpp
     renderSystem.h
     renderSystem.cpp
+    imguiLayer.h
+    imguiLayer.cpp
+    framebuffer.h
+    glframebuffer.h
+    glframebuffer.cpp
+    renderer.h
+    glrenderer.h
+    glrenderer.cpp
+    components.h
+    shader.h
+    shader.cpp
 )
 
 target_link_libraries(Ecs

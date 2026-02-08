@@ -98,7 +98,7 @@ int Window::initWindow(uint32_t width, uint32_t height, std::string title)
 
     glfwSetFramebufferSizeCallback(m_window, framebufferCallback);
 
-    uiExperiment();
+    // uiExperiment();
 
     return result;
 }

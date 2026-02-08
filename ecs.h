@@ -13,7 +13,9 @@
 
 
 using Entity = uint32_t;
-std::vector<Entity> m_entities;
+//maybe having this and the componentpool map as inline static is not the best option
+//TODO: fix someday
+inline std::vector<Entity> m_entities;
 
 namespace ECS {
 
@@ -31,7 +33,7 @@ namespace ECS {
             ComponentPool<T>() {
             }
 
-            void add(Entity ent, const T& component) {
+            inline void add(Entity ent, const T& component) {
                 if(has(ent)) {
                     std::println("Component is already added");
                     return;
@@ -43,7 +45,7 @@ namespace ECS {
                 m_components.push_back(component);
             }
 
-            void remove(Entity ent) {
+            inline void remove(Entity ent) {
                 auto it = m_entityToIndex.find(ent);
                 if(it == m_entityToIndex.end()) {
                     return;
@@ -61,19 +63,19 @@ namespace ECS {
                 m_entityToIndex.erase(ent);
             }
 
-            bool has(Entity ent) const {
+            inline bool has(Entity ent) const {
                 return m_entityToIndex.contains(ent);
             }
 
-            T& get(Entity ent) {
+            inline T& get(Entity ent) {
                 return m_components[m_entityToIndex.at(ent)];
             }
 
-            const std::vector<Entity>& entities() const {
+            inline const std::vector<Entity>& entities() const {
                 return m_entities;
             }
 
-            void hello() {
+            inline void hello() {
                 std::println("I am being called");
             }
         private:
@@ -82,10 +84,11 @@ namespace ECS {
             std::unordered_map<Entity, size_t> m_entityToIndex;
     };
 
-    std::unordered_map<std::type_index, std::unique_ptr<IComponentPool>> m_componentPoolMap;
+    //fix for now..
+    inline std::unordered_map<std::type_index, std::unique_ptr<IComponentPool>> m_componentPoolMap;
 
     template<typename T>
-    bool registerComponentPool() {
+    inline bool registerComponentPool() {
         //should be O(1), at the worst case O(n)
         std::type_index key = std::type_index(typeid(T));
         std::println("key: {}", key.name());
@@ -101,7 +104,7 @@ namespace ECS {
     };
 
     template<typename T>
-    ComponentPool<T>* getComponentPool() {
+    inline ComponentPool<T>* getComponentPool() {
         auto it = m_componentPoolMap.find(std::type_index(typeid(T)));
         if(it == m_componentPoolMap.end()) {
             return nullptr;
@@ -110,22 +113,22 @@ namespace ECS {
     };
 
     template<typename T>
-    void addComponent(Entity ent, const T& component) {
+    inline void addComponent(Entity ent, const T& component) {
         getComponentPool<T>()->add(ent, component);
     }
 
     template<typename T>
-    bool hasComponent(Entity ent) {
+    inline bool hasComponent(Entity ent) {
         return getComponentPool<T>()->has(ent);
     }
 
     template<typename T>
-    T& getComponent(Entity ent) {
+    inline T& getComponent(Entity ent) {
         return getComponentPool<T>()->get(ent);
     }
 
     template<typename T>
-    void removeComponent(Entity ent) {
+    inline void removeComponent(Entity ent) {
         getComponentPool<T>()->remove(ent);
     }
 }
