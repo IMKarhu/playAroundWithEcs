@@ -39,6 +39,11 @@ uint32_t GLFramebuffer::colorAttachment() const
     return m_spec.m_colorAttachment;
 }
 
+FramebufferSpec &GLFramebuffer::framebufferSpec()
+{
+    return m_spec;
+}
+
 void GLFramebuffer::create()
 {
     glGenFramebuffers(1, &m_spec.m_fbo);

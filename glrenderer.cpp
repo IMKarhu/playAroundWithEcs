@@ -52,6 +52,7 @@ void GLRenderer::beginFrame()
 {
     auto& fb = *m_viewportfb;
     fb.bind();
+    glViewport(0, 0, fb.framebufferSpec().m_width, fb.framebufferSpec().m_height);
     glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);

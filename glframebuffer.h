@@ -13,6 +13,7 @@ public:
     void resize(uint32_t width, uint32_t height) override;
 
     uint32_t colorAttachment() const override;
+    FramebufferSpec &framebufferSpec() override;
 private:
     void create();
     FramebufferSpec m_spec;
