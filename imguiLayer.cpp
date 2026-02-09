@@ -85,6 +85,9 @@ void ImguiLayer::drawViewport(std::unique_ptr<Renderer>& renderer)
     ImGui::Begin("Viewport", &demoWindow, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     ImGui::PopStyleVar(2);
     ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+    if(viewportSize.x > 0 && viewportSize.y > 0)
+        fb.resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+
     ImGui::Image((ImTextureID)(intptr_t)fb.colorAttachment(), viewportSize, ImVec2{0,1},ImVec2{1,0});
     ImGui::End();
 }

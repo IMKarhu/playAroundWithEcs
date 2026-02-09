@@ -26,6 +26,12 @@ void GLFramebuffer::unbind()
 
 void GLFramebuffer::resize(uint32_t width, uint32_t height)
 {
+    if (m_spec.m_width == width || m_spec.m_height == height)
+        return;
+
+    m_spec.m_width = width;
+    m_spec.m_height = height;
+    create();
 }
 
 uint32_t GLFramebuffer::colorAttachment() const
@@ -57,3 +63,4 @@ void GLFramebuffer::create()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 }
+
