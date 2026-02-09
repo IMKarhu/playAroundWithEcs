@@ -61,17 +61,6 @@ int main()
         renderSystem.update(10.0f);
         renderSystem.renderui();
 
-        // ImGui::ShowDemoWindow(&demoWindow);
-        // // uilayer.drawViewport(renderer);
-        //
-        // ImGui::Begin("settings");
-        // ImGui::Text("testing text");
-        // ImGui::Checkbox("test checkbox", &testCheckbox);
-        // ImGui::SliderFloat("test slider", &testSlider, 0.0f, 1.0f);
-        // ImGui::End();
-
-        // uilayer.end();
-
         window.pollEvents();
         window.swapBuffers();
     }

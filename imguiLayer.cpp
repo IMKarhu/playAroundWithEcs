@@ -91,3 +91,17 @@ void ImguiLayer::drawViewport(std::unique_ptr<Renderer>& renderer)
     ImGui::Image((ImTextureID)(intptr_t)fb.colorAttachment(), viewportSize, ImVec2{0,1},ImVec2{1,0});
     ImGui::End();
 }
+
+void ImguiLayer::beginWindow(const char* name, bool* open)
+{
+    float testSlider = 0.0f;
+    ImGui::Begin(name, open);
+    ImGui::Text("testing text");
+    ImGui::Checkbox("test checkbox", open);
+    ImGui::SliderFloat("test slider", &testSlider, 0.0f, 1.0f);
+}
+
+void ImguiLayer::endWindow()
+{
+    ImGui::End();
+}

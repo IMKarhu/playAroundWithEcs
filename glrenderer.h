@@ -1,5 +1,6 @@
 #pragma once
 #include "renderer.h"
+#include <vector>
 #include <memory>
 
 class Window;
@@ -10,6 +11,7 @@ class GLRenderer : public Renderer
 public:
     GLRenderer(Window& window);
 
+    void initialize(std::vector<Entity>& entities) override;
     void beginFrame() override;
     void renderScene() override;
     void endFrame() override;
