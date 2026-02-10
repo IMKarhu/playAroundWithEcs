@@ -1,9 +1,11 @@
+#include <glm/glm.hpp>
 #include <array>
 #include <vector>
 
 struct Vertex
 {
     std::array<float, 3> position;
+    std::array<float, 3> color;
 };
 
 struct Vertices
@@ -17,9 +19,17 @@ struct Vertices
 
 struct Transform
 {
-    std::array<float, 3> m_position;
-    std::array<float, 3> m_rotation;
-    std::array<float, 3> m_scale;
+    glm::vec3 position;
+    glm::vec3 rotation;
+    glm::vec3 scale;
+};
+
+struct Camera
+{
+    glm::mat4 model;
+    glm::mat4 view;
+    glm::mat4 proj;
+    glm::vec3 position;
 };
 
 struct Sprite

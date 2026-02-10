@@ -21,6 +21,8 @@ else()
     add_subdirectory(glfw)
 endif()
 
+add_subdirectory(glm)
+
 add_library(glad STATIC
     glad/src/glad.c
 )

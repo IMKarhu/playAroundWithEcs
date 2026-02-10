@@ -4,7 +4,6 @@
 class Window;
 class Renderer;
 class ImguiLayer;
-class Shader;
 
 class RenderSystem
 {
@@ -20,5 +19,4 @@ private:
     Window& m_window;
     std::unique_ptr<Renderer> m_renderer;
     std::unique_ptr<ImguiLayer> m_uilayer;
-    std::unique_ptr<Shader> m_shader;
 };

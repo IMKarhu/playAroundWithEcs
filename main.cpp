@@ -6,6 +6,8 @@
 #include <cassert>
 #include <cstdio>
 #include <print>
+#include <chrono>
+
 
 //Fine for now to limit max amount.
 //In reality there should not be any kind of entity limitations
@@ -22,9 +24,10 @@ int main()
     assert(ok);
     ok = ECS::registerComponentPool<Vertices>();
     assert(ok);
+    ok = ECS::registerComponentPool<Camera>();
+    assert(ok);
 
     for(size_t i = 0; i < MAXENTITIES; ++i) {
-        // std::println("i: {}", i);
         Entity ent = 0;
         m_entities.push_back(ent);
         ent++;
@@ -36,14 +39,53 @@ int main()
 
     Vertices verts;
     verts.m_vertices = {
-        {-0.5f, -0.5f, 0.0f},
-        {0.5f, -0.5f, 0.0f},
-        {0.0f, 0.5f, 0.0f}
+        // front
+        {{-0.5f, -0.5f,  0.5f}, {1, 0, 0}},
+        {{ 0.5f, -0.5f,  0.5f}, {0, 1, 0}},
+        {{ 0.5f,  0.5f,  0.5f}, {0, 0, 1}},
+        {{-0.5f,  0.5f,  0.5f}, {1, 1, 1}},
+        // back
+        {{ 0.5f, -0.5f, -0.5f}, {1, 0, 0}},
+        {{-0.5f, -0.5f, -0.5f}, {0, 1, 0}},
+        {{-0.5f,  0.5f, -0.5f}, {0, 0, 1}},
+        {{ 0.5f,  0.5f, -0.5f}, {1, 1, 1}},
+        // left
+        {{-0.5f, -0.5f, -0.5f}, {1, 0, 0}},
+        {{-0.5f, -0.5f,  0.5f}, {0, 1, 0}},
+        {{-0.5f,  0.5f,  0.5f}, {0, 0, 1}},
+        {{-0.5f,  0.5f, -0.5f}, {1, 1, 1}},
+        // right
+        {{ 0.5f, -0.5f,  0.5f}, {1, 0, 0}},
+        {{ 0.5f, -0.5f, -0.5f}, {0, 1, 0}},
+        {{ 0.5f,  0.5f, -0.5f}, {0, 0, 1}},
+        {{ 0.5f,  0.5f,  0.5f}, {1, 1, 1}},
+        // top
+        {{-0.5f,  0.5f,  0.5f}, {1, 0, 0}},
+        {{ 0.5f,  0.5f,  0.5f}, {0, 1, 0}},
+        {{ 0.5f,  0.5f, -0.5f}, {0, 0, 1}},
+        {{-0.5f,  0.5f, -0.5f}, {1, 1, 1}},
+        // bottom
+        {{-0.5f, -0.5f, -0.5f}, {1, 0, 0}},
+        {{ 0.5f, -0.5f, -0.5f}, {0, 1, 0}},
+        {{ 0.5f, -0.5f,  0.5f}, {0, 0, 1}},
+        {{-0.5f, -0.5f,  0.5f}, {1, 1, 1}},
     };
     verts.m_indices = {
-        0, 1, 2
+        0, 1, 2, 2, 3, 0,
+        4, 5, 6, 6, 7, 4,
+        8, 9, 10, 10, 11, 8,
+        12, 13, 14, 14, 15, 12,
+        16, 17, 18, 18, 19, 16,
+        20, 21, 22, 22, 23, 20
     };
     ECS::addComponent<Vertices>(m_entities[0], verts);
+    Camera camera = {
+        .model = glm::mat4(1),
+        .view = glm::mat4(1),
+        .proj = glm::mat4(1),
+        .position = glm::vec3(0.0f, 0.0f, 5.0f)
+    };
+    ECS::addComponent<Camera>(m_entities[0], camera);
 
     auto transformPool = ECS::getComponentPool<Transform>();
     auto entt = transformPool->entities();
@@ -52,13 +94,13 @@ int main()
     entt = vertsPool->entities();
     std::println("size of entities with vertices component {}", entt.size());
 
-    bool demoWindow = true;
-    bool testCheckbox = false;
-    float testSlider = 0.f;
     renderSystem.initialize();
+    auto curTime = std::chrono::high_resolution_clock::now();
     while(!window.shouldClose()) {
+        auto startTime = std::chrono::high_resolution_clock::now();
+        float dt = std::chrono::duration<float, std::chrono::seconds::period>(startTime - curTime).count();
 
-        renderSystem.update(10.0f);
+        renderSystem.update(dt);
         renderSystem.renderui();
 
         window.pollEvents();
@@ -69,3 +111,4 @@ int main()
     ImGui::DestroyContext();
     return 0;
 }
+
