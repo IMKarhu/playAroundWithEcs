@@ -3,12 +3,11 @@
 
 struct FramebufferSpec
 {
-    uint32_t m_width;
-    uint32_t m_height;
-    uint32_t m_fbo;
-    uint32_t m_rbo;
-    uint32_t m_colorAttachment;
-    uint32_t m_depthAttachment;
+    uint32_t width;
+    uint32_t height;
+    uint32_t fbo;
+    uint32_t colorAttachment;
+    uint32_t depthAttachment;
 };
 
 class FrameBuffer
