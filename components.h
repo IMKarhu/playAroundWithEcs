@@ -26,10 +26,13 @@ struct Transform
 
 struct Camera
 {
-    glm::mat4 model;
     glm::mat4 view;
     glm::mat4 proj;
-    glm::vec3 position;
+};
+
+struct model
+{
+    glm::mat4 model;
 };
 
 struct Sprite

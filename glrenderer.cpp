@@ -22,8 +22,8 @@ GLRenderer::~GLRenderer() {}
 void GLRenderer::initialize(std::vector<Entity>& entities)
 {
     for(auto entity : entities) {
-        if (ECS::hasComponent<Vertices>(entity))
-            std::println("has component");
+        // if (ECS::hasComponent<Vertices>(entity))
+        //     std::println("has component");
 
         auto& comp = ECS::getComponent<Vertices>(entity);
 
@@ -83,23 +83,31 @@ void GLRenderer::renderScene(float dt)
     auto& fb = *m_viewportfb;
     auto pool = ECS::getComponentPool<Vertices>();
     auto& entt = pool->entities();
-    m_shader->use();
-    for(auto entity : entt) {
-        if (ECS::hasComponent<Camera>(entity)) {
-            auto& trans = ECS::getComponent<Transform>(entity);
-            float rot = 20.0f * dt;
-            auto& cam = ECS::getComponent<Camera>(entity);
-            cam.model = glm::mat4(1);
-            cam.model = glm::translate(cam.model, trans.position);
-            cam.model = glm::rotate(cam.model, glm::radians(rot), glm::vec3(0.0, 1.0, 0.0));
-            cam.model = glm::scale(cam.model, glm::vec3(trans.scale));
-            cam.view = glm::lookAt(cam.position, glm::vec3(0), glm::vec3(0.0f, 1.0f, 0.0));
-            cam.proj = glm::perspective(glm::radians(45.0f), (float)fb.framebufferSpec().width/(float)fb.framebufferSpec().height, 0.1f, 100.0f);
-            auto mvp =  cam.proj * cam.view * cam.model;
-            m_shader->setUniformMat4("u_mvp", mvp);
-        }
 
+    m_shader->use();
+    auto& cameraTrans = ECS::getComponent<Transform>(0);
+    auto& cameramodel = ECS::getComponent<model>(0);
+    auto& cam = ECS::getComponent<Camera>(0);
+
+    //temporary
+    if(glfwGetKey(m_window.handle(), GLFW_KEY_S) == GLFW_PRESS)
+        cameraTrans.position.z -= 1.0 * dt;
+    if(glfwGetKey(m_window.handle(), GLFW_KEY_W) == GLFW_PRESS)
+        cameraTrans.position.z += 1.0 * dt;
+
+    cam.view = glm::lookAt(cameraTrans.position, glm::vec3(0), glm::vec3(0.0f, 1.0f, 0.0));
+    cam.proj = glm::perspective(glm::radians(45.0f), (float)fb.framebufferSpec().width/(float)fb.framebufferSpec().height, 0.001f, 1000.0f);
+
+    for(auto entity : entt) {
+        auto& trans = ECS::getComponent<Transform>(entity);
         auto& comp = ECS::getComponent<Vertices>(entity);
+        auto& m = ECS::getComponent<model>(entity);
+        m.model = glm::translate(glm::mat4(1), trans.position);
+        m.model = glm::rotate(m.model, glm::radians(20.0f), glm::vec3(0.0, 1.0, 0.0));
+        m.model = glm::scale(m.model, glm::vec3(trans.scale));
+        auto mvp =  cam.proj * cam.view * m.model;
+        m_shader->setUniformMat4("u_mvp", mvp);
+
         glBindVertexArray(comp.m_vao);
         glDrawElements(GL_TRIANGLES, comp.m_indices.size(), GL_UNSIGNED_INT, 0);
     }

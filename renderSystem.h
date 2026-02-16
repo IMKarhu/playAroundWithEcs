@@ -1,4 +1,5 @@
 #pragma once
+#include "ecs.h"
 #include <memory>
 
 class Window;

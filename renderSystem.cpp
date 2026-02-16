@@ -3,7 +3,6 @@
 #include "glrenderer.h"
 #include "imguiLayer.h"
 #include "components.h"
-#include "ecs.h"
 
 RenderSystem::RenderSystem(Window& window)
     : m_window(window)

@@ -2,16 +2,16 @@
 #include "renderSystem.h"
 #include "imguiLayer.h"
 #include "components.h"
-#include "ecs.h"
 #include <cassert>
 #include <cstdio>
 #include <print>
 #include <chrono>
+#include <random>
 
 
 //Fine for now to limit max amount.
 //In reality there should not be any kind of entity limitations
-const uint32_t MAXENTITIES = 5000;
+const uint32_t MAXENTITIES = 10000;
 
 
 int main()
@@ -20,11 +20,11 @@ int main()
     RenderSystem renderSystem(window);
     bool ok = ECS::registerComponentPool<Transform>();
     assert(ok);
-    ok = ECS::registerComponentPool<Sprite>();
-    assert(ok);
     ok = ECS::registerComponentPool<Vertices>();
     assert(ok);
     ok = ECS::registerComponentPool<Camera>();
+    assert(ok);
+    ok = ECS::registerComponentPool<model>();
     assert(ok);
 
     for(size_t i = 0; i < MAXENTITIES; ++i) {
@@ -33,8 +33,15 @@ int main()
         ent++;
     }
 
+    std::default_random_engine randgenerator;
+    std::uniform_real_distribution<float> random_pos(-10, 10);
+
     for(size_t i = 0; i < m_entities.size(); ++i) {
-        ECS::addComponent<Transform>(i, {{0,0,0},{0,0,0},{1,1,1}});
+        ECS::addComponent<Transform>(i, {{random_pos(randgenerator),random_pos(randgenerator),random_pos(randgenerator)},{0,0,0},{1,1,1}});
+    }
+
+    for(size_t i = 0; i < m_entities.size(); ++i) {
+        ECS::addComponent<model>(i, {.model = glm::mat4(1) });
     }
 
     Vertices verts;
@@ -78,12 +85,12 @@ int main()
         16, 17, 18, 18, 19, 16,
         20, 21, 22, 22, 23, 20
     };
-    ECS::addComponent<Vertices>(m_entities[0], verts);
+    for (size_t i = 1; i < m_entities.size(); ++i) {
+        ECS::addComponent<Vertices>(i, verts);
+    }
     Camera camera = {
-        .model = glm::mat4(1),
         .view = glm::mat4(1),
         .proj = glm::mat4(1),
-        .position = glm::vec3(0.0f, 0.0f, 5.0f)
     };
     ECS::addComponent<Camera>(m_entities[0], camera);
 
