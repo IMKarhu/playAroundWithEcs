@@ -12,9 +12,9 @@ struct Vertices
 {
     std::vector<Vertex> m_vertices;
     std::vector<uint32_t> m_indices;
-    uint32_t m_vao;
-    uint32_t m_vbo;
-    uint32_t m_ebo;
+    uint32_t m_vao = 0;
+    uint32_t m_vbo = 0;
+    uint32_t m_ebo = 0;
 };
 
 struct Transform

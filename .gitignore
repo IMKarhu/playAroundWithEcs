@@ -41,5 +41,6 @@
 *.dwo
 
 build/
+buildvs/
 .cache
 compile_commands.json

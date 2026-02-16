@@ -32,4 +32,11 @@ private:
     std::string m_title = "";
 
     static void framebufferCallback(GLFWwindow *window, int width, int height);
+    static void GLAPIENTRY DebugMessageCallback(GLenum source,
+            GLenum type,
+            GLuint id,
+            GLenum severity,
+            GLsizei length,
+            const GLchar* message,
+            const void* userParam);
 };

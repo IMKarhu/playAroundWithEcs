@@ -25,34 +25,47 @@ void GLRenderer::initialize(std::vector<Entity>& entities)
         if (ECS::hasComponent<Vertices>(entity))
             std::println("has component");
 
-        auto comp = ECS::getComponent<Vertices>(entity);
+        auto& comp = ECS::getComponent<Vertices>(entity);
 
         glCreateVertexArrays(1, &comp.m_vao);
         glCreateBuffers(1, &comp.m_vbo);
         glCreateBuffers(1, &comp.m_ebo);
 
-        glBindVertexArray(comp.m_vao);
-        glBindBuffer(GL_ARRAY_BUFFER, comp.m_vbo);
-        glNamedBufferData(comp.m_vao,
+        glNamedBufferData(comp.m_vbo,
                 comp.m_vertices.size() * sizeof(Vertex),
                 comp.m_vertices.data(),
                 GL_STATIC_DRAW
         );
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, comp.m_ebo);
         glNamedBufferData(comp.m_ebo,
                 comp.m_indices.size() * sizeof(uint32_t),
                 comp.m_indices.data(),
                 GL_STATIC_DRAW
         );
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-        glEnableVertexAttribArray(1);
+        glVertexArrayVertexBuffer(comp.m_vao, 0, comp.m_vbo, 0, sizeof(Vertex));
+        glVertexArrayElementBuffer(comp.m_vao, comp.m_ebo);
 
+        glEnableVertexArrayAttrib(comp.m_vao, 0);
+        glVertexArrayAttribFormat(comp.m_vao,
+                0,
+                3,
+                GL_FLOAT,
+                GL_FALSE,
+                offsetof(Vertex, position)
+        );
+        glVertexArrayAttribBinding(comp.m_vao, 0, 0);
+
+        glEnableVertexArrayAttrib(comp.m_vao, 1);
+        glVertexArrayAttribFormat(comp.m_vao,
+                1,
+                3,
+                GL_FLOAT,
+                GL_FALSE,
+                offsetof(Vertex, color)
+        );
+        glVertexArrayAttribBinding(comp.m_vao, 1, 0);
     }
-
 }
 
 void GLRenderer::beginFrame()
@@ -69,16 +82,13 @@ void GLRenderer::renderScene(float dt)
 {
     auto& fb = *m_viewportfb;
     auto pool = ECS::getComponentPool<Vertices>();
-    auto entt = pool->entities();
+    auto& entt = pool->entities();
     m_shader->use();
     for(auto entity : entt) {
         if (ECS::hasComponent<Camera>(entity)) {
-            auto trans = ECS::getComponent<Transform>(entity);
-            // trans.rotation.x= 1.0 * dt;
+            auto& trans = ECS::getComponent<Transform>(entity);
             float rot = 20.0f * dt;
-            // std::println("entity id {} has camera", entity);
-            // std::println("entity rotation x {}", trans.rotation.x);
-            auto cam = ECS::getComponent<Camera>(entity);
+            auto& cam = ECS::getComponent<Camera>(entity);
             cam.model = glm::mat4(1);
             cam.model = glm::translate(cam.model, trans.position);
             cam.model = glm::rotate(cam.model, glm::radians(rot), glm::vec3(0.0, 1.0, 0.0));
@@ -89,7 +99,7 @@ void GLRenderer::renderScene(float dt)
             m_shader->setUniformMat4("u_mvp", mvp);
         }
 
-        auto comp = ECS::getComponent<Vertices>(entity);
+        auto& comp = ECS::getComponent<Vertices>(entity);
         glBindVertexArray(comp.m_vao);
         glDrawElements(GL_TRIANGLES, comp.m_indices.size(), GL_UNSIGNED_INT, 0);
     }
@@ -99,7 +109,6 @@ void GLRenderer::endFrame()
 {
     auto& fb = *m_viewportfb;
     fb.unbind();
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 FrameBuffer &GLRenderer::viewportfb()
