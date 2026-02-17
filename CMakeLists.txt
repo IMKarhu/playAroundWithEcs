@@ -11,34 +11,35 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(OpenGL REQUIRED)
 add_subdirectory(ext)
+add_subdirectory(src)
 
-add_executable(Ecs
-    main.cpp
-    ecs.h
-    window.h
-    window.cpp
-    renderSystem.h
-    renderSystem.cpp
-    imguiLayer.h
-    imguiLayer.cpp
-    framebuffer.h
-    glframebuffer.h
-    glframebuffer.cpp
-    renderer.h
-    glrenderer.h
-    glrenderer.cpp
-    components.h
-    shader.h
-    shader.cpp
-)
+# add_executable(Ecs
+#     main.cpp
+#     ecs.h
+#     window.h
+#     window.cpp
+#     renderSystem.h
+#     renderSystem.cpp
+#     imguiLayer.h
+#     imguiLayer.cpp
+#     framebuffer.h
+#     glframebuffer.h
+#     glframebuffer.cpp
+#     renderer.h
+#     glrenderer.h
+#     glrenderer.cpp
+#     components.h
+#     shader.h
+#     shader.cpp
+# )
 
-target_link_libraries(Ecs
-    PUBLIC glfw
-    PUBLIC glad
-    PUBLIC imgui
-    PRIVATE OpenGL::GL
-    PRIVATE glm::glm
-)
+# target_link_libraries(Ecs
+#     PUBLIC glfw
+#     PUBLIC glad
+#     PUBLIC imgui
+#     PRIVATE OpenGL::GL
+#     PRIVATE glm::glm
+# )
 
 # for copying compile_commands to root
 set(SRC_COMPILE_COMMANDS "${CMAKE_BINARY_DIR}/compile_commands.json")
