@@ -8,12 +8,16 @@
 ImguiLayer::ImguiLayer(Window& window)
     : m_window(window)
 {
-    float main_scale = ImGui_ImplGlfw_GetContentScaleForWindow(m_window.handle());
     //everything is from glfw example
     //https://github.com/ocornut/imgui/blob/master/examples/example_glfw_opengl3/main.cpp
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+
     ImGuiIO& io = ImGui::GetIO();
+    //TODO: fix this on linux, for some reason imgui context is null deep in imgui files 
+#ifdef _WIN32
+    float main_scale = ImGui_ImplGlfw_GetContentScaleForWindow(m_window.handle());
+#endif
     (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -22,8 +26,10 @@ ImguiLayer::ImguiLayer(Window& window)
 
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
+#ifdef _WIN32
     style.ScaleAllSizes(main_scale);
     style.FontScaleDpi = main_scale;
+#endif
     io.ConfigDpiScaleFonts = true;
     io.ConfigDpiScaleViewports = true;
 

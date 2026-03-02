@@ -62,17 +62,26 @@ void Window::makeCtxCurrent(GLFWwindow *ctx)
 int Window::initWindow(uint32_t width, uint32_t height, std::string title)
 {
     int result;
-    if(!glfwInit()) {
-        std::println("you done fucked up");
-        result = -1;
-        return result;
-    }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_CORE_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+
+    if (glfwPlatformSupported(GLFW_PLATFORM_WAYLAND)) {
+        glfwWindowHint(GLFW_PLATFORM, GLFW_PLATFORM_WAYLAND);
+    }
+    else {
+        std::println("no wayland support detected");
+    }
+
+    if(!glfwInit()) {
+        std::println("you done fucked up");
+        result = -1;
+        return result;
+    }
+
 
     m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
     if(!m_window) {
