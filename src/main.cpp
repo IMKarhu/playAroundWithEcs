@@ -13,7 +13,6 @@
 //In reality there should not be any kind of entity limitations
 const uint32_t MAXENTITIES = 10000;
 
-
 int main()
 {
     Window window;
@@ -27,14 +26,14 @@ int main()
     ok = ECS::registerComponentPool<model>();
     assert(ok);
 
+    Entity ent = 0;
     for(size_t i = 0; i < MAXENTITIES; ++i) {
-        Entity ent = 0;
         m_entities.push_back(ent);
         ent++;
     }
 
     std::default_random_engine randgenerator;
-    std::uniform_real_distribution<float> random_pos(-10, 10);
+    std::uniform_real_distribution<float> random_pos(-100, 100);
 
     for(size_t i = 0; i < m_entities.size(); ++i) {
         ECS::addComponent<Transform>(i, {{random_pos(randgenerator),random_pos(randgenerator),random_pos(randgenerator)},{0,0,0},{1,1,1}});

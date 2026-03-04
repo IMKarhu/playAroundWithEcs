@@ -10,10 +10,8 @@
 #include <typeindex>
 #include <vector>
 
-
-
 using Entity = uint32_t;
-//maybe having this and the componentpool map as inline static is not the best option
+//maybe having this and the componentpool map as inline is not the best option
 //TODO: fix someday
 inline std::vector<Entity> m_entities;
 

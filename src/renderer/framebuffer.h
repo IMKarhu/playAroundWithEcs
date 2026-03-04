@@ -1,14 +1,35 @@
 #pragma once
 #include <cstdint>
+#include <vector>
+
+enum class DepthFormat {
+    None,
+    Depth32F,
+    Depth24Stencil8
+};
+
+//color formats for texture
+enum class Format {
+    RGBA8
+};
+
+struct FramebufferAttachmentSpec
+{
+    uint32_t texture;
+    Format format;
+};
 
 struct FramebufferSpec
 {
     uint32_t width;
     uint32_t height;
     uint32_t fbo;
-    uint32_t colorAttachment;
     uint32_t depthAttachment;
+    std::vector<FramebufferAttachmentSpec> attchments;
+    uint32_t samples = 1;
+    DepthFormat depthFormat = DepthFormat::None;
 };
+
 
 class FrameBuffer
 {

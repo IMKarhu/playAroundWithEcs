@@ -24,7 +24,6 @@ public:
     void swapBuffers();
     void makeCtxCurrent(GLFWwindow *ctx);
     int initWindow(uint32_t width, uint32_t height, std::string title);
-    void uiExperiment();
 private:
     GLFWwindow *m_window = nullptr;
     uint32_t m_width = 0;

@@ -11,8 +11,14 @@ GLRenderer::GLRenderer(Window& window)
 {
     FramebufferSpec spec = {
         .width = window.width(),
-        .height = window.height()
+        .height = window.height(),
+        .attchments = {{0, Format::RGBA8}},
+        .depthFormat = DepthFormat::Depth24Stencil8
     };
+    // FramebufferSpec spec = {
+    //     .width = window.width(),
+    //     .height = window.height()
+    // };
     m_viewportfb = std::make_unique<GLFramebuffer>(spec);
     m_shader = std::make_unique<Shader>("../shader.vert", "../shader.frag");
 }
@@ -22,8 +28,6 @@ GLRenderer::~GLRenderer() {}
 void GLRenderer::initialize(std::vector<Entity>& entities)
 {
     for(auto entity : entities) {
-        // if (ECS::hasComponent<Vertices>(entity))
-        //     std::println("has component");
 
         auto& comp = ECS::getComponent<Vertices>(entity);
 
