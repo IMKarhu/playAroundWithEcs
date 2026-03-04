@@ -4,7 +4,7 @@
 class GLFramebuffer : public FrameBuffer
 {
 public:
-    GLFramebuffer(FramebufferSpec& spec);
+    GLFramebuffer(const FramebufferSpec& spec);
     ~GLFramebuffer();
 
     void bind() override;

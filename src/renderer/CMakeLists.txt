@@ -1,8 +1,11 @@
 add_library(renderer
+    framebuffer.cpp
     framebuffer.h
     renderer.h
     glframebuffer.h
     glframebuffer.cpp
+    framebufferBuilder.h
+    framebufferBuilder.cpp
     glrenderer.h
     glrenderer.cpp
     shader.h

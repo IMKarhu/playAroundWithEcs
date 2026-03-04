@@ -20,6 +20,7 @@ public:
     FrameBuffer &viewportfb() override;
 private:
     Window& m_window;
-    std::unique_ptr<FrameBuffer> m_viewportfb;
+    // std::unique_ptr<FrameBuffer> m_viewportfb;
+    std::shared_ptr<FrameBuffer> m_fb;
     std::unique_ptr<Shader> m_shader;
 };

@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <vector>
+#include <memory>
 
 enum class DepthFormat {
     None,
@@ -25,7 +26,7 @@ struct FramebufferSpec
     uint32_t height;
     uint32_t fbo;
     uint32_t depthAttachment;
-    std::vector<FramebufferAttachmentSpec> attchments;
+    std::vector<FramebufferAttachmentSpec> attachments;
     uint32_t samples = 1;
     DepthFormat depthFormat = DepthFormat::None;
 };
@@ -41,6 +42,7 @@ public:
     virtual void unbind() = 0;
 
     virtual void resize(uint32_t width, uint32_t height) = 0;
+    static std::shared_ptr<FrameBuffer> create(const FramebufferSpec& spec);
 
     virtual uint32_t colorAttachment() const = 0;
     virtual FramebufferSpec &framebufferSpec() = 0;

@@ -1,5 +1,6 @@
 #include "glrenderer.h"
 #include "glframebuffer.h"
+#include "framebufferBuilder.h"
 #include "shader.h"
 #include "window.h"
 #include "components.h"
@@ -9,17 +10,12 @@
 GLRenderer::GLRenderer(Window& window)
     : m_window(window)
 {
-    FramebufferSpec spec = {
-        .width = window.width(),
-        .height = window.height(),
-        .attchments = {{0, Format::RGBA8}},
-        .depthFormat = DepthFormat::Depth24Stencil8
-    };
-    // FramebufferSpec spec = {
-    //     .width = window.width(),
-    //     .height = window.height()
-    // };
-    m_viewportfb = std::make_unique<GLFramebuffer>(spec);
+    m_fb = FramebufferBuilder()
+        .setSize(window.width(),window.height())
+        .setSamples(1)
+        .setColorAttachments({Format::RGBA8})
+        .setDepthFormat(DepthFormat::Depth24Stencil8)
+        .build();
     m_shader = std::make_unique<Shader>("../shader.vert", "../shader.frag");
 }
 
@@ -74,9 +70,10 @@ void GLRenderer::initialize(std::vector<Entity>& entities)
 
 void GLRenderer::beginFrame()
 {
-    auto& fb = *m_viewportfb;
-    fb.bind();
-    glViewport(0, 0, fb.framebufferSpec().width, fb.framebufferSpec().height);
+    // auto& fb = *m_viewportfb;
+    m_fb->bind();
+    // fb.bind();
+    glViewport(0, 0, m_fb->framebufferSpec().width, m_fb->framebufferSpec().height);
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -84,7 +81,7 @@ void GLRenderer::beginFrame()
 
 void GLRenderer::renderScene(float dt)
 {
-    auto& fb = *m_viewportfb;
+    // auto& fb = *m_viewportfb;
     auto pool = ECS::getComponentPool<Vertices>();
     auto& entt = pool->entities();
 
@@ -100,7 +97,7 @@ void GLRenderer::renderScene(float dt)
         cameraTrans.position.z += 1.0 * dt;
 
     cam.view = glm::lookAt(cameraTrans.position, glm::vec3(0), glm::vec3(0.0f, 1.0f, 0.0));
-    cam.proj = glm::perspective(glm::radians(45.0f), (float)fb.framebufferSpec().width/(float)fb.framebufferSpec().height, 0.001f, 1000.0f);
+    cam.proj = glm::perspective(glm::radians(45.0f), (float)m_fb->framebufferSpec().width/(float)m_fb->framebufferSpec().height, 0.001f, 1000.0f);
 
     for(auto entity : entt) {
         auto& trans = ECS::getComponent<Transform>(entity);
@@ -119,11 +116,11 @@ void GLRenderer::renderScene(float dt)
 
 void GLRenderer::endFrame()
 {
-    auto& fb = *m_viewportfb;
-    fb.unbind();
+    // auto& fb = *m_viewportfb;
+    m_fb->unbind();
 }
 
 FrameBuffer &GLRenderer::viewportfb()
 {
-    return *m_viewportfb;
+    return *m_fb;
 }
