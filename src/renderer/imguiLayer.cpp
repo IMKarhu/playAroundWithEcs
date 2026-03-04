@@ -66,12 +66,12 @@ void ImguiLayer::end()
     }
 }
 
-void ImguiLayer::drawViewport(std::unique_ptr<Renderer>& renderer)
+void ImguiLayer::drawViewport(std::shared_ptr<FrameBuffer> framebuffer)
 {
     bool demoWindow = true;
     bool testCheckbox = false;
     float testSlider = 0.f;
-    auto& fb = renderer->viewportfb();
+    // auto& fb = renderer->viewportfb();
 
     ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
     ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -92,9 +92,9 @@ void ImguiLayer::drawViewport(std::unique_ptr<Renderer>& renderer)
     ImGui::PopStyleVar(2);
     ImVec2 viewportSize = ImGui::GetContentRegionAvail();
     if(viewportSize.x > 0 && viewportSize.y > 0)
-        fb.resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+        framebuffer->resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 
-    ImGui::Image((ImTextureID)(intptr_t)fb.colorAttachment(), viewportSize, ImVec2{0,1},ImVec2{1,0});
+    ImGui::Image((ImTextureID)(intptr_t)framebuffer->colorAttachment(), viewportSize, ImVec2{0,1},ImVec2{1,0});
     ImGui::End();
 }
 

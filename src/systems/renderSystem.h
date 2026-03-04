@@ -5,6 +5,8 @@
 class Window;
 class Renderer;
 class ImguiLayer;
+class FrameBuffer;
+class FrameBufferManager;
 
 class RenderSystem
 {
@@ -20,4 +22,6 @@ private:
     Window& m_window;
     std::unique_ptr<Renderer> m_renderer;
     std::unique_ptr<ImguiLayer> m_uilayer;
+    std::shared_ptr<FrameBuffer> m_fb;
+    std::shared_ptr<FrameBufferManager> m_framebufferManager;
 };

@@ -1,4 +1,5 @@
 #pragma once
+#include "framebuffer.h"
 #include <memory>
 
 #include "imgui.h"
@@ -16,7 +17,7 @@ public:
 
     void begin();
     void end();
-    void drawViewport(std::unique_ptr<Renderer>& renderer);
+    void drawViewport(std::shared_ptr<FrameBuffer> framebuffer);
 
     // This probably should take in imgui window flags as well.
     static void beginWindow(const char* name, bool *open);

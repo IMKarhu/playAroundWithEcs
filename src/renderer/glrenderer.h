@@ -15,12 +15,12 @@ public:
 
     void initialize(std::vector<Entity>& entities) override;
     void beginFrame() override;
-    void renderScene(float dt) override;
+    void renderScene(float dt, uint32_t width, uint32_t height) override;
     void endFrame() override;
-    FrameBuffer &viewportfb() override;
+    // FrameBuffer &viewportfb() override;
 private:
     Window& m_window;
     // std::unique_ptr<FrameBuffer> m_viewportfb;
-    std::shared_ptr<FrameBuffer> m_fb;
+    // std::shared_ptr<FrameBuffer> m_fb;
     std::unique_ptr<Shader> m_shader;
 };
