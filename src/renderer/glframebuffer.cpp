@@ -80,7 +80,6 @@ void GLFramebuffer::create()
     for (size_t i = 0; i < m_spec.attachments.size(); ++i) {
         glCreateTextures(GL_TEXTURE_2D, 1, &m_spec.attachments[i].texture);
         createTextureStorage(m_spec.attachments[i].texture, m_spec.attachments[i].format, m_spec.width, m_spec.height);
-        // glTextureStorage2D(m_spec.attchments[i].texture, 1, (uint32_t)m_spec.attchments[i].format, m_spec.width, m_spec.height);
         glTextureParameteri(m_spec.attachments[i].texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTextureParameteri(m_spec.attachments[i].texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTextureParameteri(m_spec.attachments[i].texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -91,7 +90,6 @@ void GLFramebuffer::create()
     if (m_spec.depthFormat != DepthFormat::None) {
         glCreateTextures(GL_TEXTURE_2D, 1, &m_spec.depthAttachment);
         createTextureStorageDepth(m_spec.depthAttachment, m_spec.depthFormat, m_spec.width, m_spec.height);
-        // glTextureStorage2D(m_spec.depthAttachment, 1, (uint32_t)m_spec.depthFormat, m_spec.width, m_spec.height);
         glTextureParameteri(m_spec.depthAttachment, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTextureParameteri(m_spec.depthAttachment, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTextureParameteri(m_spec.depthAttachment, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

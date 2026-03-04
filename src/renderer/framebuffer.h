@@ -37,7 +37,8 @@ class FrameBuffer
 public:
     virtual ~FrameBuffer() = default;
 
-    //I am not really a fan of having these bind and unbind functions.. but it works for now..
+    //I am not really a fan of having these bind and unbind functions.. but it works for now.
+    //framebufferManager handles binding and ubinding so I guess having these are ok.
     virtual void bind() = 0;
     virtual void unbind() = 0;
 

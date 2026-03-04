@@ -71,7 +71,6 @@ void ImguiLayer::drawViewport(std::shared_ptr<FrameBuffer> framebuffer)
     bool demoWindow = true;
     bool testCheckbox = false;
     float testSlider = 0.f;
-    // auto& fb = renderer->viewportfb();
 
     ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
     ImGuiViewport* viewport = ImGui::GetMainViewport();

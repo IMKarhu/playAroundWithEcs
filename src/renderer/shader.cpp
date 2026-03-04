@@ -68,7 +68,6 @@ void Shader::use()
 {
     glUseProgram(m_shaderprogram);
 }
-// void setUniformVec4(const std::string& name, const glm::vec4& vec4);
 void Shader::setUniformMat4(const std::string& name, const glm::mat4& mat4)
 {
     int location = glGetUniformLocation(m_shaderprogram, name.c_str());

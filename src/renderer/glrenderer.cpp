@@ -10,12 +10,6 @@
 GLRenderer::GLRenderer(Window& window)
     : m_window(window)
 {
-    // m_fb = FramebufferBuilder()
-    //     .setSize(window.width(),window.height())
-    //     .setSamples(1)
-    //     .setColorAttachments({Format::RGBA8})
-    //     .setDepthFormat(DepthFormat::Depth24Stencil8)
-    //     .build();
     m_shader = std::make_unique<Shader>("../shader.vert", "../shader.frag");
 }
 
@@ -70,18 +64,11 @@ void GLRenderer::initialize(std::vector<Entity>& entities)
 
 void GLRenderer::beginFrame()
 {
-    // auto& fb = *m_viewportfb;
-    // m_fb->bind();
-    // // fb.bind();
-    // glViewport(0, 0, m_fb->framebufferSpec().width, m_fb->framebufferSpec().height);
-    // glEnable(GL_DEPTH_TEST);
-    // glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 }
 
 void GLRenderer::renderScene(float dt, uint32_t width, uint32_t height)
 {
-    // auto& fb = *m_viewportfb;
     auto pool = ECS::getComponentPool<Vertices>();
     auto& entt = pool->entities();
 
@@ -116,11 +103,4 @@ void GLRenderer::renderScene(float dt, uint32_t width, uint32_t height)
 
 void GLRenderer::endFrame()
 {
-    // auto& fb = *m_viewportfb;
-    // m_fb->unbind();
 }
-
-// FrameBuffer &GLRenderer::viewportfb()
-// {
-//     return *m_fb;
-// }

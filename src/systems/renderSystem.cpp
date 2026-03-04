@@ -34,12 +34,9 @@ void RenderSystem::initialize()
 
 void RenderSystem::update(float dt)
 {
-    // m_renderer->beginFrame();
     m_framebufferManager->renderto(m_fb, [&](){
             m_renderer->renderScene(dt, m_fb->framebufferSpec().width, m_fb->framebufferSpec().height);
     });
-    // m_renderer->renderScene(dt);
-    // m_renderer->endFrame();
 }
 
 void RenderSystem::renderui()
