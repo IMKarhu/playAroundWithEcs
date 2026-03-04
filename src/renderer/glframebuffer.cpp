@@ -85,7 +85,7 @@ void GLFramebuffer::create()
         glTextureParameteri(m_spec.attchments[i].texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTextureParameteri(m_spec.attchments[i].texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTextureParameteri(m_spec.attchments[i].texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glNamedFramebufferTexture(m_spec.fbo, GL_COLOR_ATTACHMENT0 + 1, m_spec.attchments[i].texture, 0);
+        glNamedFramebufferTexture(m_spec.fbo, GL_COLOR_ATTACHMENT0 + i, m_spec.attchments[i].texture, 0);
     }
 
     if (m_spec.depthFormat != DepthFormat::None) {
