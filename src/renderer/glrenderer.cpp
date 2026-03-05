@@ -1,6 +1,5 @@
 #include "glrenderer.h"
-#include "glframebuffer.h"
-#include "framebufferBuilder.h"
+#include "ecs.h"
 #include "shader.h"
 #include "window.h"
 #include "components.h"
@@ -10,7 +9,7 @@
 GLRenderer::GLRenderer(Window& window)
     : m_window(window)
 {
-    m_shader = std::make_unique<Shader>("../shader.vert", "../shader.frag");
+    m_shader = std::make_unique<Shader>("../../shader.vert", "../../shader.frag");
 }
 
 GLRenderer::~GLRenderer() {}

@@ -47,7 +47,5 @@ void RenderSystem::renderui()
     ImguiLayer::beginWindow("settings", &open);
     ImguiLayer::endWindow();
     m_uilayer->end();
-
-
 }
 
