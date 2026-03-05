@@ -1,5 +1,6 @@
 #include "window.h"
 #include "renderSystem.h"
+#include "sceneManager.h"
 #include "imguiLayer.h"
 #include "components.h"
 #include <cassert>
@@ -17,6 +18,8 @@ int main()
 {
     Window window;
     RenderSystem renderSystem(window);
+
+    auto editorScene = SceneManager::newScene("testScene");
     bool ok = ECS::registerComponentPool<Transform>();
     assert(ok);
     ok = ECS::registerComponentPool<Vertices>();
