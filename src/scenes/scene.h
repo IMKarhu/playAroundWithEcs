@@ -32,4 +32,5 @@ public:
 private:
     SceneState m_state = SceneState::Editor;
     uint32_t m_entities = 0;
+    std::unordered_map<std::type_index, std::unique_ptr<ECS::IComponentPool>> m_componentPoolMap;
 };
