@@ -1,6 +1,7 @@
 #include <glm/glm.hpp>
 #include <array>
 #include <vector>
+#include <string>
 
 struct Vertex
 {
@@ -38,5 +39,11 @@ struct model
 struct Sprite
 {
     float a;
+};
+
+struct Id
+{
+    std::string name;
+    uint32_t id;
 };
 

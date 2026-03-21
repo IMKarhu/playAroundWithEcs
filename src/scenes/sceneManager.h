@@ -14,5 +14,5 @@ public:
 
     static std::shared_ptr<Scene> getActiveScene();
 private:
-    static std::shared_ptr<Scene> m_activeScene;
+    inline static std::shared_ptr<Scene> m_activeScene = nullptr;
 };

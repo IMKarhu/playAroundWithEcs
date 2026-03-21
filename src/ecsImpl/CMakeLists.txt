@@ -1,6 +1,9 @@
 add_library(ecsImpl INTERFACE
     components.h
     ecs.h
+    ecs.cpp
+    componentpool.h
+    view.h
 )
 
 target_include_directories(ecsImpl

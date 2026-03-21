@@ -6,6 +6,7 @@
 #include "framebuffer.h"
 #include "framebufferBuilder.h"
 #include "framebufferManager.h"
+#include "scene.h"
 
 RenderSystem::RenderSystem(Window& window)
     : m_window(window)
@@ -24,15 +25,16 @@ RenderSystem::RenderSystem(Window& window)
 
 RenderSystem::~RenderSystem() {}
 
-void RenderSystem::initialize()
+void RenderSystem::initialize(std::shared_ptr<Scene>& scene)
 {
+    auto entities = scene->getAllEntitiesWithComponent<Vertices>();
     std::println("initialize");
-    auto pool = ECS::getComponentPool<Vertices>();
-    auto ent = pool->entities();
-    m_renderer->initialize(ent);
+    // auto pool = ECS::getComponentPool<Vertices>();
+    // auto ent = pool->entities();
+    m_renderer->initialize(entities);
 }
 
-void RenderSystem::update(float dt)
+void RenderSystem::update(float dt, std::shared_ptr<Scene>& scene)
 {
     m_framebufferManager->renderto(m_fb, [&](){
             m_renderer->renderScene(dt, m_fb->framebufferSpec().width, m_fb->framebufferSpec().height);

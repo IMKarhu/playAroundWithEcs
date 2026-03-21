@@ -24,6 +24,6 @@ target_link_libraries(ecs
 )
 
 target_link_libraries(windowing PUBLIC glfw glad)
-target_link_libraries(systems PUBLIC ecsImpl glm::glm windowing renderer)
+target_link_libraries(systems PUBLIC ecsImpl glm::glm windowing renderer scenes)
 target_link_libraries(renderer PUBLIC ecsImpl glm::glm glad imgui windowing)
 target_link_libraries(scenes PUBLIC ecsImpl glm::glm)

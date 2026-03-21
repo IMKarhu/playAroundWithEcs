@@ -7,6 +7,7 @@ class Renderer;
 class ImguiLayer;
 class FrameBuffer;
 class FrameBufferManager;
+class Scene;
 
 class RenderSystem
 {
@@ -14,8 +15,8 @@ public:
     RenderSystem(Window& window);
     ~RenderSystem();
 
-    void initialize();
-    void update(float dt);
+    void initialize(std::shared_ptr<Scene>& scene);
+    void update(float dt, std::shared_ptr<Scene>& scene);
     void renderui();
 
 private:

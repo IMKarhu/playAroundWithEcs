@@ -12,12 +12,6 @@ class Scene
 public:
     Scene() = default;
 
-    Entity createEntity(const std::string name = "Entity")
-    {
-        Entity ent = m_entities++;
-        return ent;
-    }
-
     void destroyEntity(Entity entity) {} //empty implementation for now
 
     void updateEditor(float dt) {} //empty implementation for now
@@ -27,10 +21,12 @@ public:
     template<typename T>
     auto getAllEntitiesWithComponent()
     {
-        return ECS::getComponentPool<T>()->entities();
+        return m_ecs.getComponentPool<T>()->entities();
     }
+
+    Ecs& getEcs();
+
 private:
     SceneState m_state = SceneState::Editor;
-    uint32_t m_entities = 0;
-    std::unordered_map<std::type_index, std::unique_ptr<ECS::IComponentPool>> m_componentPoolMap;
+    Ecs m_ecs;
 };

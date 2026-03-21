@@ -1,92 +1,14 @@
-#ifndef ECS_H
-#define ECS_H
-
-#include <vector>
-#include <cassert>
-#include <cstdio>
-#include <print>
-#include <unordered_map>
+#pragma once
+#include "componentpool.h"
 #include <memory>
 #include <typeindex>
-#include <vector>
+#include <string>
 
-using Entity = uint32_t;
-//maybe having this and the componentpool map as inline is not the best option
-//TODO: fix someday
-inline std::vector<Entity> m_entities;
-
-namespace ECS {
-
-    class IComponentPool
-    {
-        public:
-            virtual ~IComponentPool() = default;
-        private:
-    };
-
+class Ecs
+{
+public:
     template<typename T>
-    class ComponentPool : public IComponentPool
-    {
-        public:
-            ComponentPool<T>() {
-            }
-
-            inline void add(Entity ent, const T& component) {
-                if(has(ent)) {
-                    std::println("Component is already added");
-                    return;
-                }
-
-                size_t size = m_components.size();
-                m_entityToIndex[ent] = size;
-                m_entities.push_back(ent);
-                m_components.push_back(component);
-            }
-
-            inline void remove(Entity ent) {
-                auto it = m_entityToIndex.find(ent);
-                if(it == m_entityToIndex.end()) {
-                    return;
-                }
-                size_t index = it->second;
-                size_t last = m_components.size() - 1;
-                Entity lastEnt = m_entities.at(last);
-
-                m_components[index] = std::move(m_components.at(last));
-                m_entities[index] = lastEnt;
-                m_entityToIndex[lastEnt] = index;
-
-                m_components.pop_back();
-                m_entities.pop_back();
-                m_entityToIndex.erase(ent);
-            }
-
-            inline bool has(Entity ent) const {
-                return m_entityToIndex.contains(ent);
-            }
-
-            inline T& get(Entity ent) {
-                return m_components[m_entityToIndex.at(ent)];
-            }
-
-            inline const std::vector<Entity>& entities() const {
-                return m_entities;
-            }
-
-            inline void hello() {
-                std::println("I am being called");
-            }
-        private:
-            std::vector<T> m_components;
-            std::vector<Entity> m_entities;
-            std::unordered_map<Entity, size_t> m_entityToIndex;
-    };
-
-    //fix for now..
-    inline std::unordered_map<std::type_index, std::unique_ptr<IComponentPool>> m_componentPoolMap;
-
-    template<typename T>
-    inline bool registerComponentPool() {
+    bool registerComponentPool() {
         //should be O(1), at the worst case O(n)
         std::type_index key = std::type_index(typeid(T));
         std::println("key: {}", key.name());
@@ -96,39 +18,50 @@ namespace ECS {
         }
         m_componentPoolMap.insert({
                 key,
-                std::make_unique<ComponentPool<T>>()
+                std::make_unique<ECS::ComponentPool<T>>()
                 });
         return true;
     };
 
     template<typename T>
-    inline ComponentPool<T>* getComponentPool() {
+    ECS::ComponentPool<T>* getComponentPool() {
         auto it = m_componentPoolMap.find(std::type_index(typeid(T)));
         if(it == m_componentPoolMap.end()) {
             return nullptr;
         }
-        return static_cast<ComponentPool<T>*>(it->second.get());
+        return static_cast<ECS::ComponentPool<T>*>(it->second.get());
     };
 
+    template<typename... components>
+    auto view() {
+        return View<components...>(*this);
+    }
+
     template<typename T>
-    inline void addComponent(Entity ent, const T& component) {
+    void addComponent(Entity ent, const T& component) {
+        registerComponentPool<T>();
         getComponentPool<T>()->add(ent, component);
     }
 
     template<typename T>
-    inline bool hasComponent(Entity ent) {
+    bool hasComponent(Entity ent) {
         return getComponentPool<T>()->has(ent);
     }
 
     template<typename T>
-    inline T& getComponent(Entity ent) {
+    T& getComponent(Entity ent) {
         return getComponentPool<T>()->get(ent);
     }
 
     template<typename T>
-    inline void removeComponent(Entity ent) {
+    void removeComponent(Entity ent) {
         getComponentPool<T>()->remove(ent);
     }
-}
 
-#endif
+    Entity createEntity(const std::string name = "Entity");
+
+private:
+    std::unordered_map<std::type_index, std::unique_ptr<ECS::IComponentPool>> m_componentPoolMap;
+    uint32_t m_nextEntity = 0;
+    std::vector<Entity> m_entities;
+};
