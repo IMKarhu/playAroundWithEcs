@@ -15,6 +15,7 @@ FramebufferBuilder& FramebufferBuilder::setSamples(uint32_t count)
 
 FramebufferBuilder&FramebufferBuilder::setColorAttachments(std::vector<Format> attachments)
 {
+    m_spec.attachments.resize(attachments.size());
     for (size_t i = 0; i < attachments.size(); ++i) {
         m_spec.attachments[i].format = attachments[i];
     }

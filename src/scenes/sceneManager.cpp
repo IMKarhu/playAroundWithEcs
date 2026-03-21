@@ -1,6 +1,5 @@
 #include "sceneManager.h"
 
-
 std::shared_ptr<Scene> SceneManager::newScene(std::string name)
 {
     m_activeScene = std::make_shared<Scene>();
