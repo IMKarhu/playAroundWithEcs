@@ -8,3 +8,8 @@ Entity Ecs::createEntity(const std::string name)
     m_entities.emplace_back(ent);
     return ent;
 }
+
+size_t Ecs::getNumOfAllEntities() const
+{
+    return m_entities.size();
+}

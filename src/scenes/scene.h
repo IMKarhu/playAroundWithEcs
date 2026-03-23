@@ -1,6 +1,5 @@
 #pragma once
 #include "ecs.h"
-#include <string>
 
 enum class SceneState {
     Editor,

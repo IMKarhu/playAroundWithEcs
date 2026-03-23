@@ -15,6 +15,7 @@ namespace ECS {
         public:
             virtual ~IComponentPool() = default;
             virtual size_t size() const = 0;
+            virtual Entity getEntity(size_t index) = 0;
         private:
     };
 
@@ -65,7 +66,7 @@ namespace ECS {
                 return m_components[m_entityToIndex.at(ent)];
             }
 
-            inline Entity getEntity(size_t index) {
+            inline Entity getEntity(size_t index) override {
                 return m_entities.at(index);
             }
 

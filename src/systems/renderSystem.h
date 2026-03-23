@@ -17,7 +17,7 @@ public:
 
     void initialize(std::shared_ptr<Scene>& scene);
     void update(float dt, std::shared_ptr<Scene>& scene);
-    void renderui();
+    void renderui(std::shared_ptr<Scene>& scene);
 
 private:
     Window& m_window;

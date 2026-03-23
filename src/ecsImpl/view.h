@@ -1,63 +1,38 @@
 #pragma once
-#include "ecs.h"
+#include "componentpool.h"
 #include <algorithm>
+
+class Ecs;
 
 template<typename... components>
 class View
 {
 public:
-    View(Ecs& ecs) : m_ecs(ecs) {
-        m_pools = { m_ecs.getComponentPool<components>()... };
-        m_smallestpool = findSmallestPool();
-    }
+    View(Ecs& ecs);
 
     struct Iterator {
         Ecs& ecs;
         ECS::IComponentPool* smallestpool;
         size_t index;
 
-        Iterator& operator++() {
-            index++;
+        Iterator& operator++();
 
-            while(index < smallestpool->size() && !isValid()) {
-                index++;
-            }
-            return *this;
-        }
+        bool isValid() const;
 
-        bool isValid() const {
-            Entity ent = smallestpool->getEntity(index);
+        Entity operator*() const;
 
-            return (ecs.hasComponent<components>(ent) && ...);
-        }
-
-        Entity operator*() const {
-            return smallestpool->getEntity(index);
-        }
-
-        bool operator !=(const Iterator& other) const {
-            return index != other.index;
-        }
+        bool operator !=(const Iterator& other) const;
 
     };
 
-    Iterator begin() {
-        size_t first = 0;
+    Iterator begin();
 
-        while(first < m_smallestpool->size() && !Iterator{m_ecs, m_smallestpool, first}.isValid()) {
-            first++;
-        }
-        return Iterator{m_ecs, m_smallestpool, first};
-    }
-
-    Iterator end() {
-        return{m_ecs, m_smallestpool, m_smallestpool->size()};
-    }
+    Iterator end();
 
 private:
     Ecs& m_ecs;
     std::vector<ECS::IComponentPool*> m_pools;
-    ECS::IComponentPool* m_smallestpool;
+    ECS::IComponentPool* m_smallestpool = nullptr;
 
     ECS::IComponentPool* findSmallestPool()
     {
@@ -68,3 +43,61 @@ private:
         return pool;
     }
 };
+
+
+#include "ecs.h"
+template<typename... components>
+View<components...>::View(Ecs& ecs) : m_ecs(ecs) {
+    m_pools = { m_ecs.template getComponentPool<components>()... };
+
+    if (!m_pools.empty()) {
+        m_smallestpool = findSmallestPool();
+    }
+}
+
+template<typename... components>
+View<components...>::Iterator& View<components...>::Iterator::operator++() {
+    index++;
+
+    while(index < smallestpool->size() && !isValid()) {
+        index++;
+    }
+    return *this;
+}
+
+template<typename... components>
+bool View<components...>::Iterator::isValid() const {
+    Entity ent = smallestpool->getEntity(index);
+
+    return (ecs.template hasComponent<components>(ent) && ...);
+}
+
+template<typename... components>
+Entity View<components...>::Iterator::operator*() const {
+    return smallestpool->getEntity(index);
+}
+
+template<typename... components>
+bool View<components...>::Iterator::operator !=(const Iterator& other) const {
+    return index != other.index;
+}
+
+template<typename... components>
+View<components...>::Iterator View<components...>::begin() {
+    if (!m_smallestpool || m_smallestpool->size() == 0) {
+        return end();
+    }
+   size_t first = 0;
+
+    while(first < m_smallestpool->size() && !Iterator{m_ecs, m_smallestpool, first}.isValid()) {
+        first++;
+    }
+    return Iterator{m_ecs, m_smallestpool, first};
+}
+
+template<typename... components>
+View<components...>::Iterator View<components...>::end() {
+    size_t endIndex = m_smallestpool ? m_smallestpool->size() : 0;
+    return{m_ecs, m_smallestpool, endIndex};
+}
+

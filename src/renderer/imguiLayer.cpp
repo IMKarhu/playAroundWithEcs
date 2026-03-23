@@ -2,6 +2,8 @@
 #include "window.h"
 #include "renderer.h"
 #include "framebuffer.h"
+#include "components.h"
+#include "scene.h"
 
 #include <print>
 
@@ -80,6 +82,8 @@ void ImguiLayer::drawViewport(std::shared_ptr<FrameBuffer> framebuffer)
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+    // ImGui::SetNextWindowPos(ImVec2(100, 100), ImGuiCond_FirstUseEver);
+    // ImGui::SetNextWindowSize(ImVec2(300,300), ImGuiCond_FirstUseEver);
     ImGui::Begin("DockSpace demo", &demoWindow, windowFlags);
     ImGui::PopStyleVar(3);
     ImGui::DockSpace(ImGui::GetID("DockSpace"));
@@ -87,6 +91,8 @@ void ImguiLayer::drawViewport(std::shared_ptr<FrameBuffer> framebuffer)
     /*viewport*/
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::SetNextWindowPos(ImVec2(100, 100), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(300,300), ImGuiCond_FirstUseEver);
     ImGui::Begin("Viewport", &demoWindow, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     ImGui::PopStyleVar(2);
     ImVec2 viewportSize = ImGui::GetContentRegionAvail();
@@ -97,9 +103,40 @@ void ImguiLayer::drawViewport(std::shared_ptr<FrameBuffer> framebuffer)
     ImGui::End();
 }
 
+void ImguiLayer::drawSceneGraph(std::shared_ptr<Scene>& scene)
+{
+    ImGui::SetNextWindowPos(ImVec2(100, 100), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(300,300), ImGuiCond_FirstUseEver);
+    ImGui::Begin("Scene hierarchy");
+    auto& ecs = scene->getEcs();
+
+    for (auto entity : ecs.view<Id>()) {
+        auto& id = ecs.getComponent<Id>(entity);
+
+        // ImGuiTreeNodeFlags flags = ((m_SelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0);
+        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Leaf;
+
+        bool opened = ImGui::TreeNodeEx((void*)(uint64_t)entity, flags, id.name.c_str());
+
+        if (opened) {
+            ImGui::TreePop();
+        }
+    }
+
+    if (ImGui::BeginPopupContextWindow(0, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
+        if (ImGui::MenuItem("add new entity")) {
+            ecs.createEntity();
+        }
+        ImGui::EndPopup();
+    }
+    ImGui::End();
+}
+
 void ImguiLayer::beginWindow(const char* name, bool* open)
 {
     float testSlider = 0.0f;
+    ImGui::SetNextWindowPos(ImVec2(100, 100), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(300,300), ImGuiCond_FirstUseEver);
     ImGui::Begin(name, open);
     ImGui::Text("testing text");
     ImGui::Checkbox("test checkbox", open);

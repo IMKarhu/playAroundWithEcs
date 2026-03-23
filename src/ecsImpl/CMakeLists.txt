@@ -1,4 +1,4 @@
-add_library(ecsImpl INTERFACE
+add_library(ecsImpl
     components.h
     ecs.h
     ecs.cpp
@@ -7,7 +7,7 @@ add_library(ecsImpl INTERFACE
 )
 
 target_include_directories(ecsImpl
-    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 

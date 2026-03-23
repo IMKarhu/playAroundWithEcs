@@ -14,49 +14,8 @@ GLRenderer::GLRenderer(Window& window)
 
 GLRenderer::~GLRenderer() {}
 
-void GLRenderer::initialize(std::vector<Entity>& entities)
+void GLRenderer::initialize()
 {
-    for(auto entity : entities) {
-
-        glCreateVertexArrays(1, &comp.m_vao);
-        glCreateBuffers(1, &comp.m_vbo);
-        glCreateBuffers(1, &comp.m_ebo);
-
-        glNamedBufferData(comp.m_vbo,
-                comp.m_vertices.size() * sizeof(Vertex),
-                comp.m_vertices.data(),
-                GL_STATIC_DRAW
-        );
-
-        glNamedBufferData(comp.m_ebo,
-                comp.m_indices.size() * sizeof(uint32_t),
-                comp.m_indices.data(),
-                GL_STATIC_DRAW
-        );
-
-        glVertexArrayVertexBuffer(comp.m_vao, 0, comp.m_vbo, 0, sizeof(Vertex));
-        glVertexArrayElementBuffer(comp.m_vao, comp.m_ebo);
-
-        glEnableVertexArrayAttrib(comp.m_vao, 0);
-        glVertexArrayAttribFormat(comp.m_vao,
-                0,
-                3,
-                GL_FLOAT,
-                GL_FALSE,
-                offsetof(Vertex, position)
-        );
-        glVertexArrayAttribBinding(comp.m_vao, 0, 0);
-
-        glEnableVertexArrayAttrib(comp.m_vao, 1);
-        glVertexArrayAttribFormat(comp.m_vao,
-                1,
-                3,
-                GL_FLOAT,
-                GL_FALSE,
-                offsetof(Vertex, color)
-        );
-        glVertexArrayAttribBinding(comp.m_vao, 1, 0);
-    }
 }
 
 void GLRenderer::beginFrame()

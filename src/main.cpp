@@ -105,7 +105,7 @@ int main()
         float dt = std::chrono::duration<float, std::chrono::seconds::period>(startTime - curTime).count();
 
         renderSystem.update(dt, editorScene);
-        renderSystem.renderui();
+        renderSystem.renderui(editorScene);
 
         window.pollEvents();
         window.swapBuffers();

@@ -8,6 +8,7 @@
 
 class Window;
 class Renderer;
+class Scene;
 
 class ImguiLayer
 {
@@ -18,6 +19,7 @@ public:
     void begin();
     void end();
     void drawViewport(std::shared_ptr<FrameBuffer> framebuffer);
+    void drawSceneGraph(std::shared_ptr<Scene>& scene);
 
     // This probably should take in imgui window flags as well.
     static void beginWindow(const char* name, bool *open);
