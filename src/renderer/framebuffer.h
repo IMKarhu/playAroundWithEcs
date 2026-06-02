@@ -3,6 +3,11 @@
 #include <vector>
 #include <memory>
 
+enum class DepthFormatType {
+    Texture,
+    Buffer
+};
+
 enum class DepthFormat {
     None,
     Depth32F,
@@ -26,9 +31,11 @@ struct FramebufferSpec
     uint32_t height;
     uint32_t fbo;
     uint32_t depthAttachment;
+    uint32_t rbo;
     std::vector<FramebufferAttachmentSpec> attachments;
     uint32_t samples = 1;
     DepthFormat depthFormat = DepthFormat::None;
+    DepthFormatType depthType = DepthFormatType::Buffer;
 };
 
 

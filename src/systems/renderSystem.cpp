@@ -125,7 +125,7 @@ void RenderSystem::update(float dt, std::shared_ptr<Scene>& scene)
     auto& ecs = scene->getEcs();
     std::println("number of all entities: {}", ecs.getNumOfAllEntities());
     m_framebufferManager->renderto(m_fb, [&](){
-            m_renderer->renderScene(dt, m_fb->framebufferSpec().width, m_fb->framebufferSpec().height);
+            m_renderer->renderScene(dt, m_fb->framebufferSpec().width, m_fb->framebufferSpec().height, scene);
     });
 }
 
@@ -135,6 +135,7 @@ void RenderSystem::renderui(std::shared_ptr<Scene>& scene)
     m_uilayer->begin();
     m_uilayer->drawViewport(m_fb);
     m_uilayer->drawSceneGraph(scene);
+    m_uilayer->drawInspector(scene);
     ImguiLayer::beginWindow("settings", &open);
     ImguiLayer::endWindow();
     m_uilayer->end();

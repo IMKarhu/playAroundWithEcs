@@ -22,9 +22,10 @@ FramebufferBuilder&FramebufferBuilder::setColorAttachments(std::vector<Format> a
     return *this;
 }
 
-FramebufferBuilder& FramebufferBuilder::setDepthFormat(DepthFormat depthFormat)
+FramebufferBuilder& FramebufferBuilder::setDepthFormat(DepthFormat depthFormat, DepthFormatType type)
 {
     m_spec.depthFormat = depthFormat;
+    m_spec.depthType = type;
     return *this;
 }
 
