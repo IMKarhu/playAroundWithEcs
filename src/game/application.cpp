@@ -11,10 +11,8 @@ Application::Application(Platform platform)
     m_renderer = std::make_shared<GLRenderer>(*m_window);
 
     pushLayer(std::make_unique<GameLayer>(*m_renderer));
-    // pushLayer(std::make_unique<EditorLayer>(*m_renderer, *m_window));
     m_renderer->createAndAddToShaderCache("main", "../src/game/shaders/shader.vert", "../src/game/shaders/shader.frag");
 
-    // m_rendersystem->initialize();
 }
 
 void Application::run()
@@ -24,7 +22,6 @@ void Application::run()
         auto startTime = std::chrono::high_resolution_clock::now();
         float dt = std::chrono::duration<float, std::chrono::seconds::period>(startTime - curTime).count();
 
-        // m_rendersystem->update();
         for (auto& layer : m_layers) {
             layer->update(dt);
         }

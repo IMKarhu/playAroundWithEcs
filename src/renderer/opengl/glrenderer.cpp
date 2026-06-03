@@ -104,7 +104,6 @@ void GLRenderer::endFrame() const
     glBindFramebuffer(GL_READ_FRAMEBUFFER, fb->colorAttachment());
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     glBlitNamedFramebuffer(fb->colorAttachment(), 0, 0, 0, w, h, 0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-    // glBlitFramebuffer(0, 0, w, h, 0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 }
 
 void GLRenderer::createAndAddToShaderCache(std::string name,

@@ -7,6 +7,8 @@
 
 GLShader::GLShader(std::string vertexshader, std::string fragmentshader)
 {
+    uint32_t vertexid;
+    uint32_t fragmentid;
     std::string vertexCode;
     std::string fragmentCode;
     std::ifstream vShaderFile;
@@ -31,37 +33,37 @@ GLShader::GLShader(std::string vertexshader, std::string fragmentshader)
     }
     const char* vShaderCode = vertexCode.c_str();
     const char* fShaderCode = fragmentCode.c_str();
-    m_vertexshader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(m_vertexshader, 1, &vShaderCode, nullptr);
-    glCompileShader(m_vertexshader);
+    vertexid = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexid, 1, &vShaderCode, nullptr);
+    glCompileShader(vertexid);
     int success;
     char infoLog[512];
-    glGetShaderiv(m_vertexshader, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(vertexid, GL_COMPILE_STATUS, &success);
     if (!success)
     {
-        glGetShaderInfoLog(m_vertexshader, 512, nullptr, infoLog);
+        glGetShaderInfoLog(vertexid, 512, nullptr, infoLog);
         std::cout << "Error Shader Vertex compilation failed!\n" << infoLog << std::endl;
     }
-    m_fragmentshader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(m_fragmentshader, 1, &fShaderCode, nullptr);
-    glCompileShader(m_fragmentshader);
-    glGetShaderiv(m_fragmentshader, GL_COMPILE_STATUS, &success);
+    fragmentid = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentid, 1, &fShaderCode, nullptr);
+    glCompileShader(fragmentid);
+    glGetShaderiv(fragmentid, GL_COMPILE_STATUS, &success);
     if (!success)
     {
-        glGetShaderInfoLog(m_fragmentshader, 512, nullptr, infoLog);
+        glGetShaderInfoLog(fragmentid, 512, nullptr, infoLog);
         std::cout << "Error Shader fragment compilation failed!\n" << infoLog << std::endl;
     }
     m_shaderprogram = glCreateProgram();
-    glAttachShader(m_shaderprogram, m_vertexshader);
-    glAttachShader(m_shaderprogram, m_fragmentshader);
+    glAttachShader(m_shaderprogram, vertexid);
+    glAttachShader(m_shaderprogram, fragmentid);
     glLinkProgram(m_shaderprogram);
     glGetProgramiv(m_shaderprogram, GL_LINK_STATUS, &success);
     if (!success)
     {
         glGetProgramInfoLog(m_shaderprogram, 512, NULL, infoLog);
     }
-    glDeleteShader(m_vertexshader);
-    glDeleteShader(m_fragmentshader);
+    glDeleteShader(vertexid);
+    glDeleteShader(fragmentid);
 }
 
 GLShader::~GLShader() {}

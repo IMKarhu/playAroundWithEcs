@@ -41,7 +41,7 @@ private:
     std::unordered_map<std::string, Shader*> m_shadercache;
     //This might just be a temporary solution.
     //Instead of initializing same model multiple time
-    //just create it once and cache vao, ebo and indice count
+    //just create it once and cache vao and indice count
     mutable std::unordered_map<std::string, uint32_t> m_vaocache;
     mutable std::unordered_map<std::string, uint32_t> m_indexcache;
     std::shared_ptr<FrameBufferManager> m_framebufferManager;

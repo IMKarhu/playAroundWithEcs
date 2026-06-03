@@ -1,5 +1,4 @@
 file(GLOB_RECURSE CORE_SOURCES
-    "ecsImpl/*.cpp"
     "windowing/*.cpp"
     "ecsImpl/*.h"
     "windowing/*.h"

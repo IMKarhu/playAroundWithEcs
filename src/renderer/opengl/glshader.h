@@ -17,7 +17,5 @@ public:
     void setUniformTexture(const std::string& name, int value);
     void setUniformInt(const std::string& name, const int& value);
 private:
-    uint32_t m_vertexshader;
-    uint32_t m_fragmentshader;
     uint32_t m_shaderprogram;
 };

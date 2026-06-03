@@ -19,62 +19,7 @@ void RenderSystem::initialize(const Ecs &ecs, const Renderer &renderer)
     for (auto ent : ecs.view<Mesh>()) {
         auto& mesh = ecs.getComponent<Mesh>(ent);
         renderer.createMeshPrimitive(mesh.name, mesh.vertices, mesh.indices, mesh.vbo, mesh.ebo);
-        // glCreateVertexArrays(1, &mesh.vao);
-        // glCreateBuffers(1, &mesh.vbo);
-        // glCreateBuffers(1, &mesh.ebo);
-        //
-        // glNamedBufferData(mesh.vbo,
-        //         mesh.vertices.size() * sizeof(Vertex),
-        //         mesh.vertices.data(),
-        //         GL_STATIC_DRAW
-        // );
-        //
-        // glNamedBufferData(mesh.ebo,
-        //         mesh.indices.size() * sizeof(uint32_t),
-        //         mesh.indices.data(),
-        //         GL_STATIC_DRAW
-        // );
-        //
-        // glVertexArrayVertexBuffer(mesh.vao, 0, mesh.vbo, 0, sizeof(Vertex));
-        // glVertexArrayElementBuffer(mesh.vao, mesh.ebo);
-        //
-        // glEnableVertexArrayAttrib(mesh.vao, 0);
-        // glVertexArrayAttribFormat(mesh.vao,
-        //         0,
-        //         3,
-        //         GL_FLOAT,
-        //         GL_FALSE,
-        //         offsetof(Vertex, position)
-        // );
-        // glVertexArrayAttribBinding(mesh.vao, 0, 0);
-        //
-        // glEnableVertexArrayAttrib(mesh.vao, 1);
-        // glVertexArrayAttribFormat(mesh.vao,
-        //         1,
-        //         3,
-        //         GL_FLOAT,
-        //         GL_FALSE,
-        //         offsetof(Vertex, color)
-        // );
-        // glVertexArrayAttribBinding(mesh.vao, 1, 0);
     }
-
-    //auto entities = scene->getAllEntitiesWithComponent<Vertices>();
-    // auto& ecs = scene->getEcs();
-    // Entity ent = ecs.createEntity("entity1");
-    // Vertices verts;
-    // verts.m_vertices = {
-    // };
-    // verts.m_indices = {
-    // };
-    //
-    // ecs.addComponent<Vertices>(ent, verts);
-    // for (auto entity : ecs.view<Vertices>()) {
-    //     auto& vert = ecs.getComponent<Vertices>(entity);
-    // }
-
-    // auto pool = ECS::getComponentPool<Vertices>();
-    // auto ent = pool->entities();
 }
 
 void RenderSystem::update(float dt, const Ecs &ecs, const Renderer &renderer)
@@ -98,9 +43,4 @@ void RenderSystem::update(float dt, const Ecs &ecs, const Renderer &renderer)
     }
 
     renderer.endFrame();
-    // std::println("update rendersystem");
-    // std::println("number of all entities: {}", ecs.getNumOfAllEntities());
-    // m_framebufferManager->renderto(m_fb, [&](){
-    //         m_renderer->renderScene(dt, m_fb->framebufferSpec().width, m_fb->framebufferSpec().height, scene);
-    // });
 }
