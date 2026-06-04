@@ -14,7 +14,7 @@ public:
     virtual void detach() {}
     virtual void update(float dt) {}
     virtual void editorUpdate() {}
-    virtual void event(Event &event) {}
+    virtual void event(const Event &event) {}
 private:
     std::string m_layerName;
 };

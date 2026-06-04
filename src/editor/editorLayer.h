@@ -16,7 +16,7 @@ public:
     void attach() override;
     void detach() override;
     void update(float dt) override;
-    void event(Event &event) override;
+    void event(const Event &event) override;
 private:
     std::unique_ptr<RenderSystem> m_rendersystem;
     const Renderer &m_renderer;

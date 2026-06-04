@@ -15,4 +15,4 @@ void EditorLayer::detach() {}
 
 void EditorLayer::update(float dt) {}
 
-void EditorLayer::event(Event &event) {}
+void EditorLayer::event(const Event &event) {}

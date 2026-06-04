@@ -6,6 +6,12 @@
 GameLayer::GameLayer(const Renderer &renderer)
     : m_renderer(renderer), Layer("gamelayer")
 {
+    EventDispatcher::subscribe(EventType::KeyPress, [this](const Event &e) {
+            event(e);
+    });
+    EventDispatcher::subscribe(EventType::WindowResize, [this](const Event &e) {
+            event(e);
+    });
 }
 
 void GameLayer::attach()
@@ -13,7 +19,8 @@ void GameLayer::attach()
     std::println("game layer attach");
 
     auto cube = m_ecs.createEntity("cube");
-    m_ecs.addComponent<Transform>(cube, {{0,0,0}, {0,0,0}, {1,1,1}});
+    m_ecs.addComponent<Transform>(cube, {});
+
     Mesh testcube;
     testcube.vertices = {
         // front
@@ -57,7 +64,10 @@ void GameLayer::attach()
     };
     testcube.name = "testcube";
     m_ecs.addComponent<Mesh>(cube, testcube);
-    m_ecs.addComponent<model>(cube, {});
+
+    auto camera = m_ecs.createEntity("camera");
+    m_ecs.addComponent<Transform>(camera, {.position = glm::vec3(0.0, 0.0, 10.0)});
+    m_ecs.addComponent<Camera>(camera, {.primary = true});
 
     m_rendersystem = std::make_unique<RenderSystem>();
     m_rendersystem->initialize(m_ecs, m_renderer);
@@ -74,6 +84,21 @@ void GameLayer::update(float dt)
     m_rendersystem->update(dt, m_ecs, m_renderer);
 }
 
-void GameLayer::event(Event &event)
+void GameLayer::event(const Event &event)
 {
+    if (event.type == EventType::KeyPress) {
+        const auto &e = static_cast<const KeyEvent&>(event);
+        std::println("pressed a key: {} action: {} mods: {}",e.key,e.action, e.mods);
+    }
+
+    if (event.type == EventType::WindowResize) {
+        const auto &e = static_cast<const ResizeEvent&>(event);
+        for (auto ent : m_ecs.view<Camera, Transform>()) {
+            auto& camera = m_ecs.getComponent<Camera>(ent);
+            if (camera.primary) {
+                camera.aspectratio = (float)e.width/(float)e.height;
+                break;
+            }
+        }
+    }
 }

@@ -48,12 +48,6 @@ GLRenderer::GLRenderer(const Window &window)
             resizeFramebuffer(event.width, event.height);
     });
 
-    //Demonstrate how events would be used with keypresses
-    EventDispatcher::subscribe(EventType::KeyPress, [this](const Event &e) {
-            const auto& event = static_cast<const KeyEvent&>(e);
-            std::println("pressed a key: {} action: {} mods: {}",event.key,event.action, event.mods);
-    });
-
     m_framebufferManager = std::make_shared<FrameBufferManager>();
     m_framebufferManager->addFramebuffer("scene", FramebufferBuilder()
         .setSize(window.width(),window.height())
