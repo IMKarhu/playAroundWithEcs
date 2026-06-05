@@ -45,6 +45,11 @@ bool Window::shouldClose() const
     return glfwWindowShouldClose(m_window);
 }
 
+void Window::setWindowShouldClose(bool close)
+{
+    glfwSetWindowShouldClose(m_window, GLFW_TRUE);
+}
+
 void Window::pollEvents()
 {
     glfwPollEvents();
@@ -63,14 +68,14 @@ void Window::makeCtxCurrent(GLFWwindow *ctx)
 void Window::initWindow(Platform platform, uint32_t width, uint32_t height, std::string title)
 {
     if(!glfwInit()) {
-        std::println("you done fucked up");
+        std::println("Failed to initialize GLFW");
         return ;
     }
 
     if (platform.isWayland && glfwPlatformSupported(GLFW_PLATFORM_WAYLAND)) {
         glfwWindowHint(GLFW_PLATFORM, GLFW_PLATFORM_WAYLAND);
     } else {
-        std::println("no wayland support detected, windows it is");
+        std::println("no wayland support detected");
     }
 
     if (platform.api == GraphicsApi::VULKAN) {

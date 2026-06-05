@@ -13,6 +13,15 @@ Application::Application(Platform platform)
     pushLayer(std::make_unique<GameLayer>(*m_renderer));
     m_renderer->createAndAddToShaderCache("main", "../src/game/shaders/shader.vert", "../src/game/shaders/shader.frag");
 
+    //temporary for closing application by pressing ESC
+    EventDispatcher::subscribe(EventType::KeyPress, [this](const Event &e) {
+        const auto &event = static_cast<const KeyEvent&>(e);
+        if (event.key == 256) {
+            m_window->setWindowShouldClose(true);
+        }
+    });
+
+
 }
 
 void Application::run()

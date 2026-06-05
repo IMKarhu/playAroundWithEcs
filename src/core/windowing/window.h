@@ -5,13 +5,13 @@
 #include <platforms.h>
 
 #ifdef _WIN32
-#ifdef CORE_EXPORT
-#define CORE_API __declspec(dllexport)
+    #ifdef CORE_EXPORT
+    #define CORE_API __declspec(dllexport)
+    #else
+    #define CORE_API __declspec(dllimport)
+    #endif
 #else
-#define CORE_API __declspec(dllimport)
-#endif
-#else
-#define CORE_API
+    #define CORE_API
 #endif
 
 class CORE_API Window
@@ -28,6 +28,7 @@ public:
     uint32_t height() const;
 
     bool shouldClose() const;
+    void setWindowShouldClose(bool close);
     void pollEvents();
     void swapBuffers();
     void makeCtxCurrent(GLFWwindow *ctx);
