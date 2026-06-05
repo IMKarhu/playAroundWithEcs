@@ -22,7 +22,7 @@ namespace ECS {
     class ComponentPool : public IComponentPool
     {
         public:
-            ComponentPool<T>() {
+            ComponentPool() {
             }
 
             size_t size() const override { return m_components.size(); }
