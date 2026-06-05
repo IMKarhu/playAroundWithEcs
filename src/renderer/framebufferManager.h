@@ -5,10 +5,14 @@
 #include <memory>
 #include <functional>
 
-#ifdef RENDERER_EXPORT
-#define RENDERER_API __declspec(dllexport)
+#ifdef _WIN32
+    #ifdef RENDERER_EXPORT
+    #define RENDERER_API __declspec(dllexport)
+    #else
+    #define RENDERER_API __declspec(dllimport)
+    #endif
 #else
-#define RENDERER_API __declspec(dllimport)
+    #define RENDERER_API
 #endif
 
 class RENDERER_API FrameBufferManager

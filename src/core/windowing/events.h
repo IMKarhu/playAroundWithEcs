@@ -2,10 +2,14 @@
 #include <functional>
 #include <cstdint>
 
-#ifdef CORE_EXPORT
-#define CORE_API __declspec(dllexport)
+#ifdef _WIN32
+    #ifdef CORE_EXPORT
+    #define CORE_API __declspec(dllexport)
+    #else
+    #define CORE_API __declspec(dllimport)
+    #endif
 #else
-#define CORE_API __declspec(dllimport)
+    #define CORE_API
 #endif
 
 //there's probably more event types, but these came to my mind first.
