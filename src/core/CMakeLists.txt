@@ -4,6 +4,12 @@ file(GLOB_RECURSE CORE_SOURCES
     "windowing/*.h"
     "platform.h"
     "layer.h"
+    "modelImporter.h"
+    "modelImporter.cpp"
+    "tiny_gltf_v3.h"
+    "tiny_gltf_v3.c"
+    "tinygltf_json.h"
+    "tinygltf_json_c.h"
 )
 
 add_library(core

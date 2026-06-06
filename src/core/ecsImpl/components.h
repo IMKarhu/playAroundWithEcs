@@ -45,3 +45,7 @@ struct Id
     uint32_t id;
 };
 
+struct InputBindigs
+{
+};
+

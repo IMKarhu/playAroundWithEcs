@@ -1,5 +1,6 @@
 #include "gameLayer.h"
 #include "ecsImpl/components.h"
+#include "modelImporter.h"
 #include <print>
 
 
@@ -21,7 +22,7 @@ void GameLayer::attach()
     auto cube = m_ecs.createEntity("cube");
     m_ecs.addComponent<Transform>(cube, {});
 
-    Mesh testcube;
+    Mesh testcube = ModelImporter::importDataFromFIle("test");
     testcube.vertices = {
         // front
         {{-0.5f, -0.5f,  0.5f}, {1, 0, 0}},
@@ -89,6 +90,21 @@ void GameLayer::event(const Event &event)
     if (event.type == EventType::KeyPress) {
         const auto &e = static_cast<const KeyEvent&>(event);
         std::println("pressed a key: {} action: {} mods: {}",e.key,e.action, e.mods);
+        for (auto ent : m_ecs.view<Camera, Transform>()) {
+            auto& t = m_ecs.getComponent<Transform>(ent);
+            if (e.key == 65 && (e.action == 1 ||  e.action == 2)) {
+                t.position.x += 0.75f;
+            }
+            if (e.key == 68 && (e.action == 1 ||  e.action == 2)) {
+                t.position.x -= 0.75f;
+            }
+            if (e.key == 87 && (e.action == 1 ||  e.action == 2)) {
+                t.position.z -= 0.75f;
+            }
+            if (e.key == 83 && (e.action == 1 ||  e.action == 2)) {
+                t.position.z += 0.75f;
+            }
+        }
     }
 
     if (event.type == EventType::WindowResize) {
