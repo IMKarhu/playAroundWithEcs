@@ -57,7 +57,6 @@ template<typename T>
 bool Ecs::registerComponentPool()
 {
     std::type_index key = std::type_index(typeid(T));
-    // std::println("key: {}", key.name());
     if (m_componentPoolMap.contains(key)) {
         return false;
     }

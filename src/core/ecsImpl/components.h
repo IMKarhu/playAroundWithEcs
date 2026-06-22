@@ -7,16 +7,37 @@
 struct Vertex
 {
     std::array<float, 3> position;
-    std::array<float, 3> color;
+    std::array<float, 4> color = {1.0, 1.0, 1.0, 1.0};
+    std::array<float, 3> normal;
+    std::array<float, 2> texcoord;
+};
+
+struct SubMesh {
+    std::string name;
+    std::vector<Vertex> vertices;
+    std::vector<uint32_t> indices;
+    uint32_t vbo = 0;
+    uint32_t ebo = 0;
 };
 
 struct Mesh
+{
+    std::vector<SubMesh> submeshes;
+    // std::string name;
+    // std::vector<Vertex> vertices;
+    // std::vector<uint32_t> indices;
+    // uint32_t vbo = 0;
+    // uint32_t ebo = 0;
+};
+
+struct ScreenQuad
 {
     std::string name;
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
     uint32_t vbo = 0;
     uint32_t ebo = 0;
+
 };
 
 struct Transform

@@ -89,15 +89,18 @@ void GLRenderer::renderScene(const RenderInfo &info) const
 void GLRenderer::endFrame() const
 {
     m_framebufferManager->unbind("scene");
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    auto fb = m_framebufferManager->getFramebuffer("scene");
-    uint32_t w = fb->framebufferSpec().width;
-    uint32_t h = fb->framebufferSpec().height;
+}
 
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, fb->colorAttachment());
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    glBlitNamedFramebuffer(fb->colorAttachment(), 0, 0, 0, w, h, 0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+void GLRenderer::renderToScreen(const RenderInfo &info) const
+{
+    auto shaderelement = m_shadercache.find(info.shadername);
+    GLShader *shader = static_cast<GLShader*>(shaderelement->second);
+    shader->bind();
+    glDisable(GL_DEPTH_TEST);
+    glBindTexture(GL_TEXTURE_2D, m_framebufferManager->getFramebuffer("scene")->colorAttachment());
+    glBindVertexArray(m_vaocache[info.meshname]);
+    glDrawElements(GL_TRIANGLES, m_indexcache[info.meshname], GL_UNSIGNED_INT, 0);
+    shader->unbind();
 }
 
 void GLRenderer::createAndAddToShaderCache(std::string name,
@@ -116,22 +119,24 @@ void GLRenderer::createMeshPrimitive(std::string name,
                                      uint32_t vbo,
                                      uint32_t ebo) const
 {
+    std::println("create mesh primitives");
     uint32_t vao;
     glCreateVertexArrays(1, &vao);
     glCreateBuffers(1, &vbo);
     glCreateBuffers(1, &ebo);
 
-    glNamedBufferData(vbo,
+    glNamedBufferStorage(vbo,
             vertices.size() * sizeof(Vertex),
             vertices.data(),
-            GL_STATIC_DRAW
+            GL_DYNAMIC_STORAGE_BIT
     );
 
-    glNamedBufferData(ebo,
+    glNamedBufferStorage(ebo,
             indices.size() * sizeof(uint32_t),
             indices.data(),
-            GL_STATIC_DRAW
+            GL_DYNAMIC_STORAGE_BIT
     );
+
 
     glVertexArrayVertexBuffer(vao, 0, vbo, 0, sizeof(Vertex));
     glVertexArrayElementBuffer(vao, ebo);
@@ -149,12 +154,23 @@ void GLRenderer::createMeshPrimitive(std::string name,
     glEnableVertexArrayAttrib(vao, 1);
     glVertexArrayAttribFormat(vao,
             1,
-            3,
+            4,
             GL_FLOAT,
             GL_FALSE,
             offsetof(Vertex, color)
     );
     glVertexArrayAttribBinding(vao, 1, 0);
+
+    glEnableVertexArrayAttrib(vao, 2);
+    glVertexArrayAttribFormat(vao,
+            2,
+            4,
+            GL_FLOAT,
+            GL_FALSE,
+            offsetof(Vertex, texcoord)
+    );
+    glVertexArrayAttribBinding(vao, 2, 0);
+
 
     m_vaocache[name] = vao;
     m_indexcache[name] = indices.size();

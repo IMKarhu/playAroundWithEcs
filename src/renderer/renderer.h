@@ -13,6 +13,7 @@ public:
     virtual void beginFrame() const = 0;
     virtual void renderScene(const RenderInfo &info) const = 0;
     virtual void endFrame() const = 0;
+    virtual void renderToScreen(const RenderInfo &info) const = 0;
     virtual void createAndAddToShaderCache(std::string name,
                                            const std::string vertpath,
                                            const std::string fragpath) = 0;

@@ -90,8 +90,7 @@ FramebufferSpec &GLFramebuffer::framebufferSpec()
 
 void GLFramebuffer::create()
 {
-    glGenFramebuffers(1, &m_spec.fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_spec.fbo);
+    glCreateFramebuffers(1, &m_spec.fbo);
 
     for (size_t i = 0; i < m_spec.attachments.size(); ++i) {
         glCreateTextures(GL_TEXTURE_2D, 1, &m_spec.attachments[i].texture);
@@ -135,11 +134,10 @@ void GLFramebuffer::create()
         glNamedFramebufferDrawBuffers(m_spec.fbo, 1, GL_NONE);
     }
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    if (glCheckNamedFramebufferStatus(m_spec.fbo, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::println("Framebuffer is not complete");
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void GLFramebuffer::invalidate()

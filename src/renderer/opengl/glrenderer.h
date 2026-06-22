@@ -31,6 +31,7 @@ public:
     void beginFrame() const override;
     void renderScene(const RenderInfo &info) const override;
     void endFrame() const override;
+    void renderToScreen(const RenderInfo &info) const override;
     void createAndAddToShaderCache(std::string name,
                                    const std::string vertpath,
                                    const std::string fragpath) override;

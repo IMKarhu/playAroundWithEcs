@@ -22,49 +22,13 @@ void GameLayer::attach()
     auto cube = m_ecs.createEntity("cube");
     m_ecs.addComponent<Transform>(cube, {});
 
-    Mesh testcube = ModelImporter::importDataFromFIle("test");
-    testcube.vertices = {
-        // front
-        {{-0.5f, -0.5f,  0.5f}, {1, 0, 0}},
-        {{ 0.5f, -0.5f,  0.5f}, {0, 1, 0}},
-        {{ 0.5f,  0.5f,  0.5f}, {0, 0, 1}},
-        {{-0.5f,  0.5f,  0.5f}, {1, 1, 1}},
-        // back
-        {{ 0.5f, -0.5f, -0.5f}, {1, 0, 0}},
-        {{-0.5f, -0.5f, -0.5f}, {0, 1, 0}},
-        {{-0.5f,  0.5f, -0.5f}, {0, 0, 1}},
-        {{ 0.5f,  0.5f, -0.5f}, {1, 1, 1}},
-        // left
-        {{-0.5f, -0.5f, -0.5f}, {1, 0, 0}},
-        {{-0.5f, -0.5f,  0.5f}, {0, 1, 0}},
-        {{-0.5f,  0.5f,  0.5f}, {0, 0, 1}},
-        {{-0.5f,  0.5f, -0.5f}, {1, 1, 1}},
-        // right
-        {{ 0.5f, -0.5f,  0.5f}, {1, 0, 0}},
-        {{ 0.5f, -0.5f, -0.5f}, {0, 1, 0}},
-        {{ 0.5f,  0.5f, -0.5f}, {0, 0, 1}},
-        {{ 0.5f,  0.5f,  0.5f}, {1, 1, 1}},
-        // top
-        {{-0.5f,  0.5f,  0.5f}, {1, 0, 0}},
-        {{ 0.5f,  0.5f,  0.5f}, {0, 1, 0}},
-        {{ 0.5f,  0.5f, -0.5f}, {0, 0, 1}},
-        {{-0.5f,  0.5f, -0.5f}, {1, 1, 1}},
-        // bottom
-        {{-0.5f, -0.5f, -0.5f}, {1, 0, 0}},
-        {{ 0.5f, -0.5f, -0.5f}, {0, 1, 0}},
-        {{ 0.5f, -0.5f,  0.5f}, {0, 0, 1}},
-        {{-0.5f, -0.5f,  0.5f}, {1, 1, 1}},
-    };
-    testcube.indices = {
-        0, 1, 2, 2, 3, 0,
-        4, 5, 6, 6, 7, 4,
-        8, 9, 10, 10, 11, 8,
-        12, 13, 14, 14, 15, 12,
-        16, 17, 18, 18, 19, 16,
-        20, 21, 22, 22, 23, 20
-    };
-    testcube.name = "testcube";
+    std::println("before modelImporter");
+    Mesh testcube = ModelImporter::importDataFromFIle("../src/game/assets/FlightHelmet.gltf");
     m_ecs.addComponent<Mesh>(cube, testcube);
+
+    auto screen = m_ecs.createEntity("screen");
+    ScreenQuad screenquad = ModelImporter::screenQuad();
+    m_ecs.addComponent<ScreenQuad>(screen, screenquad);
 
     auto camera = m_ecs.createEntity("camera");
     m_ecs.addComponent<Transform>(camera, {.position = glm::vec3(0.0, 0.0, 10.0)});

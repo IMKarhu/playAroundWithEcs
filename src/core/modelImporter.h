@@ -18,5 +18,6 @@ class CORE_API ModelImporter
 {
 public:
     static Mesh importDataFromFIle(std::string file);
+    static ScreenQuad screenQuad();
 private:
 };

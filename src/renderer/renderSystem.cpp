@@ -18,8 +18,23 @@ void RenderSystem::initialize(const Ecs &ecs, const Renderer &renderer)
     std::println("initialize");
     for (auto ent : ecs.view<Mesh>()) {
         auto& mesh = ecs.getComponent<Mesh>(ent);
-        renderer.createMeshPrimitive(mesh.name, mesh.vertices, mesh.indices, mesh.vbo, mesh.ebo);
+        for(size_t i = 0; i < mesh.submeshes.size(); i++) {
+            renderer.createMeshPrimitive(mesh.submeshes[i].name,
+                                         mesh.submeshes[i].vertices,
+                                         mesh.submeshes[i].indices,
+                                         mesh.submeshes[i].vbo, 
+                                         mesh.submeshes[i].ebo);
+        }
     }
+    for (auto ent : ecs.view<ScreenQuad>()) {
+        auto& mesh = ecs.getComponent<ScreenQuad>(ent);
+            renderer.createMeshPrimitive(mesh.name,
+                                         mesh.vertices,
+                                         mesh.indices,
+                                         mesh.vbo, 
+                                         mesh.ebo);
+    }
+
 }
 
 void RenderSystem::update(float dt, const Ecs &ecs, const Renderer &renderer)
@@ -43,17 +58,27 @@ void RenderSystem::update(float dt, const Ecs &ecs, const Renderer &renderer)
     for (auto ent : ecs.view<Transform, Mesh>()) {
         auto& transform = ecs.getComponent<Transform>(ent);
         auto& mesh = ecs.getComponent<Mesh>(ent);
-        RenderInfo renderinfo;
-        renderinfo.shadername = "main";
-        renderinfo.meshname = mesh.name;
-        transform.model = glm::translate(glm::mat4(1.0f), transform.position);
-        transform.model = glm::rotate(transform.model, glm::radians(20.0f * dt), glm::vec3(0.0, 1.0, 0.0));
-        transform.model = glm::scale(transform.model, glm::vec3(transform.scale));
+        for (size_t i = 0; i < mesh.submeshes.size(); i++) {
+            RenderInfo renderinfo;
+            renderinfo.shadername = "basePass";
+            renderinfo.meshname = mesh.submeshes[i].name;
+            transform.model = glm::translate(glm::mat4(1.0f), transform.position);
+            transform.model = glm::rotate(transform.model, glm::radians(20.0f * dt), glm::vec3(0.0, 1.0, 0.0));
+            transform.model = glm::scale(transform.model, glm::vec3(transform.scale));
 
-        auto mvp = proj * view * transform.model;
-        renderinfo.transform = mvp;
-        renderer.renderScene(renderinfo);
+            auto mvp = proj * view * transform.model;
+            renderinfo.transform = mvp;
+            renderer.renderScene(renderinfo);
+        }
     }
 
     renderer.endFrame();
+
+    for(auto ent : ecs.view<ScreenQuad>()) {
+        auto& mesh = ecs.getComponent<ScreenQuad>(ent);
+        RenderInfo renderinfo;
+        renderinfo.shadername = "screen";
+        renderinfo.meshname = mesh.name;
+        renderer.renderToScreen(renderinfo);
+    }
 }

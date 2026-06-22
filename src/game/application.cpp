@@ -11,7 +11,8 @@ Application::Application(Platform platform)
     m_renderer = std::make_shared<GLRenderer>(*m_window);
 
     pushLayer(std::make_unique<GameLayer>(*m_renderer));
-    m_renderer->createAndAddToShaderCache("main", "../src/game/shaders/shader.vert", "../src/game/shaders/shader.frag");
+    m_renderer->createAndAddToShaderCache("screen","../src/game/shaders/screen.vert", "../src/game/shaders/screen.frag");
+    m_renderer->createAndAddToShaderCache("basePass", "../src/game/shaders/shader.vert", "../src/game/shaders/shader.frag");
 
     //temporary for closing application by pressing ESC
     EventDispatcher::subscribe(EventType::KeyPress, [this](const Event &e) {
