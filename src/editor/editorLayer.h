@@ -1,6 +1,5 @@
 #pragma once
 #include "layer.h"
-#include "renderer/renderSystem.h"
 #include <memory>
 
 
@@ -18,7 +17,6 @@ public:
     void update(float dt) override;
     void event(const Event &event) override;
 private:
-    std::unique_ptr<RenderSystem> m_rendersystem;
     const Renderer &m_renderer;
     Window &m_window;
 };

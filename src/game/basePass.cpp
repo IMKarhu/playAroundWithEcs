@@ -1,25 +1,19 @@
-#include "renderSystem.h"
+#include "basePass.h""
 #include "ecsImpl/ecs.h"
 #include "ecsImpl/components.h"
-#include "opengl/glrenderer.h"
+#include "renderer.h"
 #include "assetManager.h"
 #include <print>
-#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-RenderSystem::RenderSystem()
+BasePass::BasePass()
 {
 }
 
-RenderSystem::~RenderSystem() {}
+BasePass::~BasePass() {}
 
-void RenderSystem::initialize(const Ecs &ecs, const Renderer &renderer)
-{
-    std::println("initialize");
-}
-
-void RenderSystem::update(float dt, const Ecs &ecs, Renderer &renderer, const AssetManager& assetmanager)
+void BasePass::update(float dt, const Ecs &ecs, Renderer &renderer, const AssetManager& assetmanager)
 {
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 proj = glm::mat4(1.0f);
@@ -71,8 +65,6 @@ void RenderSystem::update(float dt, const Ecs &ecs, Renderer &renderer, const As
             renderinfo.shadername = "screen";
             renderinfo.meshname = mesh.name;
             renderinfo.mesh = handle.mesh;
-            // renderinfo.vao = handle.vao;
-            // renderinfo.indexCount = handle.indexCount;
             renderer.renderToScreen(renderinfo, *assetmanager.getMeshManager());
         }
     }

@@ -1,4 +1,5 @@
 #include "gameLayer.h"
+#include "basePass.h"
 #include "ecsImpl/components.h"
 #include "modelImporter.h"
 #include <print>
@@ -40,8 +41,7 @@ void GameLayer::attach()
     m_ecs.addComponent<Transform>(camera, {.position = glm::vec3(0.0, 0.0, 50.0)});
     m_ecs.addComponent<Camera>(camera, {.primary = true});
 
-    m_rendersystem = std::make_unique<RenderSystem>();
-    m_rendersystem->initialize(m_ecs, m_renderer);
+    m_basepass = std::make_unique<BasePass>();
 
     m_assetmanager = std::make_unique<AssetManager>(m_renderer);
     m_assetmanager->loadAssetsFromDirectory("../src/game/assets/");
@@ -55,7 +55,7 @@ void GameLayer::detach()
 
 void GameLayer::update(float dt)
 {
-    m_rendersystem->update(dt, m_ecs, m_renderer, *m_assetmanager.get());
+    m_basepass->update(dt, m_ecs, m_renderer, *m_assetmanager.get());
 }
 
 void GameLayer::event(const Event &event)

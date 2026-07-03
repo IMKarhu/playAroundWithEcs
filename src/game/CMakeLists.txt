@@ -1,4 +1,4 @@
-add_executable(game main.cpp application.h application.cpp gameLayer.h gameLayer.cpp)
+add_executable(game main.cpp application.h application.cpp gameLayer.h gameLayer.cpp basePass.h basePass.cpp)
 
 set_property(TARGET game PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/buildvs")
 
