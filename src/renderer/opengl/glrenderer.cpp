@@ -101,7 +101,37 @@ void GLRenderer::renderScene(const RenderInfo &info, const MeshManager& meshmana
     shader->unbind();
 }
 
-void GLRenderer::endFrame() const
+void GLRenderer::submit(RenderInfo info)
+{
+    m_renderqueue.push_back(info);
+}
+
+void GLRenderer::flush(const MeshManager& meshmanager)
+{
+    for(const auto& info : m_renderqueue) {
+        auto shaderelement = m_shadercache.find(info.shadername);
+        GLShader *shader = static_cast<GLShader*>(shaderelement->second);
+        const MeshResource& mesh = meshmanager.get(info.mesh);
+        shader->bind();
+        shader->setUniformMat4("u_mvp", info.transform);
+        if (info.texturehandle > 0) {
+            glBindTextureUnit(0, info.texture.id);
+            shader->setUniformTexture("ubasecolortexture", 0);
+            shader->setUniformInt("uusetexture", true);
+        }
+        else
+        {
+            glBindTextureUnit(0, 0);
+            shader->setUniformInt("uusetexture", false);
+        }
+        glBindVertexArray(mesh.vao);
+        glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0);
+        shader->unbind();
+    }
+    m_renderqueue.clear();
+}
+
+void GLRenderer::endFrame()
 {
     m_framebufferManager->unbind("scene");
 }

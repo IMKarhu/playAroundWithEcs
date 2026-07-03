@@ -14,7 +14,9 @@ public:
     virtual void initialize() const = 0;
     virtual void beginFrame() const = 0;
     virtual void renderScene(const RenderInfo &info, const MeshManager& meshmanager) const = 0;
-    virtual void endFrame() const = 0;
+    virtual void submit(RenderInfo info) = 0;
+    virtual void flush(const MeshManager& meshmanager) = 0;
+    virtual void endFrame() = 0;
     virtual void renderToScreen(const RenderInfo &info, const MeshManager& meshmanager) const = 0;
     virtual void createAndAddToShaderCache(std::string name,
                                            const std::string vertpath,

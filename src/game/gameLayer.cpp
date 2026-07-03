@@ -4,7 +4,7 @@
 #include <print>
 
 
-GameLayer::GameLayer(const Renderer &renderer)
+GameLayer::GameLayer(Renderer &renderer)
     : m_renderer(renderer), Layer("gamelayer")
 {
     EventDispatcher::subscribe(EventType::KeyPress, [this](const Event &e) {
@@ -37,7 +37,7 @@ void GameLayer::attach()
     m_ecs.addComponent<ScreenQuad>(screen, screenquad);
 
     auto camera = m_ecs.createEntity("camera");
-    m_ecs.addComponent<Transform>(camera, {.position = glm::vec3(0.0, 0.0, 10.0)});
+    m_ecs.addComponent<Transform>(camera, {.position = glm::vec3(0.0, 0.0, 50.0)});
     m_ecs.addComponent<Camera>(camera, {.primary = true});
 
     m_rendersystem = std::make_unique<RenderSystem>();

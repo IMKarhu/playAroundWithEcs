@@ -21,6 +21,6 @@ public:
     ~RenderSystem();
 
     void initialize(const Ecs &ecs, const Renderer &renderer);
-    void update(float dt, const Ecs &ecs, const Renderer &renderer, const AssetManager& assetmanager);
+    void update(float dt, const Ecs &ecs, Renderer &renderer, const AssetManager& assetmanager);
 private:
 };

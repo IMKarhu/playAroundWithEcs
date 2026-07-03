@@ -10,7 +10,7 @@ class Renderer;
 class GameLayer : public Layer
 {
 public:
-    GameLayer(const Renderer &renderer);
+    GameLayer(Renderer &renderer);
 
     void attach() override;
     void detach() override;
@@ -19,6 +19,6 @@ public:
 private:
     std::unique_ptr<RenderSystem> m_rendersystem;
     std::unique_ptr<AssetManager> m_assetmanager;
-    const Renderer &m_renderer;
+    Renderer &m_renderer;
     Ecs m_ecs;
 };
