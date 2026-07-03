@@ -12,6 +12,7 @@
 
 class Renderer;
 class Ecs;
+class AssetManager;
 
 class RENDERER_API RenderSystem
 {
@@ -20,6 +21,6 @@ public:
     ~RenderSystem();
 
     void initialize(const Ecs &ecs, const Renderer &renderer);
-    void update(float dt, const Ecs &ecs, const Renderer &renderer);
+    void update(float dt, const Ecs &ecs, const Renderer &renderer, const AssetManager& assetmanager);
 private:
 };

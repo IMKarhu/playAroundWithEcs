@@ -2,6 +2,7 @@
 #include "ecsImpl/ecs.h"
 #include "ecsImpl/components.h"
 #include "opengl/glrenderer.h"
+#include "assetManager.h"
 #include <print>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -16,28 +17,9 @@ RenderSystem::~RenderSystem() {}
 void RenderSystem::initialize(const Ecs &ecs, const Renderer &renderer)
 {
     std::println("initialize");
-    for (auto ent : ecs.view<Mesh>()) {
-        auto& mesh = ecs.getComponent<Mesh>(ent);
-        for(size_t i = 0; i < mesh.submeshes.size(); i++) {
-            renderer.createMeshPrimitive(mesh.submeshes[i].name,
-                                         mesh.submeshes[i].vertices,
-                                         mesh.submeshes[i].indices,
-                                         mesh.submeshes[i].vbo, 
-                                         mesh.submeshes[i].ebo);
-        }
-    }
-    for (auto ent : ecs.view<ScreenQuad>()) {
-        auto& mesh = ecs.getComponent<ScreenQuad>(ent);
-            renderer.createMeshPrimitive(mesh.name,
-                                         mesh.vertices,
-                                         mesh.indices,
-                                         mesh.vbo, 
-                                         mesh.ebo);
-    }
-
 }
 
-void RenderSystem::update(float dt, const Ecs &ecs, const Renderer &renderer)
+void RenderSystem::update(float dt, const Ecs &ecs, const Renderer &renderer, const AssetManager& assetmanager)
 {
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 proj = glm::mat4(1.0f);
@@ -58,17 +40,26 @@ void RenderSystem::update(float dt, const Ecs &ecs, const Renderer &renderer)
     for (auto ent : ecs.view<Transform, Mesh>()) {
         auto& transform = ecs.getComponent<Transform>(ent);
         auto& mesh = ecs.getComponent<Mesh>(ent);
-        for (size_t i = 0; i < mesh.submeshes.size(); i++) {
+        const auto data = assetmanager.getModelAsset(mesh.name);
+        for (const auto& handle : data.handles) {
             RenderInfo renderinfo;
             renderinfo.shadername = "basePass";
-            renderinfo.meshname = mesh.submeshes[i].name;
+            renderinfo.meshname = mesh.name;
+            renderinfo.mesh = handle.mesh;
+            renderinfo.texture = handle.basecolorHandle;
+            // renderinfo.vao = handle.vao;
+            // renderinfo.indexCount = handle.indexCount;
+            // renderinfo.texturehandle = handle.basecolorHandle.id;
+            transform.scale = glm::vec3(0.00800000037997961,
+                                        0.00800000037997961,
+                                        0.00800000037997961);
             transform.model = glm::translate(glm::mat4(1.0f), transform.position);
             transform.model = glm::rotate(transform.model, glm::radians(20.0f * dt), glm::vec3(0.0, 1.0, 0.0));
             transform.model = glm::scale(transform.model, glm::vec3(transform.scale));
 
             auto mvp = proj * view * transform.model;
             renderinfo.transform = mvp;
-            renderer.renderScene(renderinfo);
+            renderer.renderScene(renderinfo, *assetmanager.getMeshManager());
         }
     }
 
@@ -76,9 +67,15 @@ void RenderSystem::update(float dt, const Ecs &ecs, const Renderer &renderer)
 
     for(auto ent : ecs.view<ScreenQuad>()) {
         auto& mesh = ecs.getComponent<ScreenQuad>(ent);
-        RenderInfo renderinfo;
-        renderinfo.shadername = "screen";
-        renderinfo.meshname = mesh.name;
-        renderer.renderToScreen(renderinfo);
+        const auto data = assetmanager.getModelAsset(mesh.name);
+        for (const auto& handle : data.handles) {
+            RenderInfo renderinfo;
+            renderinfo.shadername = "screen";
+            renderinfo.meshname = mesh.name;
+            renderinfo.mesh = handle.mesh;
+            // renderinfo.vao = handle.vao;
+            // renderinfo.indexCount = handle.indexCount;
+            renderer.renderToScreen(renderinfo, *assetmanager.getMeshManager());
+        }
     }
 }

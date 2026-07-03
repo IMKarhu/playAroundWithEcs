@@ -29,25 +29,18 @@ public:
 
     void initialize() const override;
     void beginFrame() const override;
-    void renderScene(const RenderInfo &info) const override;
+    void renderScene(const RenderInfo &info, const MeshManager& meshmanager) const override;
     void endFrame() const override;
-    void renderToScreen(const RenderInfo &info) const override;
+    void renderToScreen(const RenderInfo &info, const MeshManager& meshmanager) const override;
     void createAndAddToShaderCache(std::string name,
                                    const std::string vertpath,
                                    const std::string fragpath) override;
-    void createMeshPrimitive(std::string name,
-                             std::vector<Vertex> vertices,
-                             std::vector<uint32_t> indices,
-                             uint32_t vbo,
-                             uint32_t ebo) const override;
+    MeshResource createMeshPrimitive(std::vector<Vertex> vertices,
+                                     std::vector<uint32_t> indices) const override;
+    TextureHandle createTexture(const std::string& filepath, TextureImportSettings settings) const override;
     void resizeFramebuffer(uint32_t width, uint32_t height);
 
 private:
     std::unordered_map<std::string, Shader*> m_shadercache;
-    //This might just be a temporary solution.
-    //Instead of initializing same model multiple time
-    //just create it once and cache vao and indice count
-    mutable std::unordered_map<std::string, uint32_t> m_vaocache;
-    mutable std::unordered_map<std::string, uint32_t> m_indexcache;
     std::shared_ptr<FrameBufferManager> m_framebufferManager;
 };

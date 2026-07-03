@@ -12,6 +12,38 @@ struct Vertex
     std::array<float, 2> texcoord;
 };
 
+
+struct Texture
+{
+    uint32_t width = 0;
+    uint32_t height = 0;
+    uint32_t channels = 0;
+    std::vector<unsigned char> pixels;
+};
+
+struct TextureHandle
+{
+    uint32_t id = 0;
+
+    bool valid() const
+    {
+        return id != 0;
+    }
+};
+
+struct MeshResource
+{
+    uint32_t vao;
+    uint32_t vbo;
+    uint32_t ebo;
+    uint32_t indexCount;
+};
+
+struct MeshHandle
+{
+    uint32_t id = 0;
+};
+
 struct SubMesh {
     std::string name;
     std::vector<Vertex> vertices;
@@ -23,11 +55,9 @@ struct SubMesh {
 struct Mesh
 {
     std::vector<SubMesh> submeshes;
-    // std::string name;
-    // std::vector<Vertex> vertices;
-    // std::vector<uint32_t> indices;
-    // uint32_t vbo = 0;
-    // uint32_t ebo = 0;
+    std::vector<Texture> textures;
+    uint32_t id;
+    std::string name;
 };
 
 struct ScreenQuad

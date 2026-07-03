@@ -9,3 +9,18 @@ target_include_directories(game
 target_link_libraries(game
     PRIVATE core renderer editor
 )
+
+add_custom_command(
+    TARGET game
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+    "${CMAKE_BINARY_DIR}/assets"
+)
+
+add_custom_command(
+    TARGET game
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_SOURCE_DIR}/src/game/shaders"
+    "${CMAKE_BINARY_DIR}/shaders"
+)

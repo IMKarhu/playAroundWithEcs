@@ -15,8 +15,16 @@ file(GLOB_RECURSE RENDERER_SOURCES
     "framebufferManager.h"
     "imguiLayer.h"
     "renderSystem.h"
+    "assetManager.h"
+    "assetManager.cpp"
+    "textureManager.h"
+    "textureManager.cpp"
+    "textureSettings.h"
+    "meshManager.h"
+    "meshManager.cpp"
     "renderInfo.h"
     "shader.h"
+    "stb_image.h"
 )
 
 add_library(renderer

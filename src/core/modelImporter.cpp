@@ -2,15 +2,11 @@
 #include "tiny_gltf_v3.h"
 #define TINYGLTF3_IMPLEMENTATION
 #include <print>
-#include <iostream>
 
-// Helper to deduce extensions
-bool hasExtension(const std::string& filepath, const std::string& ext) {
-    if (filepath.size() >= ext.size()) {
-        return (filepath.compare(filepath.size() - ext.size(), ext.size(), ext) == 0);
-    }
-    return false;
-}
+/*
+ * Partially implemented by Gemini with heavy touch on my part
+ * This needs to be reimplemented.. I am not happy with this
+*/
 
 size_t getComponentCount(int32_t type) {
     switch (type) {
@@ -40,9 +36,9 @@ size_t getComponentSizeInBytes(int32_t componentType) {
     }
 }
 
-Mesh ModelImporter::importDataFromFIle(std::string file)
+ModelImporter::ModelImportData ModelImporter::importDataFromFile(std::string file)
 {
-    Mesh outMesh;
+    ModelImportData data;
     tg3_parse_options opts;
     tg3_error_stack errors;
     tg3_model model;
@@ -52,12 +48,7 @@ Mesh ModelImporter::importDataFromFIle(std::string file)
 
     bool success = false;
     tg3_error_code err;
-
-    if (hasExtension(file, ".glb")) {
-        // tg3_error_code err = tg3_parse_glb(&model, &errors, file.data(), 0, 0, 0, &opts);
-    } else {
-        err = tg3_parse_file(&model, &errors, file.c_str(), 110, &opts);
-    }
+    err = tg3_parse_file(&model, &errors, file.c_str(), file.length(), &opts);
 
     if (err != TG3_OK) {
         for (uint32_t i = 0; i < errors.count; i++) {
@@ -68,18 +59,23 @@ Mesh ModelImporter::importDataFromFIle(std::string file)
 
     std::println("mesh count: {}", model.meshes_count);
 
-    // iterate over all the meshes
-    outMesh.submeshes.clear();
+    data.outMesh.submeshes.clear();
+
+    //pretty clunky way of doing this but works for now.. at least with sponza
+    //probably need to reimplemnt this again at some point
+    for (size_t i = 0; i < model.nodes_count; i++) {
+        const auto& node = model.nodes[i];
+        data.transform.scale = glm::vec3(node.scale[0], node.scale[2], node.scale[2]);
+    }
+    uint32_t submeshnum = 0;
     for (size_t i = 0; i < model.meshes_count; i++) {
         const auto& mesh = model.meshes[i];
-        std::println("primitive count: {}", mesh.primitives_count);
         for (size_t j = 0; j < mesh.primitives_count; j++) {
             const auto& primitive = mesh.primitives[j];
-            std::println("primitive material: {}", primitive.material);
             SubMesh submesh;
-            submesh.name = std::string(mesh.name.data, mesh.name.len);
+            submesh.name = file.c_str() + std::to_string(submeshnum);
             uint64_t totalvertcount = 0;
-            for (size_t v = 0; primitive.attributes_count; v++) {
+            for (size_t v = 0; v < primitive.attributes_count; v++) {
                 std::string_view view(primitive.attributes[v].key.data, primitive.attributes[v].key.len);
                 if (view == "POSITION") {
                     totalvertcount = model.accessors[primitive.attributes[v].value].count;
@@ -92,7 +88,6 @@ Mesh ModelImporter::importDataFromFIle(std::string file)
             submesh.vertices.resize(totalvertcount);
             for (size_t k = 0; k < primitive.attributes_count; k++) {
                 const auto& attribute = primitive.attributes[k];
-                std::println("attribute value: {}",attribute.value);
                 std::string_view view(attribute.key.data, attribute.key.len);
                 int32_t accessorIndex = attribute.value;
                 const auto& accessor = model.accessors[accessorIndex];
@@ -104,7 +99,6 @@ Mesh ModelImporter::importDataFromFIle(std::string file)
                     stride = getComponentCount(accessor.type) * getComponentSizeInBytes(accessor.component_type);
                 }
                 if (view == "POSITION") {
-                    std::println("I am position");
                     for (uint64_t v = 0; v < accessor.count; v++) {
                         const auto* vertex = reinterpret_cast<const float*>(dataPtr + (v * stride));
                         submesh.vertices[v].position[0] = vertex[0];
@@ -114,7 +108,6 @@ Mesh ModelImporter::importDataFromFIle(std::string file)
 
                 }
                 if (view == "TEXCOORD_0") {
-                    std::println("I am texCoords");
                     for (uint64_t v = 0; v < accessor.count; v++) {
                         const auto* uv = reinterpret_cast<const float*>(dataPtr + (v * stride));
                         submesh.vertices[v].texcoord[0] = uv[0];
@@ -123,7 +116,6 @@ Mesh ModelImporter::importDataFromFIle(std::string file)
 
                 }
                 if (view == "NORMAL") {
-                    std::println("I am normals");
                     for (uint64_t v = 0; v < accessor.count; v++) {
                         const auto* normals = reinterpret_cast<const float*>(dataPtr + (v * stride));
                         submesh.vertices[v].normal[0] = normals[0];
@@ -131,15 +123,16 @@ Mesh ModelImporter::importDataFromFIle(std::string file)
                         submesh.vertices[v].normal[2] = normals[2];
                     }
                 }
-                if (primitive.material >= 0 && primitive.material < model.materials_count) {
-                    const auto& material = model.materials[primitive.material];
-                    const auto& pbr = material.pbr_metallic_roughness;
-                    for (uint64_t v = 0; v < accessor.count; v++) {
-                        submesh.vertices[v].color[0] = pbr.base_color_factor[0];
-                        submesh.vertices[v].color[1] = pbr.base_color_factor[1];
-                        submesh.vertices[v].color[2] = pbr.base_color_factor[2];
-                        submesh.vertices[v].color[3] = pbr.base_color_factor[3];
-                    }
+
+            }
+            if (primitive.material >= 0 && primitive.material < model.materials_count) {
+                const auto& material = model.materials[primitive.material];
+                const auto& pbr = material.pbr_metallic_roughness;
+                for (uint64_t v = 0; v < totalvertcount; v++) {
+                    submesh.vertices[v].color[0] = pbr.base_color_factor[0];
+                    submesh.vertices[v].color[1] = pbr.base_color_factor[1];
+                    submesh.vertices[v].color[2] = pbr.base_color_factor[2];
+                    submesh.vertices[v].color[3] = pbr.base_color_factor[3];
                 }
             }
             // if indices exist
@@ -164,28 +157,46 @@ Mesh ModelImporter::importDataFromFIle(std::string file)
                     submesh.indices.push_back(index);
                 }
             }
-            outMesh.submeshes.push_back(submesh);
+            data.submeshmaterialindex.push_back(primitive.material);
+            data.outMesh.submeshes.push_back(submesh);
+            submeshnum++;
         }
     }
 
-    // --- STEP 2: EXTRACT IMAGES / TEXTURES ---
-    // TinyGLTF automatically loads image binary data via embedded stb_image macros!
-    // for (const auto& gltfImage : model.images) {
-    //     ImportedTextureData texData;
-    //     texData.width = gltfImage.width;
-    //     texData.height = gltfImage.height;
-    //     texData.componentCount = gltfImage.component;
-    //
-    //     // Copy the raw pixel bytes safely into our out-struct
-    //     texData.pixels = gltfImage.image; 
-    //
-    //     outData.textures.push_back(texData);
-    // }
+    for (size_t i = 0; i < model.textures_count; i++) {
+        const auto& image = model.images[i];
+        Texture tex;
+        if (image.uri.data && image.uri.len > 0) {
+            tex.filename = std::string(image.uri.data, image.uri.len);
+        }
+        data.textures.push_back(tex);
+    }
+
+    data.materialhandles.resize(model.materials_count);
+    for (size_t i = 0; i < model.materials_count; i++) {
+        const auto& material = model.materials[i];
+        auto& outmat = data.materialhandles[i];
+
+        int32_t basecoloridx = material.pbr_metallic_roughness.base_color_texture.index;
+        if (basecoloridx >= 0 && basecoloridx < static_cast<int32_t>(model.textures_count)) {
+            outmat.basecolorhandle = model.textures[basecoloridx].source;
+        }
+
+        int32_t metallicroughness = material.pbr_metallic_roughness.metallic_roughness_texture.index;
+        if (metallicroughness >= 0 && metallicroughness < static_cast<int32_t>(model.textures_count)) {
+            outmat.metallicroughnesshandle = model.textures[metallicroughness].source;
+        }
+
+        int32_t normalidx = material.normal_texture.index;
+        if (normalidx >= 0 && normalidx < static_cast<int32_t>(model.textures_count)) {
+            outmat.normalhandle = model.textures[normalidx].source;
+        }
+    }
 
     tg3_model_free(&model);
     tg3_error_stack_free(&errors);
 
-    return outMesh;
+    return data;
 }
 
 ScreenQuad ModelImporter::screenQuad()

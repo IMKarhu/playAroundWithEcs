@@ -2,6 +2,7 @@
 #include "layer.h"
 #include "ecsImpl/ecs.h"
 #include "renderSystem.h"
+#include "assetManager.h"
 #include <memory>
 
 class Renderer;
@@ -17,6 +18,7 @@ public:
     void event(const Event &event) override;
 private:
     std::unique_ptr<RenderSystem> m_rendersystem;
+    std::unique_ptr<AssetManager> m_assetmanager;
     const Renderer &m_renderer;
     Ecs m_ecs;
 };
