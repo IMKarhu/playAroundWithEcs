@@ -56,7 +56,6 @@ void AssetManager::loadModel(std::filesystem::path path)
 {
             std::string assetname = path.filename().string();
             std::println("file name: {}", assetname);
-            //hack the path for now
             ModelImporter::ModelImportData data = ModelImporter::importDataFromFile(m_assetpath.string()+assetname);
             data.outMesh.name = assetname;
 
@@ -78,7 +77,6 @@ void AssetManager::loadTextures(ModelImporter::ModelImportData data)
 void AssetManager::createMeshes(ModelImporter::ModelImportData data)
 {
     ModelAsset asset;
-
     for (size_t i = 0; i < data.outMesh.submeshes.size(); i++) {
         std::println("subdata.outMesh name: {}", data.outMesh.submeshes[i].name);
         ModelPrimitive primitive;

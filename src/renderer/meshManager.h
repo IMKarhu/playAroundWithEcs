@@ -17,7 +17,6 @@ public:
                       std::vector<uint32_t>& indices);
     const MeshResource get(MeshHandle handle) const;
 private:
-    std::unordered_map<uint32_t, MeshHandle> m_meshcache;
     std::vector<MeshResource> m_meshes;
     const Renderer& m_renderer;
 };
