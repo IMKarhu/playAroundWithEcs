@@ -28,7 +28,10 @@ static void GLAPIENTRY DebugMessageCallback(GLenum source,
 
 
 GLRenderer::GLRenderer(const Window &window)
+    :m_window(window)
 {
+    m_width = m_window.width();
+    m_height = m_window.height();
     std::println("hello from glrenderer");
     bool result = gladLoadGL();
     if(result == 1) {
@@ -49,17 +52,9 @@ GLRenderer::GLRenderer(const Window &window)
 
     EventDispatcher::subscribe(EventType::WindowResize, [this](const Event &e) {
             const auto& event = static_cast<const ResizeEvent&>(e);
-            resizeFramebuffer(event.width, event.height);
+            m_width = event.width;
+            m_height = event.height;
     });
-
-    m_framebufferManager = std::make_shared<FrameBufferManager>();
-    m_framebufferManager->addFramebuffer("scene", FramebufferBuilder()
-        .setSize(window.width(),window.height())
-        .setSamples(1)
-        .setColorAttachments({Format::RGBA8})
-        .setDepthFormat(DepthFormat::Depth24Stencil8, DepthFormatType::Texture)
-        .build());
-
 }
 
 GLRenderer::~GLRenderer()
@@ -70,35 +65,52 @@ GLRenderer::~GLRenderer()
     m_shadercache.clear();
 }
 
-void GLRenderer::initialize() const
-{
-}
-
 void GLRenderer::beginFrame() const
 {
-    m_framebufferManager->bind("scene");
 }
 
-void GLRenderer::renderScene(const RenderInfo &info, const MeshManager& meshmanager) const
+void GLRenderer::endFrame()
 {
-    auto shaderelement = m_shadercache.find(info.shadername);
-    GLShader *shader = static_cast<GLShader*>(shaderelement->second);
-    const MeshResource& mesh = meshmanager.get(info.mesh);
-    shader->bind();
-    shader->setUniformMat4("u_mvp", info.transform);
-    if (info.texturehandle > 0) {
-        glBindTextureUnit(0, info.texture.id);
-        shader->setUniformTexture("ubasecolortexture", 0);
-        shader->setUniformInt("uusetexture", true);
+}
+
+void GLRenderer::beginPass(const RenderPassDesc& desc, FrameBufferManager& framebuffermanager)
+{
+    if (desc.framebuffer == "") {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, m_width, m_height);
     }
-    else
-    {
-        glBindTextureUnit(0, 0);
-        shader->setUniformInt("uusetexture", false);
+    else {
+        auto framebuffer = framebuffermanager.getFramebuffer(desc.framebuffer);
+        framebuffer->bind();
+        glViewport(0, 0, framebuffer->framebufferSpec().width, framebuffer->framebufferSpec().height);
     }
-    glBindVertexArray(mesh.vao);
-    glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0);
-    shader->unbind();
+
+    if (desc.depthtest) {
+        glEnable(GL_DEPTH_TEST);
+    }
+    else {
+        glDisable(GL_DEPTH_TEST);
+    }
+
+    glClearColor(desc.clearcolor.x,
+                 desc.clearcolor.y,
+                 desc.clearcolor.z,
+                 desc.clearcolor.w);
+
+    GLbitfield clearmask = 0;
+    if (desc.clearcolorbuffer) {
+        clearmask |= GL_COLOR_BUFFER_BIT;
+    }
+    if (desc.cleardepthbuffer) {
+        clearmask |= GL_DEPTH_BUFFER_BIT;
+    }
+    if (clearmask != 0) {
+        glClear(clearmask);
+    }
+}
+
+void GLRenderer::endPass(RenderPassDesc desc)
+{
 }
 
 void GLRenderer::submit(RenderInfo info)
@@ -114,7 +126,7 @@ void GLRenderer::flush(const MeshManager& meshmanager)
         const MeshResource& mesh = meshmanager.get(info.mesh);
         shader->bind();
         shader->setUniformMat4("u_mvp", info.transform);
-        if (info.texturehandle > 0) {
+        if (info.texture.id > 0) {
             glBindTextureUnit(0, info.texture.id);
             shader->setUniformTexture("ubasecolortexture", 0);
             shader->setUniformInt("uusetexture", true);
@@ -129,24 +141,6 @@ void GLRenderer::flush(const MeshManager& meshmanager)
         shader->unbind();
     }
     m_renderqueue.clear();
-}
-
-void GLRenderer::endFrame()
-{
-    m_framebufferManager->unbind("scene");
-}
-
-void GLRenderer::renderToScreen(const RenderInfo &info, const MeshManager& meshmanager) const
-{
-    auto shaderelement = m_shadercache.find(info.shadername);
-    GLShader *shader = static_cast<GLShader*>(shaderelement->second);
-    const MeshResource& mesh = meshmanager.get(info.mesh);
-    shader->bind();
-    glDisable(GL_DEPTH_TEST);
-    glBindTexture(GL_TEXTURE_2D, m_framebufferManager->getFramebuffer("scene")->colorAttachment());
-    glBindVertexArray(mesh.vao);
-    glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0);
-    shader->unbind();
 }
 
 void GLRenderer::createAndAddToShaderCache(std::string name,
@@ -239,8 +233,3 @@ TextureHandle GLRenderer::createTexture(const std::string& filepath, TextureImpo
     return { handle };
 }
 
-void GLRenderer::resizeFramebuffer(uint32_t width, uint32_t height)
-{
-    auto fb = m_framebufferManager->getFramebuffer("scene");
-    fb->resize(width, height);
-}

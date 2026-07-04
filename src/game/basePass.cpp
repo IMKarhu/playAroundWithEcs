@@ -29,8 +29,6 @@ void BasePass::update(float dt, const Ecs &ecs, Renderer &renderer, const AssetM
         }
     }
 
-    renderer.beginFrame();
-
     for (auto ent : ecs.view<Transform, Mesh>()) {
         auto& transform = ecs.getComponent<Transform>(ent);
         auto& mesh = ecs.getComponent<Mesh>(ent);
@@ -38,7 +36,6 @@ void BasePass::update(float dt, const Ecs &ecs, Renderer &renderer, const AssetM
         for (const auto& handle : data.handles) {
             RenderInfo renderinfo;
             renderinfo.shadername = "basePass";
-            renderinfo.meshname = mesh.name;
             renderinfo.mesh = handle.mesh;
             renderinfo.texture = handle.basecolorHandle;
             transform.scale = glm::vec3(0.00800000037997961,
@@ -51,21 +48,6 @@ void BasePass::update(float dt, const Ecs &ecs, Renderer &renderer, const AssetM
             auto mvp = proj * view * transform.model;
             renderinfo.transform = mvp;
             renderer.submit(renderinfo);
-        }
-    }
-
-    renderer.flush(*assetmanager.getMeshManager());
-    renderer.endFrame();
-
-    for(auto ent : ecs.view<ScreenQuad>()) {
-        auto& mesh = ecs.getComponent<ScreenQuad>(ent);
-        const auto data = assetmanager.getModelAsset(mesh.name);
-        for (const auto& handle : data.handles) {
-            RenderInfo renderinfo;
-            renderinfo.shadername = "screen";
-            renderinfo.meshname = mesh.name;
-            renderinfo.mesh = handle.mesh;
-            renderer.renderToScreen(renderinfo, *assetmanager.getMeshManager());
         }
     }
 }

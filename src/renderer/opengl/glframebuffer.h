@@ -1,5 +1,6 @@
 #pragma once
 #include "framebuffer.h"
+#include "ecsImpl/components.h"
 
 #ifdef _WIN32
     #ifdef RENDERER_EXPORT
@@ -22,10 +23,14 @@ public:
 
     void resize(uint32_t width, uint32_t height) override;
 
-    uint32_t colorAttachment() const override;
+    TextureHandle colorAttachment(uint32_t index) const override;
     FramebufferSpec &framebufferSpec() override;
 private:
     void create();
     void invalidate();
+    TextureHandle m_depthattachment;
+    std::vector<TextureHandle> m_colorattachments;
+    uint32_t m_fbo;
+    uint32_t m_rbo;
     FramebufferSpec m_spec;
 };

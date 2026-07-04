@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 
 #include <print>
+#include <assert.h>
 
 // needs more formats and not sure if this is even the right way to go about this
 // also does not support multiple levels yet.
@@ -59,7 +60,7 @@ GLFramebuffer::~GLFramebuffer()
 
 void GLFramebuffer::bind()
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, m_spec.fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 }
 void GLFramebuffer::unbind()
 {
@@ -77,10 +78,12 @@ void GLFramebuffer::resize(uint32_t width, uint32_t height)
     create();
 }
 
-//TODO: is this correct? always get the first attachment, probably not. needs to be fixed
-uint32_t GLFramebuffer::colorAttachment() const
+//Right now we assume index 0 is basecolor attachment and rest are whatever
+//Shitty right?
+TextureHandle GLFramebuffer::colorAttachment(uint32_t index) const
 {
-    return m_spec.attachments[0].texture;
+    assert(index < m_colorattachments.size() && "index is bigger than attachment vector size");
+    return m_colorattachments[index];
 }
 
 FramebufferSpec &GLFramebuffer::framebufferSpec()
@@ -90,51 +93,51 @@ FramebufferSpec &GLFramebuffer::framebufferSpec()
 
 void GLFramebuffer::create()
 {
-    glCreateFramebuffers(1, &m_spec.fbo);
-
-    for (size_t i = 0; i < m_spec.attachments.size(); ++i) {
-        glCreateTextures(GL_TEXTURE_2D, 1, &m_spec.attachments[i].texture);
-        createTextureStorage(m_spec.attachments[i].texture, m_spec.attachments[i].format, m_spec.width, m_spec.height);
-        glTextureParameteri(m_spec.attachments[i].texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTextureParameteri(m_spec.attachments[i].texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTextureParameteri(m_spec.attachments[i].texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTextureParameteri(m_spec.attachments[i].texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glNamedFramebufferTexture(m_spec.fbo, GL_COLOR_ATTACHMENT0 + i, m_spec.attachments[i].texture, 0);
+    glCreateFramebuffers(1, &m_fbo);
+    m_colorattachments.resize(m_spec.attachments.size());
+    for (size_t i = 0; i < m_colorattachments.size(); ++i) {
+        glCreateTextures(GL_TEXTURE_2D, 1, &m_colorattachments[i].id);
+        createTextureStorage(m_colorattachments[i].id, m_spec.attachments[i].format, m_spec.width, m_spec.height);
+        glTextureParameteri(m_colorattachments[i].id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTextureParameteri(m_colorattachments[i].id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTextureParameteri(m_colorattachments[i].id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTextureParameteri(m_colorattachments[i].id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glNamedFramebufferTexture(m_fbo, GL_COLOR_ATTACHMENT0 + i, m_colorattachments[i].id, 0);
     }
 
     if (m_spec.depthFormat != DepthFormat::None) {
         if ( m_spec.depthType == DepthFormatType::Texture) {
-            glCreateTextures(GL_TEXTURE_2D, 1, &m_spec.depthAttachment);
-            createTextureStorageDepth(m_spec.depthAttachment, m_spec.depthFormat, m_spec.width, m_spec.height);
-            glTextureParameteri(m_spec.depthAttachment, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTextureParameteri(m_spec.depthAttachment, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTextureParameteri(m_spec.depthAttachment, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTextureParameteri(m_spec.depthAttachment, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glCreateTextures(GL_TEXTURE_2D, 1, &m_depthattachment.id);
+            createTextureStorageDepth(m_depthattachment.id, m_spec.depthFormat, m_spec.width, m_spec.height);
+            glTextureParameteri(m_depthattachment.id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTextureParameteri(m_depthattachment.id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTextureParameteri(m_depthattachment.id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTextureParameteri(m_depthattachment.id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             switch(m_spec.depthFormat) {
                 case DepthFormat::Depth24Stencil8:
-                    glNamedFramebufferTexture(m_spec.fbo, GL_DEPTH_STENCIL_ATTACHMENT, m_spec.depthAttachment, 0);
+                    glNamedFramebufferTexture(m_fbo, GL_DEPTH_STENCIL_ATTACHMENT, m_depthattachment.id, 0);
                     break;
                 case DepthFormat::Depth32F:
-                    glNamedFramebufferTexture(m_spec.fbo, GL_DEPTH_ATTACHMENT, m_spec.depthAttachment, 0);
+                    glNamedFramebufferTexture(m_fbo, GL_DEPTH_ATTACHMENT, m_depthattachment.id, 0);
                     break;
             }
         }
         else if (m_spec.depthType == DepthFormatType::Buffer) {
-            glCreateRenderbuffers(1, &m_spec.rbo);
-            createRenderBufferStorage(m_spec.rbo, m_spec.fbo, m_spec.depthFormat, m_spec.width, m_spec.height);
+            glCreateRenderbuffers(1, &m_rbo);
+            createRenderBufferStorage(m_rbo, m_fbo, m_spec.depthFormat, m_spec.width, m_spec.height);
         }
     }
 
     if (m_spec.attachments.size() > 1) {
         GLenum drawBuffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-        glNamedFramebufferDrawBuffers(m_spec.fbo, m_spec.attachments.size(), drawBuffers);
+        glNamedFramebufferDrawBuffers(m_fbo, m_colorattachments.size(), drawBuffers);
     }
     else if (m_spec.attachments.empty()) {
         //depth only pass
-        glNamedFramebufferDrawBuffers(m_spec.fbo, 1, GL_NONE);
+        glNamedFramebufferDrawBuffers(m_fbo, 1, GL_NONE);
     }
 
-    if (glCheckNamedFramebufferStatus(m_spec.fbo, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    if (glCheckNamedFramebufferStatus(m_fbo, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::println("Framebuffer is not complete");
     }
 
@@ -142,16 +145,16 @@ void GLFramebuffer::create()
 
 void GLFramebuffer::invalidate()
 {
-    glDeleteFramebuffers(1, &m_spec.fbo);
-    for (auto attachment : m_spec.attachments) {
-        if (attachment.texture) {
-            glDeleteTextures(1, &attachment.texture);
+    glDeleteFramebuffers(1, &m_fbo);
+    for (auto attachment : m_colorattachments) {
+        if (attachment.id) {
+            glDeleteTextures(1, &attachment.id);
         }
     }
-    if (m_spec.depthAttachment) {
-        glDeleteTextures(1, &m_spec.depthAttachment);
+    if (m_depthattachment.id) {
+        glDeleteTextures(1, &m_depthattachment.id);
     }
-    if (m_spec.rbo) {
-        glDeleteRenderbuffers(1, &m_spec.rbo);
+    if (m_rbo) {
+        glDeleteRenderbuffers(1, &m_rbo);
     }
 }

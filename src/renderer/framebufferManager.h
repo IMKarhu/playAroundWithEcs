@@ -3,7 +3,6 @@
 #include <unordered_map>
 #include <string>
 #include <memory>
-#include <functional>
 
 #ifdef _WIN32
     #ifdef RENDERER_EXPORT
@@ -24,7 +23,8 @@ public:
     void addFramebuffer(const std::string &name, std::shared_ptr<FrameBuffer> framebuffer);
     void bind(const std::string &name);
     void unbind(const std::string &name);
-    std::shared_ptr<FrameBuffer> getFramebuffer(const std::string &name);
+    std::shared_ptr<FrameBuffer> getFramebuffer(const std::string& name);
+    void resizeAll(uint32_t width, uint32_t height);
 private:
     std::unordered_map<std::string, std::shared_ptr<FrameBuffer>> m_framebuffers;
 };

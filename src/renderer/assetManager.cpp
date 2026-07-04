@@ -54,13 +54,13 @@ const ModelAsset& AssetManager::getModelAsset(const std::string& id) const
 
 void AssetManager::loadModel(std::filesystem::path path)
 {
-            std::string assetname = path.filename().string();
-            std::println("file name: {}", assetname);
-            ModelImporter::ModelImportData data = ModelImporter::importDataFromFile(m_assetpath.string()+assetname);
-            data.outMesh.name = assetname;
-
-            loadTextures(data);
-            createMeshes(data);
+    std::string assetname = path.filename().string();
+    std::println("file name: {}", assetname);
+    ModelImporter::ModelImportData data = ModelImporter::importDataFromFile(m_assetpath.string()+assetname);
+    data.outMesh.name = assetname;
+    
+    loadTextures(data);
+    createMeshes(data);
 }
 
 void AssetManager::loadTextures(ModelImporter::ModelImportData data)
@@ -85,7 +85,6 @@ void AssetManager::createMeshes(ModelImporter::ModelImportData data)
         uint32_t matindex = data.submeshmaterialindex[i];
         if (matindex >= 0 && matindex < data.materialhandles.size()) {
             const auto& material = data.materialhandles[matindex];
-            std::println("im in assigning texindex");
             auto resolve = [&](int32_t idx) -> TextureHandle {
                 if (idx >= 0 && idx < static_cast<int32_t>(m_localtexturehandles.size())) {
                     return m_localtexturehandles[idx];

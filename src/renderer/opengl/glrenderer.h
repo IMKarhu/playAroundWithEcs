@@ -28,24 +28,26 @@ public:
     GLRenderer(const Window &window);
     ~GLRenderer() override;
 
-    void initialize() const override;
     void beginFrame() const override;
-    void renderScene(const RenderInfo &info, const MeshManager& meshmanager) const override;
+    void endFrame() override;
+
+    void beginPass(const RenderPassDesc& desc, FrameBufferManager& framebuffermanager) override;
+    void endPass(RenderPassDesc desc) override;
+
     void submit(RenderInfo info) override;
     void flush(const MeshManager& meshmanager) override;
-    void endFrame() override;
-    void renderToScreen(const RenderInfo &info, const MeshManager& meshmanager) const override;
     void createAndAddToShaderCache(std::string name,
                                    const std::string vertpath,
                                    const std::string fragpath) override;
     MeshResource createMeshPrimitive(std::vector<Vertex> vertices,
                                      std::vector<uint32_t> indices) const override;
     TextureHandle createTexture(const std::string& filepath, TextureImportSettings settings) const override;
-    void resizeFramebuffer(uint32_t width, uint32_t height);
-
 private:
+    uint32_t m_width = 0;
+    uint32_t m_height = 0;
     std::unordered_map<std::string, Shader*> m_shadercache;
     std::vector<RenderInfo> m_renderqueue;
     std::shared_ptr<FrameBufferManager> m_framebufferManager;
+    const Window& m_window;
     void draw();
 };

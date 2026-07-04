@@ -5,12 +5,15 @@
 #include <memory>
 
 class Renderer;
+class Window;
+class FrameBufferManager;
 class BasePass;
+class ScreenPass;
 
 class GameLayer : public Layer
 {
 public:
-    GameLayer(Renderer &renderer);
+    GameLayer(Renderer& renderer, Window& window);
 
     void attach() override;
     void detach() override;
@@ -18,7 +21,10 @@ public:
     void event(const Event &event) override;
 private:
     std::unique_ptr<BasePass> m_basepass;
+    std::unique_ptr<ScreenPass> m_screenpass;
     std::unique_ptr<AssetManager> m_assetmanager;
-    Renderer &m_renderer;
+    std::unique_ptr<FrameBufferManager> m_framebuffermanager;
+    Renderer& m_renderer;
+    Window& m_window;
     Ecs m_ecs;
 };

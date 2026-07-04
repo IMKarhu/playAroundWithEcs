@@ -20,6 +20,7 @@ file(GLOB_RECURSE RENDERER_SOURCES
     "meshManager.h"
     "meshManager.cpp"
     "renderInfo.h"
+    "renderPassDesc.h"
     "shader.h"
     "stb_image.h"
 )
