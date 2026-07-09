@@ -1,6 +1,7 @@
-More or less inspired by Austin Morlans ECS implementation
+Work in progress.
 
-Work in progress
-OpenGL 4.5 required
-Somewhat tries to use modern DSA OpenGL instead of the legacy one
+A Small game engine called Lumos.
 
+OpenGL 4.5 required.
+
+![picture1](./pictures/deferred_opengl.png)
