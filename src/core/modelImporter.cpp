@@ -1,7 +1,8 @@
 #include "modelImporter.h"
-#include "tiny_gltf_v3.h"
-#define TINYGLTF3_IMPLEMENTATION
+// #include "tiny_gltf_v3.h"
+// #define TINYGLTF3_IMPLEMENTATION
 #include <print>
+#include <iostream>
 
 /*
  * Partially implemented by Gemini with heavy touch on my part
@@ -55,10 +56,7 @@ ModelImporter::ModelImportData ModelImporter::importDataFromFile(std::string fil
         }
     }
 
-    std::println("mesh count: {}", model.meshes_count);
 
-    //pretty clunky way of doing this but works for now.. at least with sponza
-    //probably need to reimplemnt this again at some point
     for (size_t i = 0; i < model.nodes_count; i++) {
         const auto& node = model.nodes[i];
         data.transform.scale = glm::vec3(node.scale[0], node.scale[2], node.scale[2]);
@@ -90,6 +88,7 @@ ScreenQuad ModelImporter::screenQuad()
 
 void ModelImporter::parseModel(const tg3_model& model, ModelImportData& data)
 {
+    std::println("model mesh count: {}", model.meshes_count);
     for (size_t i = 0; i < model.meshes_count; i++) {
         parseMeshe(model, model.meshes[i], data);
     }
@@ -108,6 +107,8 @@ void ModelImporter::parseModel(const tg3_model& model, ModelImportData& data)
 void ModelImporter::parseMeshe(const tg3_model& model, const tg3_mesh& mesh, ModelImportData& data)
 {
     uint32_t submeshnum = 0;
+    std::println("mesh name: {}, and primitive count: {}", std::string(mesh.name.data, mesh.name.len),
+                                                          mesh.primitives_count);
     for (size_t i = 0; i < mesh.primitives_count; i++) {
         parsePrimitive(model, mesh.primitives[i], data, submeshnum);
         submeshnum++;
@@ -151,10 +152,12 @@ void ModelImporter::parsePrimitive(const tg3_model& model, const tg3_primitive& 
             std::string_view view(primitive.attributes[v].key.data, primitive.attributes[v].key.len);
             if (view == "POSITION") {
                 totalvertcount = model.accessors[primitive.attributes[v].value].count;
+                // std::println("totalvertcount: {}", totalvertcount);
                 break;
             }
         }
         if (totalvertcount == 0) {
+            std::println("totalvertcount was 0");
             return;
         }
         submesh.vertices.resize(totalvertcount);
@@ -242,3 +245,4 @@ void ModelImporter::readAttributes(std::string_view view, const tg3_accessor& ac
 {
     std::println("TODO: implement this function at some point so we can replace all the if statement view lookups in parsePrimitives");
 }
+

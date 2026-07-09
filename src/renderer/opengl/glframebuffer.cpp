@@ -12,6 +12,12 @@ static void createTextureStorage(uint32_t& id, Format format, uint32_t width, ui
         case Format::RGBA8:
             glTextureStorage2D(id, 1, GL_RGBA8, width, height);
             break;
+        case Format::RGBA16F:
+            glTextureStorage2D(id, 1, GL_RGBA16F, width, height);
+            break;
+        case Format::RGB16F:
+            glTextureStorage2D(id, 1, GL_RGB16F, width, height);
+            break;
         default:
             std::println("failed to create texture storage");
     }
@@ -78,8 +84,6 @@ void GLFramebuffer::resize(uint32_t width, uint32_t height)
     create();
 }
 
-//Right now we assume index 0 is basecolor attachment and rest are whatever
-//Shitty right?
 TextureHandle GLFramebuffer::colorAttachment(uint32_t index) const
 {
     assert(index < m_colorattachments.size() && "index is bigger than attachment vector size");
@@ -96,6 +100,7 @@ void GLFramebuffer::create()
     glCreateFramebuffers(1, &m_fbo);
     m_colorattachments.resize(m_spec.attachments.size());
     for (size_t i = 0; i < m_colorattachments.size(); ++i) {
+        std::println("framebuffer: {}, and format: {}", i, int(m_spec.attachments[i].format));
         glCreateTextures(GL_TEXTURE_2D, 1, &m_colorattachments[i].id);
         createTextureStorage(m_colorattachments[i].id, m_spec.attachments[i].format, m_spec.width, m_spec.height);
         glTextureParameteri(m_colorattachments[i].id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -128,7 +133,7 @@ void GLFramebuffer::create()
         }
     }
 
-    if (m_spec.attachments.size() > 1) {
+    if (!m_spec.attachments.empty()) {
         GLenum drawBuffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
         glNamedFramebufferDrawBuffers(m_fbo, m_colorattachments.size(), drawBuffers);
     }

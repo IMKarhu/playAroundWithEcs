@@ -48,4 +48,5 @@ private:
     static void parsePrimitive(const tg3_model& model, const tg3_primitive& primitive, ModelImportData& data, uint32_t submeshnum);
     static void readIndices(const tg3_model& model, const tg3_primitive& primitive, SubMesh& submesh);
     static void readAttributes(std::string_view view, const tg3_accessor& accessor, SubMesh& submesh);
+
 };

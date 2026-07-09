@@ -4,15 +4,11 @@
 #include "windowing/window.h"
 #include "framebuffer.h"
 #include "framebufferManager.h"
-#include "framebufferBuilder.h"
 #include "shader.h"
 #include "glshader.h"
-#include "meshManager.h"
+#include "glmesh.hpp"
+#include "assetManager.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
-#include <glm/gtc/matrix_transform.hpp>
 #include <print>
 
 static void GLAPIENTRY DebugMessageCallback(GLenum source,
@@ -49,6 +45,8 @@ GLRenderer::GLRenderer(const Window &window)
             0, nullptr,
             GL_FALSE
     );
+
+    m_graphicsdevice = std::make_unique<Lumos::GLDevice>();
 
     EventDispatcher::subscribe(EventType::WindowResize, [this](const Event &e) {
             const auto& event = static_cast<const ResizeEvent&>(e);
@@ -109,8 +107,9 @@ void GLRenderer::beginPass(const RenderPassDesc& desc, FrameBufferManager& frame
     }
 }
 
-void GLRenderer::endPass(RenderPassDesc desc)
+void GLRenderer::endPass()
 {
+    // flush();
 }
 
 void GLRenderer::submit(RenderInfo info)
@@ -118,26 +117,61 @@ void GLRenderer::submit(RenderInfo info)
     m_renderqueue.push_back(info);
 }
 
-void GLRenderer::flush(const MeshManager& meshmanager)
+void GLRenderer::flush(std::function<void()> func, Lumos::AssetManager& assetmanager)
 {
+    func();
     for(const auto& info : m_renderqueue) {
         auto shaderelement = m_shadercache.find(info.shadername);
         GLShader *shader = static_cast<GLShader*>(shaderelement->second);
-        const MeshResource& mesh = meshmanager.get(info.mesh);
         shader->bind();
-        shader->setUniformMat4("u_mvp", info.transform);
-        if (info.texture.id > 0) {
-            glBindTextureUnit(0, info.texture.id);
-            shader->setUniformTexture("ubasecolortexture", 0);
-            shader->setUniformInt("uusetexture", true);
-        }
-        else
+        switch(info.type)
         {
-            glBindTextureUnit(0, 0);
-            shader->setUniformInt("uusetexture", false);
+            case InfoType::Screen:
+                glBindTextureUnit(0, info.screenpasscolorattachment.id);
+                glDrawArrays(GL_TRIANGLES, 0, 6);
+                break;
+            case InfoType::Lighting:
+                shader->setUniformVec3("u_lightdir", info.lightdir);
+                shader->setUniformVec3("u_lightcolor", info.lightcolor);
+                glBindTextureUnit(0, info.attachments.attachment0.id);
+                glBindTextureUnit(1, info.attachments.attachment1.id);
+                glBindTextureUnit(2, info.attachments.attachment2.id);
+                glDrawArrays(GL_TRIANGLES, 0, 6);
+                break;
+            case InfoType::Geometry:
+                shader->setUniformMat4("u_model", info.model);
+                shader->setUniformMat4("u_viewproj", info.viewproj);
+                if (info.mesh) {
+                    Lumos::GLMesh* glmesh = static_cast<Lumos::GLMesh*>(info.mesh);
+
+                    for (size_t i = 0; i < glmesh->getSubMeshCount(); i++) {
+                        Lumos::RenderPacket packet = glmesh->getSubMeshPacket(i);
+                        if (packet.basecolorHandle.isValid()) {
+                            auto* tex = assetmanager.getTextureManager().get(packet.basecolorHandle);
+                            if (tex) {
+                                glBindTextureUnit(0, static_cast<Lumos::GLTexture*>(tex)->rendererID());
+                            }
+                        }
+                        if (packet.normalHandle.isValid()) {
+                            auto* tex = assetmanager.getTextureManager().get(packet.normalHandle);
+                            if (tex) {
+                                glBindTextureUnit(1, static_cast<Lumos::GLTexture*>(tex)->rendererID());
+                            }
+                        }
+                        if (packet.metallicroughnessHandle.isValid()) {
+                            auto* tex = assetmanager.getTextureManager().get(packet.metallicroughnessHandle);
+                            if (tex) {
+                                glBindTextureUnit(2, static_cast<Lumos::GLTexture*>(tex)->rendererID());
+                            }
+                        }
+                        glmesh->prepareSubMesh(i);
+                        glDrawElements(GL_TRIANGLES, glmesh->getIndexCount(i), GL_UNSIGNED_INT, 0);
+                    }
+                }
+                break;
+            default:
+                std::println("info type did not match to any of these: LIGHTING, GEOMETRY, SCREEN");
         }
-        glBindVertexArray(mesh.vao);
-        glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0);
         shader->unbind();
     }
     m_renderqueue.clear();
@@ -153,83 +187,8 @@ void GLRenderer::createAndAddToShaderCache(std::string name,
     m_shadercache[name] = new GLShader(vertpath, fragpath);
 }
 
-MeshResource GLRenderer::createMeshPrimitive(std::vector<Vertex> vertices,
-                                             std::vector<uint32_t> indices) const
+Lumos::IGraphicsDevice& GLRenderer::getGraphicsDevice()
 {
-    MeshResource res;
-    res.indexCount = indices.size();
-    glCreateVertexArrays(1, &res.vao);
-    glCreateBuffers(1, &res.vbo);
-    glCreateBuffers(1, &res.ebo);
-
-    glNamedBufferStorage(res.vbo,
-            vertices.size() * sizeof(Vertex),
-            vertices.data(),
-            GL_DYNAMIC_STORAGE_BIT
-    );
-
-    glNamedBufferStorage(res.ebo,
-            indices.size() * sizeof(uint32_t),
-            indices.data(),
-            GL_DYNAMIC_STORAGE_BIT
-    );
-
-
-    glVertexArrayVertexBuffer(res.vao, 0, res.vbo, 0, sizeof(Vertex));
-    glVertexArrayElementBuffer(res.vao, res.ebo);
-
-    glEnableVertexArrayAttrib(res.vao, 0);
-    glVertexArrayAttribFormat(res.vao,
-            0,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            offsetof(Vertex, position)
-    );
-    glVertexArrayAttribBinding(res.vao, 0, 0);
-
-    glEnableVertexArrayAttrib(res.vao, 1);
-    glVertexArrayAttribFormat(res.vao,
-            1,
-            4,
-            GL_FLOAT,
-            GL_FALSE,
-            offsetof(Vertex, color)
-    );
-    glVertexArrayAttribBinding(res.vao, 1, 0);
-
-    glEnableVertexArrayAttrib(res.vao, 2);
-    glVertexArrayAttribFormat(res.vao,
-            2,
-            4,
-            GL_FLOAT,
-            GL_FALSE,
-            offsetof(Vertex, texcoord)
-    );
-    glVertexArrayAttribBinding(res.vao, 2, 0);
-
-    return res;
-}
-
-TextureHandle GLRenderer::createTexture(const std::string& filepath, TextureImportSettings settings) const
-{
-    uint32_t handle;
-    int x, y, c;
-    stbi_uc* pixels = stbi_load(filepath.c_str(), &x, &y, &c, STBI_rgb_alpha);
-    if (!pixels) {
-        std::println("failed to load texture file");
-        handle = -1;
-        return { handle };
-    }
-    glCreateTextures(GL_TEXTURE_2D, 1, &handle);
-    glTextureParameteri(handle, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTextureParameteri(handle, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-    glTextureParameteri(handle, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTextureParameteri(handle, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    glTextureStorage2D(handle, 1, GL_RGBA8, x, y);
-    glTextureSubImage2D(handle, 0, 0, 0, x, y, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-    stbi_image_free(pixels);
-    return { handle };
+    return *m_graphicsdevice;
 }
 

@@ -1,6 +1,5 @@
 #pragma once
 #include "renderer.h"
-#include "ecsImpl/components.h"
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -21,6 +20,10 @@ class Window;
 class Shader;
 class GLShader;
 
+namespace Lumos
+{
+    class AssetManager;
+}
 
 class RENDERER_API GLRenderer : public Renderer
 {
@@ -32,22 +35,21 @@ public:
     void endFrame() override;
 
     void beginPass(const RenderPassDesc& desc, FrameBufferManager& framebuffermanager) override;
-    void endPass(RenderPassDesc desc) override;
+    void endPass() override;
 
     void submit(RenderInfo info) override;
-    void flush(const MeshManager& meshmanager) override;
+    void flush(std::function<void()> func, Lumos::AssetManager& assetmanager) override;
     void createAndAddToShaderCache(std::string name,
                                    const std::string vertpath,
                                    const std::string fragpath) override;
-    MeshResource createMeshPrimitive(std::vector<Vertex> vertices,
-                                     std::vector<uint32_t> indices) const override;
-    TextureHandle createTexture(const std::string& filepath, TextureImportSettings settings) const override;
+    Lumos::IGraphicsDevice& getGraphicsDevice() override;
 private:
     uint32_t m_width = 0;
     uint32_t m_height = 0;
     std::unordered_map<std::string, Shader*> m_shadercache;
     std::vector<RenderInfo> m_renderqueue;
     std::shared_ptr<FrameBufferManager> m_framebufferManager;
+    std::unique_ptr<Lumos::IGraphicsDevice> m_graphicsdevice;
     const Window& m_window;
     void draw();
 };

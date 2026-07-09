@@ -88,14 +88,14 @@ void GLShader::setUniformMat4(const std::string& name, const glm::mat4& mat4)
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat4));
 
 }
-void GLShader::setUniformVec3(const std::string& name, const std::array<float, 3>& vec3)
+void GLShader::setUniformVec3(const std::string& name, const glm::vec3& vec3)
 {
     int location = glGetUniformLocation(m_shaderprogram, name.c_str());
     if (location < 0)
     {
         return;
     }
-    glUniform3fv(location, 1, vec3.data());
+    glUniform3fv(location, 1, glm::value_ptr(vec3));
 }
 
 void GLShader::setUniformTexture(const std::string& name, int value)

@@ -9,10 +9,12 @@ Application::Application(Platform platform)
     m_window = std::make_unique<Window>();
     //this can be glrenderer for now since thats all we have
     m_renderer = std::make_shared<GLRenderer>(*m_window);
+    m_assetmanager = std::make_unique<Lumos::AssetManager>(m_renderer->getGraphicsDevice());
 
-    pushLayer(std::make_unique<GameLayer>(*m_renderer,*m_window));
+    pushLayer(std::make_unique<GameLayer>(*m_renderer, *m_assetmanager, *m_window));
     m_renderer->createAndAddToShaderCache("screen","shaders/screen.vert", "shaders/screen.frag");
     m_renderer->createAndAddToShaderCache("basePass", "shaders/shader.vert", "shaders/shader.frag");
+    m_renderer->createAndAddToShaderCache("lighting", "shaders/lighting.vert", "shaders/lighting.frag");
 
     //temporary for closing application by pressing ESC
     EventDispatcher::subscribe(EventType::KeyPress, [this](const Event &e) {

@@ -1,8 +1,8 @@
 #pragma once
+#include <cstdint>
 
 class Renderer;
 class Ecs;
-class AssetManager;
 class FrameBufferManager;
 
 class ScreenPass
@@ -11,10 +11,8 @@ public:
     ScreenPass();
     ~ScreenPass();
 
-    void update(float dt,
-                const Ecs &ecs,
+    void update(const Ecs &ecs,
                 Renderer &renderer,
-                const AssetManager& assetmanager,
-                FrameBufferManager& framebuffermanager);
+                uint32_t framebuffercolorattachment);
 private:
 };

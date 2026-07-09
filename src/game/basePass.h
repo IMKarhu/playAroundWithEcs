@@ -2,7 +2,10 @@
 
 class Renderer;
 class Ecs;
-class AssetManager;
+namespace Lumos
+{
+    class AssetManager;
+}
 
 class BasePass
 {
@@ -10,6 +13,6 @@ public:
     BasePass();
     ~BasePass();
 
-    void update(float dt, const Ecs &ecs, Renderer &renderer, const AssetManager& assetmanager);
+    void update(const Ecs &ecs, Renderer &renderer, Lumos::AssetManager& assetmanager);
 private:
 };

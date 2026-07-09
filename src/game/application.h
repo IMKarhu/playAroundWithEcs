@@ -2,6 +2,7 @@
 #include "layer.h"
 #include "windowing/window.h"
 #include "renderer.h"
+#include "assetManager.h"
 #include <vector>
 #include <memory>
 
@@ -15,4 +16,5 @@ private:
     std::vector<std::unique_ptr<Layer>> m_layers;
     std::unique_ptr<Window> m_window;
     std::shared_ptr<Renderer> m_renderer;
+    std::unique_ptr<Lumos::AssetManager> m_assetmanager;
 };

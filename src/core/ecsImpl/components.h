@@ -1,25 +1,17 @@
 #pragma once
+#include "assetbase.h"
 #include <glm/glm.hpp>
 #include <array>
 #include <vector>
 #include <string>
 
-struct Vertex
-{
-    std::array<float, 3> position;
-    std::array<float, 4> color = {1.0, 1.0, 1.0, 1.0};
-    std::array<float, 3> normal;
-    std::array<float, 2> texcoord;
-};
-
-
-struct Texture
-{
-    uint32_t width = 0;
-    uint32_t height = 0;
-    uint32_t channels = 0;
-    std::vector<unsigned char> pixels;
-};
+// struct Vertex
+// {
+//     glm::vec3 position;
+//     std::array<float, 4> color = {1.0, 1.0, 1.0, 1.0};
+//     std::array<float, 3> normal;
+//     std::array<float, 2> texcoord;
+// };
 
 struct TextureHandle
 {
@@ -31,12 +23,22 @@ struct TextureHandle
     }
 };
 
-struct MeshResource
+struct MaterialResource
 {
-    uint32_t vao;
-    uint32_t vbo;
-    uint32_t ebo;
-    uint32_t indexCount;
+    TextureHandle basecolor;
+    TextureHandle normal;
+    TextureHandle metallicroughness;
+
+    glm::vec4 basecolorfactor = glm::vec4(1);
+    float metallicfactor = 1.0f;
+    float roughnessfactor = 1.0f;
+
+    bool doublesided = false;
+};
+
+struct MaterialHandle
+{
+    uint32_t id = 0;
 };
 
 struct MeshHandle
@@ -44,30 +46,16 @@ struct MeshHandle
     uint32_t id = 0;
 };
 
-struct SubMesh {
-    std::string name;
-    std::vector<Vertex> vertices;
-    std::vector<uint32_t> indices;
-    uint32_t vbo = 0;
-    uint32_t ebo = 0;
-};
-
 struct Mesh
 {
-    std::vector<SubMesh> submeshes;
-    std::vector<Texture> textures;
-    uint32_t id;
+    Lumos::AssetHandle assethandle;
     std::string name;
 };
 
 struct ScreenQuad
 {
     std::string name;
-    std::vector<Vertex> vertices;
-    std::vector<uint32_t> indices;
-    uint32_t vbo = 0;
-    uint32_t ebo = 0;
-
+    Lumos::AssetHandle assethandle;
 };
 
 struct Transform
@@ -76,6 +64,7 @@ struct Transform
     glm::vec3 rotation = glm::vec3(0, 0, 0);
     glm::vec3 scale = glm::vec3(1, 1, 1);
     glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 mvp = glm::mat4(1.0f);
 };
 
 struct Camera
@@ -96,7 +85,18 @@ struct Id
     uint32_t id;
 };
 
-struct InputBindigs
+enum class LightType
 {
+    Directional,
+    Point,
+    Spot
 };
 
+struct Light
+{
+    LightType type = LightType::Directional;
+    glm::vec3 color = glm::vec3(1);
+    glm::vec3 direction = glm::vec3(0.0f, -1.0f, 0.0f);
+    float intensity = 1.0f;
+    float radius = 1.0f;
+};

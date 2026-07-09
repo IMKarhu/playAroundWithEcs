@@ -17,7 +17,9 @@ enum class DepthFormat {
 
 //color formats for texture
 enum class Format {
-    RGBA8
+    RGBA8,
+    RGBA16F,
+    RGB16F
 };
 
 struct FramebufferAttachmentSpec
