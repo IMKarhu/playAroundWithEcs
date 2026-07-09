@@ -1,5 +1,5 @@
 #include "framebuffer.h"
-#include "glframebuffer.h"
+#include "opengl/glframebuffer.h"
 
 std::shared_ptr<FrameBuffer> FrameBuffer::create(const FramebufferSpec& spec)
 {

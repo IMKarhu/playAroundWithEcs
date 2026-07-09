@@ -1,0 +1,50 @@
+#include "application.h"
+#include "opengl/glrenderer.h"
+#include "gameLayer.h"
+#include "editor/editorLayer.h"
+#include <chrono>
+
+Application::Application(Platform platform)
+{
+    m_window = std::make_unique<Window>();
+    //this can be glrenderer for now since thats all we have
+    m_renderer = std::make_shared<GLRenderer>(*m_window);
+    m_assetmanager = std::make_unique<Lumos::AssetManager>(m_renderer->getGraphicsDevice());
+
+    pushLayer(std::make_unique<GameLayer>(*m_renderer, *m_assetmanager, *m_window));
+    m_renderer->createAndAddToShaderCache("screen","shaders/screen.vert", "shaders/screen.frag");
+    m_renderer->createAndAddToShaderCache("basePass", "shaders/shader.vert", "shaders/shader.frag");
+    m_renderer->createAndAddToShaderCache("lighting", "shaders/lighting.vert", "shaders/lighting.frag");
+
+    //temporary for closing application by pressing ESC
+    EventDispatcher::subscribe(EventType::KeyPress, [this](const Event &e) {
+        const auto &event = static_cast<const KeyEvent&>(e);
+        if (event.key == 256) {
+            m_window->setWindowShouldClose(true);
+        }
+    });
+
+
+}
+
+void Application::run()
+{
+    auto curTime = std::chrono::high_resolution_clock::now();
+    while(!m_window->shouldClose()) {
+        auto startTime = std::chrono::high_resolution_clock::now();
+        float dt = std::chrono::duration<float, std::chrono::seconds::period>(startTime - curTime).count();
+
+        for (auto& layer : m_layers) {
+            layer->update(dt);
+        }
+
+        m_window->pollEvents();
+        m_window->swapBuffers();
+    }
+}
+
+void Application::pushLayer(std::unique_ptr<Layer> layer)
+{
+    layer->attach();
+    m_layers.push_back(std::move(layer));
+}

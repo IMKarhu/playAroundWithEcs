@@ -1,45 +1,22 @@
 cmake_minimum_required(VERSION 3.28...4.1)
 
-project(TestingGround)
+project(Lumos)
 
-#set(CMAKE_CXX_COMPILER "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/Llvm/bin/clang++")
-set(CMAKE_CXX_FLAGS "-Wall")
-#set(CMAKE_CXX_FLAGS "/EHsc")
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+
 find_package(OpenGL REQUIRED)
 add_subdirectory(ext)
-add_subdirectory(src)
-
-# add_executable(Ecs
-#     main.cpp
-#     ecs.h
-#     window.h
-#     window.cpp
-#     renderSystem.h
-#     renderSystem.cpp
-#     imguiLayer.h
-#     imguiLayer.cpp
-#     framebuffer.h
-#     glframebuffer.h
-#     glframebuffer.cpp
-#     renderer.h
-#     glrenderer.h
-#     glrenderer.cpp
-#     components.h
-#     shader.h
-#     shader.cpp
-# )
-
-# target_link_libraries(Ecs
-#     PUBLIC glfw
-#     PUBLIC glad
-#     PUBLIC imgui
-#     PRIVATE OpenGL::GL
-#     PRIVATE glm::glm
-# )
+add_subdirectory(src/core)
+add_subdirectory(src/renderer)
+add_subdirectory(src/editor)
+add_subdirectory(src/game)
 
 # for copying compile_commands to root
 set(SRC_COMPILE_COMMANDS "${CMAKE_BINARY_DIR}/compile_commands.json")

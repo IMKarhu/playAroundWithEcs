@@ -1,20 +1,10 @@
 #pragma once
-#include <glm/mat4x4.hpp>
-#include <string>
-#include <array>
 
 class Shader
 {
 public:
-    Shader(const char* vertexshader, const char* fragmentshader);
-
-    void use();
-    void setUniformMat4(const std::string& name, const glm::mat4& mat4);
-    void setUniformVec3(const std::string& name, const std::array<float, 3>& vec3);
-    void setUniformTexture(const std::string& name, int value);
-    void setUniformInt(const std::string& name, const int& value);
+    virtual ~Shader() = default;
+    virtual void bind() = 0;
+    virtual void unbind() = 0;
 private:
-    uint32_t m_vertexshader;
-    uint32_t m_fragmentshader;
-    uint32_t m_shaderprogram;
 };
