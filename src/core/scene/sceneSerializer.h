@@ -1,7 +1,5 @@
 #pragma once
-#include <string>
-
-#include "ecsImpl/ecs.h"
+#include "scene/scene.h"
 
 #ifdef _WIN32
     #ifdef CORE_EXPORT
@@ -17,15 +15,13 @@
 namespace Lumos
 {
     class AssetManager;
-    class CORE_API Scene
+    class CORE_API SceneSerializer
     {
     public:
-        Scene(AssetManager& assetmanager, const std::string& name = "scene");
-        ~Scene() = default;
-
-        Ecs& getEcs();
+        SceneSerializer(std::shared_ptr<Scene> scene);
+        bool serialize(const std::string& filepath);
+        bool deSerialize(const std::string& filepath, AssetManager& assetmanager);
     private:
-        Ecs m_ecs;
-        std::string m_name;
+        std::shared_ptr<Scene> m_scene;
     };
 }// namespace Lumos

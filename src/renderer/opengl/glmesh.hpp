@@ -1,5 +1,5 @@
 #pragma once
-#include <assetbase.h>
+#include <assetmanagers/assetbase.h>
 #include <glad/glad.h>
 
 namespace Lumos

@@ -2,7 +2,7 @@
 #include <functional>
 #include "renderInfo.h"
 #include "renderPassDesc.h"
-#include "assetbase.h"
+#include "assetmanagers/assetbase.h"
 
 class MeshManager;
 class FrameBufferManager;

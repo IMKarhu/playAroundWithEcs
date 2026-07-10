@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "scene.h"
+#include "scene/scene.h"
 
 #ifdef _WIN32
     #ifdef CORE_EXPORT

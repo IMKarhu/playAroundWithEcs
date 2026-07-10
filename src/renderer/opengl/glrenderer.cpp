@@ -5,7 +5,7 @@
 #include "shader.h"
 #include "glshader.h"
 #include "glmesh.hpp"
-#include "assetManager.h"
+#include "assetmanagers/assetManager.h"
 
 #include <print>
 

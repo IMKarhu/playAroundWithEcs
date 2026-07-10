@@ -5,8 +5,8 @@
 #include "ecsImpl/ecs.h"
 #include "ecsImpl/components.h"
 #include "framebufferBuilder.h"
-#include "assetManager.h"
-#include "scene.h"
+#include "assetmanagers/assetManager.h"
+#include "scene/scene.h"
 #include <print>
 
 #include <glm/glm.hpp>

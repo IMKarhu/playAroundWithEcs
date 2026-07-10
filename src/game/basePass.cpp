@@ -2,7 +2,7 @@
 #include "ecsImpl/ecs.h"
 #include "ecsImpl/components.h"
 #include "renderer.h"
-#include "assetManager.h"
+#include "assetmanagers/assetManager.h"
 #include <print>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

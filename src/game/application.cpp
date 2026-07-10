@@ -2,7 +2,8 @@
 #include "opengl/glrenderer.h"
 #include "windowing/eventDispatcher.h"
 #include "gameLayer.h"
-#include "scene.h"
+#include "scene/scene.h"
+#include "scene/sceneSerializer.h"
 #include <chrono>
 
 Application::Application(Platform platform)
@@ -21,6 +22,8 @@ Application::Application(Platform platform)
     m_renderer->createAndAddToShaderCache("lighting", "shaders/lighting.vert", "shaders/lighting.frag");
 
     auto Scene = std::make_shared<Lumos::Scene>(*m_assetmanager, "test scene");
+    Lumos::SceneSerializer serializer(Scene);
+    serializer.deSerialize("../src/game/scenes/testscene.json", *m_assetmanager);
     m_scenemanager.setActiveScene(Scene);
 }
 

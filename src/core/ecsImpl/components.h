@@ -1,5 +1,5 @@
 #pragma once
-#include "assetbase.h"
+#include "assetmanagers/assetbase.h"
 #include <glm/glm.hpp>
 #include <array>
 #include <vector>
@@ -87,9 +87,9 @@ struct Id
 
 enum class LightType
 {
-    Directional,
-    Point,
-    Spot
+    Directional = 0,
+    Point = 1,
+    Spot = 2
 };
 
 struct Light

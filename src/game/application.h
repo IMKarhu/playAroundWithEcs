@@ -2,8 +2,8 @@
 #include "layer.h"
 #include "windowing/window.h"
 #include "renderer.h"
-#include "assetManager.h"
-#include "sceneManager.h"
+#include "assetmanagers/assetManager.h"
+#include "scene/sceneManager.h"
 #include "windowing/events.h"
 #include <vector>
 #include <memory>
