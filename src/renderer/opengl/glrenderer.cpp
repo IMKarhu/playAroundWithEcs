@@ -1,7 +1,5 @@
 #include "glrenderer.h"
 #include "glad/glad.h"
-#include "windowing/events.h"
-#include "windowing/window.h"
 #include "framebuffer.h"
 #include "framebufferManager.h"
 #include "shader.h"
@@ -23,11 +21,8 @@ static void GLAPIENTRY DebugMessageCallback(GLenum source,
 }
 
 
-GLRenderer::GLRenderer(const Window &window)
-    :m_window(window)
+GLRenderer::GLRenderer()
 {
-    m_width = m_window.width();
-    m_height = m_window.height();
     std::println("hello from glrenderer");
     bool result = gladLoadGL();
     if(result == 1) {
@@ -47,12 +42,6 @@ GLRenderer::GLRenderer(const Window &window)
     );
 
     m_graphicsdevice = std::make_unique<Lumos::GLDevice>();
-
-    EventDispatcher::subscribe(EventType::WindowResize, [this](const Event &e) {
-            const auto& event = static_cast<const ResizeEvent&>(e);
-            m_width = event.width;
-            m_height = event.height;
-    });
 }
 
 GLRenderer::~GLRenderer()
@@ -109,7 +98,6 @@ void GLRenderer::beginPass(const RenderPassDesc& desc, FrameBufferManager& frame
 
 void GLRenderer::endPass()
 {
-    // flush();
 }
 
 void GLRenderer::submit(RenderInfo info)
@@ -190,5 +178,11 @@ void GLRenderer::createAndAddToShaderCache(std::string name,
 Lumos::IGraphicsDevice& GLRenderer::getGraphicsDevice()
 {
     return *m_graphicsdevice;
+}
+
+void GLRenderer::setDefaultFramebufferDimensios(uint32_t width, uint32_t height)
+{
+    m_width = width;
+    m_height = height;
 }
 

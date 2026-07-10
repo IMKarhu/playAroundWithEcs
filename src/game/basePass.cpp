@@ -15,9 +15,9 @@ BasePass::~BasePass() {}
 
 void BasePass::update(const Ecs &ecs, Renderer &renderer, Lumos::AssetManager& assetmanager)
 {
-    for (auto ent : ecs.view<Transform, Mesh>()) {
+    for (auto ent : ecs.view<Transform, MeshComponent>()) {
         auto& transform = ecs.getComponent<Transform>(ent);
-        auto& mesh = ecs.getComponent<Mesh>(ent);
+        auto& mesh = ecs.getComponent<MeshComponent>(ent);
         Lumos::IMesh* rawmesh = assetmanager.getMeshManager().get(mesh.assethandle);
         if (!rawmesh) {
             continue;

@@ -16,7 +16,6 @@
 
 class FrameBuffer;
 class FrameBufferManager;
-class Window;
 class Shader;
 class GLShader;
 
@@ -28,7 +27,7 @@ namespace Lumos
 class RENDERER_API GLRenderer : public Renderer
 {
 public:
-    GLRenderer(const Window &window);
+    GLRenderer();
     ~GLRenderer() override;
 
     void beginFrame() const override;
@@ -43,13 +42,14 @@ public:
                                    const std::string vertpath,
                                    const std::string fragpath) override;
     Lumos::IGraphicsDevice& getGraphicsDevice() override;
+    void setDefaultFramebufferDimensios(uint32_t width, uint32_t height) override;
 private:
-    uint32_t m_width = 0;
-    uint32_t m_height = 0;
+    //these are for default framebuffer
+    uint32_t m_width;
+    uint32_t m_height;
     std::unordered_map<std::string, Shader*> m_shadercache;
     std::vector<RenderInfo> m_renderqueue;
     std::shared_ptr<FrameBufferManager> m_framebufferManager;
     std::unique_ptr<Lumos::IGraphicsDevice> m_graphicsdevice;
-    const Window& m_window;
     void draw();
 };

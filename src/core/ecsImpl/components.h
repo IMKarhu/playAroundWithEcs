@@ -46,7 +46,7 @@ struct MeshHandle
     uint32_t id = 0;
 };
 
-struct Mesh
+struct MeshComponent
 {
     Lumos::AssetHandle assethandle;
     std::string name;

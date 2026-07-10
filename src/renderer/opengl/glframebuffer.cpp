@@ -100,7 +100,6 @@ void GLFramebuffer::create()
     glCreateFramebuffers(1, &m_fbo);
     m_colorattachments.resize(m_spec.attachments.size());
     for (size_t i = 0; i < m_colorattachments.size(); ++i) {
-        std::println("framebuffer: {}, and format: {}", i, int(m_spec.attachments[i].format));
         glCreateTextures(GL_TEXTURE_2D, 1, &m_colorattachments[i].id);
         createTextureStorage(m_colorattachments[i].id, m_spec.attachments[i].format, m_spec.width, m_spec.height);
         glTextureParameteri(m_colorattachments[i].id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -125,6 +124,8 @@ void GLFramebuffer::create()
                 case DepthFormat::Depth32F:
                     glNamedFramebufferTexture(m_fbo, GL_DEPTH_ATTACHMENT, m_depthattachment.id, 0);
                     break;
+                default:
+                    std::println("Unkown depth format used in framebuffer");
             }
         }
         else if (m_spec.depthType == DepthFormatType::Buffer) {
