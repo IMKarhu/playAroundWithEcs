@@ -15,7 +15,6 @@ find_package(OpenGL REQUIRED)
 add_subdirectory(ext)
 add_subdirectory(src/core)
 add_subdirectory(src/renderer)
-add_subdirectory(src/editor)
 add_subdirectory(src/game)
 
 # for copying compile_commands to root
