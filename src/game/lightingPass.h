@@ -1,8 +1,11 @@
 #pragma once
 
-class Renderer;
+namespace Lumos
+{
+    class Renderer;
+    class FrameBufferManager;
+}
 class Ecs;
-class FrameBufferManager;
 
 class LightingPass
 {
@@ -10,7 +13,7 @@ public:
     LightingPass();
     ~LightingPass();
 
-    void update(const Ecs &ecs, Renderer &renderer, FrameBufferManager& framebuffermanager);
+    void update(const Ecs &ecs, Lumos::Renderer &renderer, Lumos::FrameBufferManager& framebuffermanager);
 private:
 };
 

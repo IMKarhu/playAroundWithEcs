@@ -13,13 +13,13 @@ ScreenPass::ScreenPass()
 ScreenPass::~ScreenPass() {}
 
 void ScreenPass::update(const Ecs &ecs,
-                        Renderer &renderer,
+                        Lumos::Renderer &renderer,
                         uint32_t framebuffercolorattachment)
 {
-    for(auto ent : ecs.view<ScreenQuad>()) {
-        auto& quad = ecs.getComponent<ScreenQuad>(ent);
-        RenderInfo info;
-        info.type = InfoType::Screen;
+    for(auto ent : ecs.view<Lumos::ScreenQuad>()) {
+        auto& quad = ecs.getComponent<Lumos::ScreenQuad>(ent);
+        Lumos::RenderInfo info;
+        info.type = Lumos::InfoType::Screen;
         info.readframebuffer = "yes";
         info.shadername = "screen";
         info.screenpasscolorattachment.id = framebuffercolorattachment;

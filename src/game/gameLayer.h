@@ -6,11 +6,11 @@
 #include "framebufferManager.h"
 #include <memory>
 
-class Ecs;
-class Renderer;
 
+class Ecs;
 namespace Lumos
 {
+    class Renderer;
     class Window;
     class AssetManager;
     class Scene;
@@ -19,7 +19,7 @@ namespace Lumos
 class GameLayer : public Lumos::Layer
 {
 public:
-    GameLayer(Renderer& renderer, Lumos::AssetManager& assetmanager, const Lumos::Window& window);
+    GameLayer(Lumos::Renderer& renderer, Lumos::AssetManager& assetmanager, const Lumos::Window& window);
 
     void attach() override;
     void detach() override;
@@ -31,8 +31,8 @@ private:
     std::unique_ptr<BasePass> m_basepass;
     std::unique_ptr<ScreenPass> m_screenpass;
     std::unique_ptr<LightingPass> m_lightingpass;
-    std::unique_ptr<FrameBufferManager> m_framebuffermanager;
-    Renderer& m_renderer;
+    std::unique_ptr<Lumos::FrameBufferManager> m_framebuffermanager;
+    Lumos::Renderer& m_renderer;
     const Lumos::Window& m_window;
     Lumos::AssetManager& m_assetmanager;
 };

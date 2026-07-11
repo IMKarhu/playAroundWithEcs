@@ -16,14 +16,14 @@ LightingPass::~LightingPass()
 {
 }
 
-void LightingPass::update(const Ecs &ecs, Renderer &renderer, FrameBufferManager& framebuffermanager)
+void LightingPass::update(const Ecs &ecs, Lumos::Renderer &renderer, Lumos::FrameBufferManager& framebuffermanager)
 {
-    for (auto ent : ecs.view<Transform, Light>()) {
-        auto& transform = ecs.getComponent<Transform>(ent);
-        auto& light = ecs.getComponent<Light>(ent);
+    for (auto ent : ecs.view<Lumos::Transform, Lumos::Light>()) {
+        auto& transform = ecs.getComponent<Lumos::Transform>(ent);
+        auto& light = ecs.getComponent<Lumos::Light>(ent);
         auto gbuffer = framebuffermanager.getFramebuffer("gbuffer");
-        RenderInfo info;
-        info.type = InfoType::Lighting;
+        Lumos::RenderInfo info;
+        info.type = Lumos::InfoType::Lighting;
         info.shadername = "lighting";
         info.attachments.attachment0.id = gbuffer->colorAttachment(0).id;
         info.attachments.attachment1.id = gbuffer->colorAttachment(1).id;

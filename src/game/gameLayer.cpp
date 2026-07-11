@@ -12,7 +12,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-GameLayer::GameLayer(Renderer& renderer, Lumos::AssetManager& assetmanager, const Lumos::Window& window)
+GameLayer::GameLayer(Lumos::Renderer& renderer, Lumos::AssetManager& assetmanager, const Lumos::Window& window)
     : m_renderer(renderer)
     , m_assetmanager(assetmanager)
     , m_window(window)
@@ -24,21 +24,21 @@ void GameLayer::attach()
 {
     std::println("game layer attach");
 
-    m_framebuffermanager = std::make_unique<FrameBufferManager>();
-    m_framebuffermanager->addFramebuffer("gbuffer", FramebufferBuilder()
+    m_framebuffermanager = std::make_unique<Lumos::FrameBufferManager>();
+    m_framebuffermanager->addFramebuffer("gbuffer", Lumos::FramebufferBuilder()
         .setSize(m_window.width(), m_window.height())
         .setSamples(1)
-        .setColorAttachments({Format::RGBA8,
-                              Format::RGBA16F,
-                              Format::RGBA16F})
-        .setDepthFormat(DepthFormat::Depth24Stencil8, DepthFormatType::Texture)
+        .setColorAttachments({Lumos::Format::RGBA8,
+                              Lumos::Format::RGBA16F,
+                              Lumos::Format::RGBA16F})
+        .setDepthFormat(Lumos::DepthFormat::Depth24Stencil8, Lumos::DepthFormatType::Texture)
         .build());
 
-    m_framebuffermanager->addFramebuffer("lighting", FramebufferBuilder()
+    m_framebuffermanager->addFramebuffer("lighting", Lumos::FramebufferBuilder()
             .setSize(m_window.width(), m_window.height())
             .setSamples(1)
-            .setColorAttachments({Format::RGBA16F})
-            .setDepthFormat(DepthFormat::Depth24Stencil8, DepthFormatType::Texture)
+            .setColorAttachments({Lumos::Format::RGBA16F})
+            .setDepthFormat(Lumos::DepthFormat::Depth24Stencil8, Lumos::DepthFormatType::Texture)
             .build());
 
     m_basepass = std::make_unique<BasePass>();
@@ -62,7 +62,7 @@ void GameLayer::update(float dt, const std::shared_ptr<Lumos::Scene>& scene)
     updateTransform(dt, ecs);
 
     m_renderer.beginFrame();
-    RenderPassDesc desc;
+    Lumos::RenderPassDesc desc;
     desc.framebuffer = "gbuffer";
     //basepass
     m_renderer.beginPass(desc, *m_framebuffermanager.get());
@@ -96,8 +96,8 @@ void GameLayer::event(Lumos::Event& event, const std::shared_ptr<Lumos::Scene>& 
     dispatcher.dispatch<Lumos::WindowResizeEvent>([this, &ecs](Lumos::WindowResizeEvent& e) {
             m_renderer.setDefaultFramebufferDimensios(e.width(), e.height());
             m_framebuffermanager->resizeAll(e.width(), e.height());
-            for (auto ent : ecs.view<Camera, Transform>()) {
-                auto& camera = ecs.getComponent<Camera>(ent);
+            for (auto ent : ecs.view<Lumos::Camera, Lumos::Transform>()) {
+                auto& camera = ecs.getComponent<Lumos::Camera>(ent);
                 if (camera.primary) {
                     camera.aspectratio = (float)e.width()/(float)e.height();
                     break;
@@ -110,8 +110,8 @@ void GameLayer::event(Lumos::Event& event, const std::shared_ptr<Lumos::Scene>& 
             //this has some jank in it, ie if you press two keys at the same time only one gets processed
             //and if you hold one key and press another it fires the other one and treats the other one being "released"
             //probably has more to do how we handle state in window keycallback than what we do here
-            for (auto ent : ecs.view<Camera, Transform>()) {
-                auto& t = ecs.getComponent<Transform>(ent);
+            for (auto ent : ecs.view<Lumos::Camera, Lumos::Transform>()) {
+                auto& t = ecs.getComponent<Lumos::Transform>(ent);
                 if (e.button() == 65) {
                     t.position.x += 0.75f * 0.1;
                 }
@@ -140,9 +140,9 @@ void GameLayer::updateTransform(float dt, Ecs& ecs)
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 proj = glm::mat4(1.0f);
 
-    for (auto ent : ecs.view<Transform, Camera>()) {
-        auto& camtransform = ecs.getComponent<Transform>(ent);
-        auto& camera = ecs.getComponent<Camera>(ent);
+    for (auto ent : ecs.view<Lumos::Transform, Lumos::Camera>()) {
+        auto& camtransform = ecs.getComponent<Lumos::Transform>(ent);
+        auto& camera = ecs.getComponent<Lumos::Camera>(ent);
         if (camera.primary) {
 
             view = glm::lookAt(camtransform.position, camtransform.position + glm::vec3(0.0f,0.0f, -1.0f), camera.upvector);
@@ -151,9 +151,9 @@ void GameLayer::updateTransform(float dt, Ecs& ecs)
         }
     }
 
-    for (auto ent : ecs.view<Transform, MeshComponent>()) {
-        auto& transform = ecs.getComponent<Transform>(ent);
-        auto& mesh = ecs.getComponent<MeshComponent>(ent);
+    for (auto ent : ecs.view<Lumos::Transform, Lumos::MeshComponent>()) {
+        auto& transform = ecs.getComponent<Lumos::Transform>(ent);
+        auto& mesh = ecs.getComponent<Lumos::MeshComponent>(ent);
         // transform.scale = glm::vec3(0.00800000037997961,
         //                             0.00800000037997961,
         //                             0.00800000037997961);

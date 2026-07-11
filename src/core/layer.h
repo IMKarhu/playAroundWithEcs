@@ -16,7 +16,6 @@ namespace Lumos
             virtual void attach() {}
             virtual void detach() {}
             virtual void update(float dt, const std::shared_ptr<Lumos::Scene>& scene) {}
-            virtual void editorUpdate() {}
             virtual void event(Event &event, const std::shared_ptr<Lumos::Scene>& scene) {}
         private:
             std::string m_layerName;

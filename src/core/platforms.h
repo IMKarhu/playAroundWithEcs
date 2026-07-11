@@ -1,13 +1,17 @@
 #pragma once
 
-enum class GraphicsApi
+namespace Lumos
 {
-    OPENGL,
-    VULKAN
-};
+    enum class GraphicsApi
+    {
+        OPENGL,
+        VULKAN
+    };
 
-struct Platform
-{
-    GraphicsApi api = GraphicsApi::OPENGL;
-    bool isWayland = false;
-};
+    struct Platform
+    {
+        GraphicsApi api = GraphicsApi::OPENGL;
+        bool isWayland = false;
+    };
+}// namespace Lumos
+

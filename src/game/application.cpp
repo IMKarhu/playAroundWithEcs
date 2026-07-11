@@ -6,12 +6,12 @@
 #include "scene/sceneSerializer.h"
 #include <chrono>
 
-Application::Application(Platform platform)
+Application::Application(Lumos::Platform platform)
 {
     m_window = std::make_unique<Lumos::Window>();
     m_window->setEventCallback(std::bind(&Application::event, this, std::placeholders::_1));
     //this can be glrenderer for now since thats all we have
-    m_renderer = std::make_shared<GLRenderer>();
+    m_renderer = std::make_shared<Lumos::GLRenderer>();
     //quick fix for setting framebuffer width and height so I dont need to pass window to renderer
     m_renderer->setDefaultFramebufferDimensios(m_window->width(), m_window->height());
     m_assetmanager = std::make_unique<Lumos::AssetManager>(m_renderer->getGraphicsDevice());

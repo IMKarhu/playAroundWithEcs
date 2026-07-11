@@ -24,7 +24,6 @@ add_library(renderer
 
 target_link_libraries(renderer
     PRIVATE core
-    # PRIVATE Vulkan::Vulkan
 )
 
 target_include_directories(renderer
