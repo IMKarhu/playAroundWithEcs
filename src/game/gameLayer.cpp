@@ -7,8 +7,8 @@
 #include "framebufferBuilder.h"
 #include "assetmanagers/assetManager.h"
 #include "scene/scene.h"
-#include <print>
 
+#include <print>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 

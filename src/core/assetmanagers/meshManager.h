@@ -1,7 +1,6 @@
 #pragma once
 #include "assetbase.h"
 #include "textureManager.h"
-#include <vector>
 
 #ifdef _WIN32
     #ifdef CORE_EXPORT

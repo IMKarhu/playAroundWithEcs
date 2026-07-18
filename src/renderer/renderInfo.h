@@ -19,9 +19,9 @@ namespace Lumos
         glm::mat4 model;
         glm::vec3 lightdir;
         glm::vec3 lightcolor;
-        Lumos::IMesh* mesh;
-        Lumos::AssetHandle screenpasscolorattachment;
-        Lumos::GBufferHandles attachments;
+        IMesh* mesh;
+        AssetHandle screenpasscolorattachment;
+        GBufferHandles attachments;
         std::string readframebuffer;
     };
 }// namespace Lumos

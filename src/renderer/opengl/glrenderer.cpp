@@ -2,7 +2,6 @@
 #include "glad/glad.h"
 #include "framebuffer.h"
 #include "framebufferManager.h"
-#include "shader.h"
 #include "glshader.h"
 #include "glmesh.hpp"
 #include "assetmanagers/assetManager.h"
