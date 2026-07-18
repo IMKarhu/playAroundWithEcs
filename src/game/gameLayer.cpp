@@ -110,25 +110,31 @@ void GameLayer::event(Lumos::Event& event, const std::shared_ptr<Lumos::Scene>& 
             //this has some jank in it, ie if you press two keys at the same time only one gets processed
             //and if you hold one key and press another it fires the other one and treats the other one being "released"
             //probably has more to do how we handle state in window keycallback than what we do here
-            for (auto ent : ecs.view<Lumos::Camera, Lumos::Transform>()) {
-                auto& t = ecs.getComponent<Lumos::Transform>(ent);
+            for (auto ent : ecs.view<Lumos::Camera, Lumos::Movement>()) {
+                auto& m = ecs.getComponent<Lumos::Movement>(ent);
                 if (e.button() == 65) {
-                    t.position.x += 0.75f * 0.1;
+                    m.moved = true;
+                    m.button = 65;
                 }
                 if (e.button() == 68) {
-                    t.position.x -= 0.75f * 0.1;
+                    m.moved = true;
+                    m.button = 68;
                 }
                 if (e.button() == 87) {
-                    t.position.z -= 0.75f * 0.1;
+                    m.moved = true;
+                    m.button = 87;
                 }
                 if (e.button() == 83) {
-                    t.position.z += 0.75f * 0.1;
+                    m.moved = true;
+                    m.button = 83;
                 }
                 if (e.button() == 69) {//e
-                    t.position.y += 0.75f * 0.1;
+                    m.moved = true;
+                    m.button = 69;
                 }
                 if (e.button() == 81) {//q
-                    t.position.y -= 0.75f * 0.1;
+                    m.moved = true;
+                    m.button = 81;
                 }
             }
             return false;
@@ -137,6 +143,41 @@ void GameLayer::event(Lumos::Event& event, const std::shared_ptr<Lumos::Scene>& 
 
 void GameLayer::updateTransform(float dt, Ecs& ecs)
 {
+     for (auto ent : ecs.view<Lumos::Camera, Lumos::Movement, Lumos::Transform>()) {
+         auto& m = ecs.getComponent<Lumos::Movement>(ent);
+         auto& t = ecs.getComponent<Lumos::Transform>(ent);
+         if (m.button == 65) {
+             t.position.x += m.speed * dt;
+             m.moved = false;
+             m.button = -1;
+         }
+         if (m.button == 68) {
+             t.position.x -= m.speed * dt;
+             m.moved = false;
+             m.button = -1;
+         }
+         if (m.button == 87) {
+             t.position.z -= m.speed * dt;
+             m.moved = false;
+             m.button = -1;
+         }
+         if (m.button == 83) {
+             t.position.z += m.speed * dt;
+             m.moved = false;
+             m.button = -1;
+         }
+         if (m.button == 69) {//e
+             t.position.y += m.speed * dt;
+             m.moved = false;
+             m.button = -1;
+         }
+         if (m.button == 81) {//q
+             t.position.y -= m.speed * dt;
+             m.moved = false;
+             m.button = -1;
+         }
+     }
+
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 proj = glm::mat4(1.0f);
 
