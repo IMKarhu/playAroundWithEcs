@@ -16,21 +16,6 @@
 
 namespace Lumos
 {
-    struct SubMesh
-    {
-        uint32_t vao = 0;
-        uint32_t vbo = 0;
-        uint32_t ebo = 0;
-        uint32_t indexcount = 0;
-        AssetHandle materialtexture;
-    };
-
-    class Mesh : public IAsset
-    {
-    public:
-        std::vector<SubMesh> m_submeshes;
-    };
-
     class CORE_API MeshManager : public ISubAssetManager
     {
     public:
