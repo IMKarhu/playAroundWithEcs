@@ -18,24 +18,6 @@
 
 namespace Lumos
 {
-    class Texture : public IAsset
-    {
-    public:
-        //this is the actual texture handle
-        uint32_t m_renderid = 0;
-        int m_width = 0;
-        int m_height = 0;
-        Texture(const std::string& path) {
-            //TODO implement this
-        }
-
-        ~Texture() override {
-            if (m_renderid != 0) {
-                //TODO implemnt deletion
-            }
-        }
-    };
-
     class CORE_API TextureManager : public ISubAssetManager
     {
     public:
