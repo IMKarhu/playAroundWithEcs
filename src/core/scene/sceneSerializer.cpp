@@ -83,6 +83,17 @@ namespace Lumos
                 };
                 ecs.addComponent<Light>(entity, light);
             }
+            if (jsonent.contains("MovementComponent")) {
+                auto moved = jsonent["MovementComponent"]["Moved"];
+                auto speed = jsonent["MovementComponent"]["Speed"];
+                auto button = jsonent["MovementComponent"]["Button"];
+                Movement movement = {
+                    .moved = moved,
+                    .speed = speed,
+                    .button = button
+                };
+                ecs.addComponent<Movement>(entity, movement);
+            }
         }
         file.close();
         return true;

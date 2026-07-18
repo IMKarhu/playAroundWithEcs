@@ -19,6 +19,11 @@
                 "Projection": 1,
                 "Primary": true,
                 "Up": [0.0, 1.0, 0.0]
+            },
+            "MovementComponent": {
+                "Moved": false,
+                "Speed": 0.01,
+                "Button": -1
             }
         },
         {
