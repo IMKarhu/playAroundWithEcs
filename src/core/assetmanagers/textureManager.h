@@ -21,7 +21,7 @@ namespace Lumos
     class CORE_API TextureManager : public ISubAssetManager
     {
     public:
-        TextureManager(IGraphicsDevice& graphicsdevice);
+        TextureManager(IGPUResourceFactory& graphicsdevice);
 
         AssetHandle load(const std::string& filepath);
         ITexture* get(AssetHandle handle);
@@ -31,7 +31,7 @@ namespace Lumos
     private:
         std::unordered_map<uint64_t, std::shared_ptr<ITexture>> m_textures;
         std::unordered_map<uint64_t, AssetRecord> m_metadata;
-        IGraphicsDevice& m_graphicsdevice;
+        IGPUResourceFactory& m_graphicsdevice;
     };
 }//namespace Lumos
 

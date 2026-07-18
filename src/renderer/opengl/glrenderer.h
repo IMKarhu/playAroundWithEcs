@@ -39,7 +39,7 @@ namespace Lumos
             void createAndAddToShaderCache(std::string name,
                     const std::string vertpath,
                     const std::string fragpath) override;
-            Lumos::IGraphicsDevice& getGraphicsDevice() override;
+            IGPUResourceFactory& getGPUResourceFactory() override;
             void setDefaultFramebufferDimensios(uint32_t width, uint32_t height) override;
         private:
             //these are for default framebuffer
@@ -48,7 +48,7 @@ namespace Lumos
             std::unordered_map<std::string, Shader*> m_shadercache;
             std::vector<RenderInfo> m_renderqueue;
             std::shared_ptr<FrameBufferManager> m_framebufferManager;
-            std::unique_ptr<Lumos::IGraphicsDevice> m_graphicsdevice;
+            std::unique_ptr<IGPUResourceFactory> m_graphicsdevice;
             void draw();
     };
 }

@@ -92,10 +92,10 @@ namespace Lumos
         virtual void prepareSubMesh(size_t index) = 0;
         virtual RenderPacket getSubMeshPacket(size_t index) = 0;
     };
-    class IGraphicsDevice
+    class IGPUResourceFactory
     {
     public:
-        virtual ~IGraphicsDevice() = default;
+        virtual ~IGPUResourceFactory() = default;
         virtual std::unique_ptr<ITexture> createTexture(const std::string& path) = 0;
         virtual std::unique_ptr<IMesh> createMesh(const std::vector<SubMeshData>& submeshes) = 0;
     };

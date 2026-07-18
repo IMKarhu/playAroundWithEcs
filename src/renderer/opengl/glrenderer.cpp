@@ -43,7 +43,7 @@ namespace Lumos
                 GL_FALSE
                 );
 
-        m_graphicsdevice = std::make_unique<Lumos::GLDevice>();
+        m_graphicsdevice = std::make_unique<GLResourceFactory>();
     }
 
     GLRenderer::~GLRenderer()
@@ -177,7 +177,7 @@ namespace Lumos
         m_shadercache[name] = new GLShader(vertpath, fragpath);
     }
 
-    Lumos::IGraphicsDevice& GLRenderer::getGraphicsDevice()
+    IGPUResourceFactory& GLRenderer::getGPUResourceFactory()
     {
         return *m_graphicsdevice;
     }

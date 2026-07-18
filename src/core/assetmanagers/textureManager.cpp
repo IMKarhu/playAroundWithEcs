@@ -3,7 +3,7 @@
 
 namespace Lumos
 {
-    TextureManager::TextureManager(IGraphicsDevice& graphicsdevice)
+    TextureManager::TextureManager(IGPUResourceFactory& graphicsdevice)
         :m_graphicsdevice(graphicsdevice)
     {
     }

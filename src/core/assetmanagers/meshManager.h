@@ -19,7 +19,7 @@ namespace Lumos
     class CORE_API MeshManager : public ISubAssetManager
     {
     public:
-        MeshManager(IGraphicsDevice& graphicsdevice, TextureManager& texturemanager);
+        MeshManager(IGPUResourceFactory& graphicsdevice, TextureManager& texturemanager);
 
         AssetHandle load(const std::string& filepath);
         AssetHandle loadQuad();
@@ -31,7 +31,7 @@ namespace Lumos
         std::unordered_map<uint64_t, std::shared_ptr<IMesh>> m_meshes;
         std::unordered_map<uint64_t, AssetRecord> m_metadata;
         TextureManager& m_texturemanager;
-        IGraphicsDevice& m_graphicsdevice;
+        IGPUResourceFactory& m_graphicsdevice;
     };
 }//namespace Lumos
 

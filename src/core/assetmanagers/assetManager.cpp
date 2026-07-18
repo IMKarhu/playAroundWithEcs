@@ -2,7 +2,7 @@
 
 namespace Lumos
 {
-    AssetManager::AssetManager(IGraphicsDevice& graphicsdevice)
+    AssetManager::AssetManager(IGPUResourceFactory& graphicsdevice)
     {
         m_texturemanager = std::make_unique<TextureManager>(graphicsdevice);
         m_meshmanager = std::make_unique<MeshManager>(graphicsdevice, *m_texturemanager);

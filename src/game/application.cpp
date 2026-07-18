@@ -14,7 +14,7 @@ Application::Application(Lumos::Platform platform)
     m_renderer = std::make_shared<Lumos::GLRenderer>();
     //quick fix for setting framebuffer width and height so I dont need to pass window to renderer
     m_renderer->setDefaultFramebufferDimensios(m_window->width(), m_window->height());
-    m_assetmanager = std::make_unique<Lumos::AssetManager>(m_renderer->getGraphicsDevice());
+    m_assetmanager = std::make_unique<Lumos::AssetManager>(m_renderer->getGPUResourceFactory());
 
     pushLayer(std::make_unique<GameLayer>(*m_renderer, *m_assetmanager, *m_window));
     m_renderer->createAndAddToShaderCache("screen","shaders/screen.vert", "shaders/screen.frag");

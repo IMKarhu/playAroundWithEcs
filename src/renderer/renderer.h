@@ -6,7 +6,6 @@
 
 namespace Lumos
 {
-    class MeshManager;
     class FrameBufferManager;
     class AssetManager;
     class Renderer
@@ -25,7 +24,7 @@ namespace Lumos
             virtual void createAndAddToShaderCache(std::string name,
                     const std::string vertpath,
                     const std::string fragpath) = 0;
-            virtual Lumos::IGraphicsDevice& getGraphicsDevice() = 0;
+            virtual IGPUResourceFactory& getGPUResourceFactory() = 0;
             virtual void setDefaultFramebufferDimensios(uint32_t width, uint32_t height) = 0;
         private:
     };

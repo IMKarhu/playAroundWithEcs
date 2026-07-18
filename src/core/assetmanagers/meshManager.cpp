@@ -37,7 +37,7 @@ namespace Lumos
         }
     }
 
-    MeshManager::MeshManager(IGraphicsDevice& graphicsdevice, TextureManager& texturemanager)
+    MeshManager::MeshManager(IGPUResourceFactory& graphicsdevice, TextureManager& texturemanager)
         :m_texturemanager(texturemanager)
         ,m_graphicsdevice(graphicsdevice)
     {
