@@ -25,8 +25,6 @@ namespace Lumos
 
         AssetHandle load(const std::string& filepath);
         ITexture* get(AssetHandle handle);
-        void incrementRefCount(AssetHandle handle);
-        void decrementRefCount(AssetHandle handle);
         void unloadUnused() override;
     private:
         std::unordered_map<uint64_t, std::shared_ptr<ITexture>> m_textures;

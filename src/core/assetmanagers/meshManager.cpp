@@ -213,22 +213,6 @@ namespace Lumos
         return nullptr;
     }
 
-    void MeshManager::incrementRefCount(AssetHandle handle)
-    {
-        if (m_metadata.find(handle.id) != m_metadata.end()) {
-            m_metadata[handle.id].refcount++;
-        }
-    }
-
-    void MeshManager::decrementRefCount(AssetHandle handle)
-    {
-        auto it = m_metadata.find(handle.id);
-        if (it != m_metadata.end() && it->second.refcount > 0) {
-            it->second.refcount--;
-        }
-    }
-
-
     void MeshManager::unloadUnused()
     {
         for (auto it = m_metadata.begin(); it != m_metadata.end();) {
