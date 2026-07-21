@@ -11,9 +11,7 @@ namespace Lumos
         for (const auto& data : modeldata.submeshes) {
             GLSubMesh mesh;
             mesh.indexcount = static_cast<uint32_t>(data.indices.size());
-            mesh.basecolorhandle = data.basecolorHandle;
-            mesh.normalhandle = data.normalHandle;
-            mesh.metallicroughnesshandle = data.metallicroughnessHandle;
+            mesh.materialdata = data.materialdata;
             glCreateVertexArrays(1, &mesh.vao);
             glCreateBuffers(1, &mesh.vbo);
             glCreateBuffers(1, &mesh.ebo);
@@ -109,9 +107,7 @@ namespace Lumos
         RenderPacket packet;
         if (index < m_submeshes.size()) {
             const auto& sub = m_submeshes[index];
-            packet.basecolorHandle = sub.basecolorhandle;
-            packet.normalHandle = sub.normalhandle;
-            packet.metallicroughnessHandle = sub.metallicroughnesshandle;
+            packet.materialdata = sub.materialdata;
             packet.basecolorfactor = sub.basecolorfactor;
             packet.metallicroughnessfactor = sub.metallicroughnessfactor;
         }

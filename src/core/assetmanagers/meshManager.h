@@ -1,7 +1,6 @@
 #pragma once
 #include "assetbase.hpp"
 #include "textureManager.h"
-#include "tiny_gltf_v3.h"
 #include <vector>
 
 #ifdef _WIN32
@@ -30,10 +29,6 @@ namespace Lumos
         std::unordered_map<uint64_t, AssetRecord> m_metadata;
         TextureManager& m_texturemanager;
         IGPUResourceFactory& m_resourcefactory;
-
-        tg3_model parsemodel(const std::string& path, tg3_error_stack& errors);
-        std::vector<AssetHandle> loadTextures(const tg3_model& model);
-        ModelData buildSubMeshes(const tg3_model& model, const std::vector<AssetHandle>& textures);
     };
 }//namespace Lumos
 

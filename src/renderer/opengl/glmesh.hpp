@@ -10,9 +10,7 @@ namespace Lumos
         uint32_t vbo = 0;
         uint32_t ebo = 0;
         uint32_t indexcount = 0;
-        AssetHandle basecolorhandle;
-        AssetHandle normalhandle;
-        AssetHandle metallicroughnesshandle;
+        MaterialData materialdata;
         glm::vec3 basecolorfactor = glm::vec3(1);
         glm::vec3 metallicroughnessfactor = glm::vec3(1);
     };

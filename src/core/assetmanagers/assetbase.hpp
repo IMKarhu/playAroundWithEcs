@@ -66,21 +66,26 @@ namespace Lumos
         glm::vec3 texcoords;
         glm::vec4 tangents;
     };
-
-    struct SubMeshData
+    struct MaterialData
     {
-        std::vector<Vertex> vertices;
-        std::vector<uint32_t> indices;
         AssetHandle basecolorHandle;
         AssetHandle normalHandle;
         AssetHandle metallicroughnessHandle;
     };
 
+    struct SubMeshData
+    {
+        std::vector<Vertex> vertices;
+        std::vector<uint32_t> indices;
+        MaterialData materialdata;
+    };
+
     struct TextureSource
     {
         std::string cachekey;
-        std::variant<std::filesystem::path,
-            std::span<const uint8_t>> sources;
+        std::string path;
+        // std::variant<std::filesystem::path,
+        //     std::span<const uint8_t>> sources;
 
         std::string mimetype;
     };
@@ -93,10 +98,7 @@ namespace Lumos
 
     struct RenderPacket
     {
-        AssetHandle basecolorHandle;
-        AssetHandle normalHandle;
-        AssetHandle metallicroughnessHandle;
-
+        MaterialData materialdata;
         glm::vec3 basecolorfactor = glm::vec3(1);
         glm::vec3 metallicroughnessfactor = glm::vec3(1);
     };

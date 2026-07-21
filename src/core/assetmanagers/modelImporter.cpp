@@ -1,5 +1,6 @@
 #include "modelImporter.h"
 #include <print>
+#include <string_view>
 #define TINYGLTF3_IMPLEMENTATION
 
 namespace Lumos
@@ -32,53 +33,105 @@ namespace Lumos
         }
     }
 
+    ModelImporter::ModelImporter() {}
+    ModelImporter::~ModelImporter() {}
+
     ModelData ModelImporter::import(const std::string& path)
     {
-        tg3_error_stack errors;
-        tg3_model model = parsemodel(path, errors);
+        m_model = parsemodel(path);
 
-        ModelData data = parseSubMeshes(model);
+        ModelData data = parseSubMeshes(m_model);
+        // data.texturesources = loadTextures(m_model);
         return data;
     }
 
+    void ModelImporter::destroyctx()
+    {
+        tg3_model_free(&m_model);
+        tg3_error_stack_free(&m_errors);
+    }
+
     //private functions
-    tg3_model ModelImporter::parsemodel(const std::string& path, tg3_error_stack& errors)
+    tg3_model ModelImporter::parsemodel(const std::string& path)
     {
         tg3_parse_options opts;
         tg3_model model;
 
         tg3_parse_options_init(&opts);
-        tg3_error_stack_init(&errors);
+        tg3_error_stack_init(&m_errors);
 
         tg3_error_code err;
-        err = tg3_parse_file(&model, &errors, path.c_str(), path.length(), &opts);
+        err = tg3_parse_file(&model, &m_errors, path.c_str(), path.length(), &opts);
 
         if (err != TG3_OK) {
-            for (uint32_t i = 0; i < errors.count; i++) {
-                std::println("{} {}", (int)errors.entries[i].severity,
-                             errors.entries[i].message ? errors.entries[i].message : "null");
+            for (uint32_t i = 0; i < m_errors.count; i++) {
+                std::println("{} {}", (int)m_errors.entries[i].severity,
+                             m_errors.entries[i].message ? m_errors.entries[i].message : "null");
             }
-            tg3_error_stack_free(&errors);
+            tg3_error_stack_free(&m_errors);
             return model;
         }
 
         return model;
     }
 
-    std::vector<TextureSource> ModelImporter::loadTextures(const tg3_model& model)
+    std::vector<TextureSource> ModelImporter::parseImages()
     {
         std::vector<TextureSource> sources;
-        sources.resize(model.images_count);
+        sources.resize(m_model.images_count);
 
-        for (size_t i = 0; i < model.images_count; i++) {
-            if (model.images[i].uri.data && model.images[i].uri.len > 0) {
-                std::string texturepath = std::string(model.images[i].uri.data,
-                        model.images[i].uri.len);
+        for (size_t i = 0; i < m_model.images_count; i++) {
+            const auto& image = m_model.images[i];
+            if (image.uri.data && image.uri.len > 0) {
+                std::string texturepath = std::string(image.uri.data, image.uri.len);
                 sources[i].cachekey = texturepath;
-                sources[i].sources = texturepath;
+                sources[i].path = texturepath;
             }
         }
         return sources;
+    }
+
+    void ModelImporter::parseMaterials(ModelData& modeldata, std::vector<AssetHandle>& textures)
+    {
+        std::println("size: {}",modeldata.submeshes.size());
+        std::println("textures size: {}", textures.size());
+        for (size_t i = 0; i < m_model.meshes_count; i++) {
+            const auto& mesh = m_model.meshes[i];
+            for (size_t j = 0; j< mesh.primitives_count; j++) {
+                std::println("im definitely her");
+                const auto& primitive = mesh.primitives[j];
+                MaterialData data;
+                if (primitive.material >= 0 && primitive.material < m_model.materials_count) {
+                    const auto& material = m_model.materials[primitive.material];
+                    int32_t basecoloridx = material.pbr_metallic_roughness.base_color_texture.index;
+                    if (basecoloridx >= 0 && basecoloridx < static_cast<int32_t>(m_model.textures_count)) {
+                        int32_t imgsource = m_model.textures[basecoloridx].source;
+                        data.basecolorHandle = textures[imgsource];
+                        std::println("im definitely here basecolr");
+                        std::println("texture name: {}",std::string(m_model.textures[basecoloridx].name.data,
+                                                                    m_model.textures[basecoloridx].name.len));
+                    }
+                    int32_t normalidx = material.normal_texture.index;
+                    if (normalidx >= 0 && normalidx < static_cast<int32_t>(m_model.textures_count)) {
+                        int32_t imgsource = m_model.textures[normalidx].source;
+                        data.normalHandle = textures[imgsource];
+                        std::println("im definitely here normal");
+                        std::println("texture name: {}",std::string(m_model.textures[normalidx].name.data,
+                                                                    m_model.textures[normalidx].name.len));
+                    }
+                    int32_t metrough = material.pbr_metallic_roughness.metallic_roughness_texture.index;
+                    if (metrough >= 0 && metrough < static_cast<int32_t>(m_model.textures_count)) {
+                        int32_t imgsource = m_model.textures[metrough].source;
+                        data.metallicroughnessHandle = textures[imgsource];
+                        std::println("im definitely here metrough");
+                        std::println("texture name: {}",std::string(m_model.textures[metrough].name.data,
+                                                                    m_model.textures[metrough].name.len));
+                    }
+                }
+                modeldata.submeshes[j].materialdata = data;
+            }
+        }
+
     }
 
     ModelData ModelImporter::parseSubMeshes(const tg3_model& model)
@@ -89,25 +142,6 @@ namespace Lumos
             for (size_t i = 0; i < mesh.primitives_count; i++) {
                 const auto& primitive = mesh.primitives[i];
                 SubMeshData submeshdata;
-
-                // if (primitive.material >= 0 && primitive.material < model.materials_count) {
-                //     const auto& material = model.materials[primitive.material];
-                //     int32_t basecoloridx = material.pbr_metallic_roughness.base_color_texture.index;
-                //     if (basecoloridx >= 0 && basecoloridx < static_cast<int32_t>(model.textures_count)) {
-                //         int32_t imgsource = model.textures[basecoloridx].source;
-                //         submeshdata.basecolorHandle = textures[imgsource];
-                //     }
-                //     int32_t normalidx = material.normal_texture.index;
-                //     if (normalidx >= 0 && normalidx < static_cast<int32_t>(model.textures_count)) {
-                //         int32_t imgsource = model.textures[normalidx].source;
-                //         submeshdata.normalHandle = textures[imgsource];
-                //     }
-                //     int32_t metrough = material.pbr_metallic_roughness.metallic_roughness_texture.index;
-                //     if (metrough >= 0 && metrough < static_cast<int32_t>(model.textures_count)) {
-                //         int32_t imgsource = model.textures[metrough].source;
-                //         submeshdata.metallicroughnessHandle = textures[imgsource];
-                //     }
-                // }
 
                 uint64_t totalvertcount = 0;
                 for (size_t v = 0; v < primitive.attributes_count; v++) {
@@ -179,7 +213,6 @@ namespace Lumos
                     if (stride == 0) {
                         stride = getComponentCount(accessor.type) * getComponentSizeInBytes(accessor.component_type);
                     }
-                    submeshdata.indices.resize(accessor.count);
                     for (size_t i = 0; i < accessor.count; ++i) {
                         uint32_t index = 0;
                         if (accessor.component_type == TG3_COMPONENT_TYPE_UNSIGNED_INT) {
