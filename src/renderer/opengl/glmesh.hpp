@@ -1,5 +1,5 @@
 #pragma once
-#include <assetbase.h>
+#include <assetmanagers/assetbase.h>
 #include <glad/glad.h>
 
 namespace Lumos
@@ -48,7 +48,7 @@ namespace Lumos
         int channels = 0;
     };
 
-    class GLDevice : public IGraphicsDevice
+    class GLResourceFactory : public IGPUResourceFactory
     {
     public:
         std::unique_ptr<ITexture> createTexture(const std::string& path) override

@@ -1,6 +1,5 @@
 #include "meshManager.h"
 #include "string_hash.h"
-// #include "modelImporter.h"
 #include "tiny_gltf_v3.h"
 #define TINYGLTF3_IMPLEMENTATION
 
@@ -37,7 +36,7 @@ namespace Lumos
         }
     }
 
-    MeshManager::MeshManager(IGraphicsDevice& graphicsdevice, TextureManager& texturemanager)
+    MeshManager::MeshManager(IGPUResourceFactory& graphicsdevice, TextureManager& texturemanager)
         :m_texturemanager(texturemanager)
         ,m_graphicsdevice(graphicsdevice)
     {
@@ -213,22 +212,6 @@ namespace Lumos
         }
         return nullptr;
     }
-
-    void MeshManager::incrementRefCount(AssetHandle handle)
-    {
-        if (m_metadata.find(handle.id) != m_metadata.end()) {
-            m_metadata[handle.id].refcount++;
-        }
-    }
-
-    void MeshManager::decrementRefCount(AssetHandle handle)
-    {
-        auto it = m_metadata.find(handle.id);
-        if (it != m_metadata.end() && it->second.refcount > 0) {
-            it->second.refcount--;
-        }
-    }
-
 
     void MeshManager::unloadUnused()
     {

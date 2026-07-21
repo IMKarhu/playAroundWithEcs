@@ -2,9 +2,7 @@
 
 int main()
 {
-    Platform platform;
-    // auto app = std::make_unique<Application>(platform);
-    // app->run();
+    Lumos::Platform platform;
     Application app{platform};
     app.run();
     return 0;

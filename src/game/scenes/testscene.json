@@ -1,0 +1,60 @@
+{
+    "SceneName": "test scene",
+    "Entities": [
+        {
+            "Name": "camera",
+            "TransformComponent": {
+                "Position": [0.0, 0.0, 10.0],
+                "Rotation": [0.0, 0.0, 0.0],
+                "Scale": [1, 1, 1],
+                "Modelmat": 1,
+                "mvp": 1
+            },
+            "CameraComponent": {
+                "Fov": 45.0,
+                "Near": 0.1,
+                "Far": 100.0,
+                "Aspectratio": 1.777,
+                "View": 1,
+                "Projection": 1,
+                "Primary": true,
+                "Up": [0.0, 1.0, 0.0]
+            },
+            "MovementComponent": {
+                "Moved": false,
+                "Speed": 0.01,
+                "Button": -1
+            }
+        },
+        {
+            "Name": "helmet",
+            "TransformComponent": {
+                "Position": [0.0, 0.0, 0.0],
+                "Rotation": [0.0, 0.0, 0.0],
+                "Scale": [1, 1, 1],
+                "Modelmat": 1,
+                "mvp": 1
+            },
+            "MeshComponent": {
+                "FilePath": "../src/game/assets/FlightHelmet.gltf"
+            }
+        },
+        {
+            "Name": "Directional light",
+            "TransformComponent": {
+                "Position": [0.0, 10.0, 0.0],
+                "Rotation": [0.0, 0.0, 0.0],
+                "Scale": [1, 1, 1],
+                "Modelmat": 1,
+                "mvp": 1
+            },
+            "LightComponent": {
+                "LightType": 0,
+                "Color": [1, 1, 1],
+                "Direction": [0.0, -1.0, 0.0],
+                "Intensity": 1.0,
+                "Radius": 5.0
+            }
+        }
+    ]
+}

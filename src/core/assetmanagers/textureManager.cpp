@@ -3,7 +3,7 @@
 
 namespace Lumos
 {
-    TextureManager::TextureManager(IGraphicsDevice& graphicsdevice)
+    TextureManager::TextureManager(IGPUResourceFactory& graphicsdevice)
         :m_graphicsdevice(graphicsdevice)
     {
     }
@@ -30,21 +30,6 @@ namespace Lumos
             return it->second.get();
         }
         return nullptr;
-    }
-
-    void TextureManager::incrementRefCount(AssetHandle handle)
-    {
-        if (m_metadata.find(handle.id) != m_metadata.end()) {
-            m_metadata[handle.id].refcount++;
-        }
-    }
-
-    void TextureManager::decrementRefCount(AssetHandle handle)
-    {
-        auto it = m_metadata.find(handle.id);
-        if (it != m_metadata.end() && it->second.refcount > 0) {
-            it->second.refcount--;
-        }
     }
 
     void TextureManager::unloadUnused()

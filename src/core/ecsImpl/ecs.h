@@ -5,6 +5,10 @@
 #include <typeindex>
 #include <string>
 
+namespace Lumos
+{
+}// namespace Lumos
+
 class Ecs
 {
 public:
@@ -17,7 +21,7 @@ public:
     Entity createEntity(const std::string name = "Entity")
     {
         Entity ent = m_nextEntity++;
-        addComponent<Id>(ent, {name, ent});
+        addComponent<Lumos::Id>(ent, {name, ent});
         m_entities.emplace_back(ent);
         return ent;
     }

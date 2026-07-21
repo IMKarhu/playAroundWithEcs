@@ -1,10 +1,14 @@
 #pragma once
 
-class Shader
+namespace Lumos
 {
-public:
-    virtual ~Shader() = default;
-    virtual void bind() = 0;
-    virtual void unbind() = 0;
-private:
-};
+    class Shader
+    {
+        public:
+            virtual ~Shader() = default;
+            virtual void bind() = 0;
+            virtual void unbind() = 0;
+        private:
+    };
+}// namespace Lumos
+

@@ -19,7 +19,7 @@ target_include_directories(game
 )
 
 target_link_libraries(game
-    PRIVATE core renderer editor
+    PRIVATE core renderer
 )
 
 # add_custom_command(

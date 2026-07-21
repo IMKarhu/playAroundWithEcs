@@ -2,7 +2,7 @@
 #include "ecsImpl/ecs.h"
 #include "ecsImpl/components.h"
 #include "renderer.h"
-#include "assetManager.h"
+#include "assetmanagers/assetManager.h"
 #include <print>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -13,17 +13,17 @@ BasePass::BasePass()
 
 BasePass::~BasePass() {}
 
-void BasePass::update(const Ecs &ecs, Renderer &renderer, Lumos::AssetManager& assetmanager)
+void BasePass::update(const Ecs &ecs, Lumos::Renderer &renderer, Lumos::AssetManager& assetmanager)
 {
-    for (auto ent : ecs.view<Transform, Mesh>()) {
-        auto& transform = ecs.getComponent<Transform>(ent);
-        auto& mesh = ecs.getComponent<Mesh>(ent);
+    for (auto ent : ecs.view<Lumos::Transform, Lumos::MeshComponent>()) {
+        auto& transform = ecs.getComponent<Lumos::Transform>(ent);
+        auto& mesh = ecs.getComponent<Lumos::MeshComponent>(ent);
         Lumos::IMesh* rawmesh = assetmanager.getMeshManager().get(mesh.assethandle);
         if (!rawmesh) {
             continue;
         }
-        RenderInfo renderinfo;
-        renderinfo.type = InfoType::Geometry;
+        Lumos::RenderInfo renderinfo;
+        renderinfo.type = Lumos::InfoType::Geometry;
         renderinfo.shadername = "basePass";
         renderinfo.mesh = rawmesh;
         renderinfo.viewproj = transform.mvp;

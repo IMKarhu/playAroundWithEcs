@@ -1,9 +1,9 @@
 #pragma once
 
-class Renderer;
 class Ecs;
 namespace Lumos
 {
+    class Renderer;
     class AssetManager;
 }
 
@@ -13,6 +13,6 @@ public:
     BasePass();
     ~BasePass();
 
-    void update(const Ecs &ecs, Renderer &renderer, Lumos::AssetManager& assetmanager);
+    void update(const Ecs &ecs, Lumos::Renderer &renderer, Lumos::AssetManager& assetmanager);
 private:
 };

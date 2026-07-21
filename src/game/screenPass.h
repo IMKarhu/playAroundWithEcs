@@ -1,9 +1,12 @@
 #pragma once
 #include <cstdint>
 
-class Renderer;
+namespace Lumos
+{
+    class Renderer;
+    class FrameBufferManager;
+}
 class Ecs;
-class FrameBufferManager;
 
 class ScreenPass
 {
@@ -12,7 +15,7 @@ public:
     ~ScreenPass();
 
     void update(const Ecs &ecs,
-                Renderer &renderer,
+                Lumos::Renderer &renderer,
                 uint32_t framebuffercolorattachment);
 private:
 };
