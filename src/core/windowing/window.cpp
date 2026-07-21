@@ -102,7 +102,6 @@ namespace Lumos
             glfwTerminate();
             return ;
         }
-
         glfwMakeContextCurrent(m_window);
         glfwSetWindowUserPointer(m_window, &m_windowdata);
         glfwSetFramebufferSizeCallback(m_window, framebufferCallback);

@@ -1,5 +1,5 @@
 #pragma once
-#include <assetmanagers/assetbase.h>
+#include <assetmanagers/assetbase.hpp>
 #include <glad/glad.h>
 
 namespace Lumos
@@ -60,5 +60,6 @@ namespace Lumos
         {
             return std::make_unique<GLMesh>(submeshes);
         }
+
     };
 }//namespace Lumos

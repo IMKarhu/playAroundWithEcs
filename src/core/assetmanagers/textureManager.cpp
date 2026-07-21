@@ -3,8 +3,8 @@
 
 namespace Lumos
 {
-    TextureManager::TextureManager(IGPUResourceFactory& graphicsdevice)
-        :m_graphicsdevice(graphicsdevice)
+    TextureManager::TextureManager(IGPUResourceFactory& resourcefactory)
+        :m_resourcefactory(resourcefactory)
     {
     }
 
@@ -17,7 +17,7 @@ namespace Lumos
             return AssetHandle { id };
         }
 
-        m_textures[id] = m_graphicsdevice.createTexture(filepath);
+        m_textures[id] = m_resourcefactory.createTexture(filepath);
         m_metadata[id] = AssetRecord{ 1, filepath };
 
         return AssetHandle{ id };

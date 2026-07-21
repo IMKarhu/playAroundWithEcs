@@ -2,7 +2,7 @@
 #include <string>
 #include <glm/glm.hpp>
 #include "ecsImpl/components.h"
-#include "assetmanagers/assetbase.h"
+#include "assetmanagers/assetbase.hpp"
 
 namespace Lumos
 {

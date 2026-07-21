@@ -1,7 +1,7 @@
 #pragma once
 #include "textureManager.h"
 #include "meshManager.h"
-#include "assetbase.h"
+#include "assetbase.hpp"
 
 #ifdef _WIN32
     #ifdef CORE_EXPORT

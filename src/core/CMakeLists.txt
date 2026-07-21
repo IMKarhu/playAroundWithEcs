@@ -6,6 +6,7 @@ file(GLOB_RECURSE CORE_SOURCES
     "scene/*.cpp"
     "scene/*.hpp"
     "assetmanagers/*.h"
+    "assetmanagers/*.hpp"
     "assetmanagers/*.cpp"
     "assetmanagers/*.c"
     "platform.h"
