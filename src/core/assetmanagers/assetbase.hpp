@@ -3,6 +3,9 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <variant>
+#include <filesystem>
+#include <span>
 #include <glm/glm.hpp>
 
 namespace Lumos
@@ -73,6 +76,21 @@ namespace Lumos
         AssetHandle metallicroughnessHandle;
     };
 
+    struct TextureSource
+    {
+        std::string cachekey;
+        std::variant<std::filesystem::path,
+            std::span<const uint8_t>> sources;
+
+        std::string mimetype;
+    };
+
+    struct ModelData
+    {
+        std::vector<SubMeshData> submeshes;
+        std::vector<TextureSource> texturesources;
+    };
+
     struct RenderPacket
     {
         AssetHandle basecolorHandle;
@@ -82,6 +100,7 @@ namespace Lumos
         glm::vec3 basecolorfactor = glm::vec3(1);
         glm::vec3 metallicroughnessfactor = glm::vec3(1);
     };
+
 
     class IMesh : public IAsset
     {
@@ -97,7 +116,7 @@ namespace Lumos
     public:
         virtual ~IGPUResourceFactory() = default;
         virtual std::unique_ptr<ITexture> createTexture(const std::string& path) = 0;
-        virtual std::unique_ptr<IMesh> createMesh(const std::vector<SubMeshData>& submeshes) = 0;
+        virtual std::unique_ptr<IMesh> createMesh(const ModelData& modeldata) = 0;
     };
 
 } //namespace Lumos

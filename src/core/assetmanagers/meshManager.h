@@ -33,7 +33,7 @@ namespace Lumos
 
         tg3_model parsemodel(const std::string& path, tg3_error_stack& errors);
         std::vector<AssetHandle> loadTextures(const tg3_model& model);
-        std::vector<SubMeshData> buildSubMeshes(const tg3_model& model, const std::vector<AssetHandle>& textures);
+        ModelData buildSubMeshes(const tg3_model& model, const std::vector<AssetHandle>& textures);
     };
 }//namespace Lumos
 

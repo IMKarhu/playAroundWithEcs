@@ -20,7 +20,7 @@ namespace Lumos
     class GLMesh : public IMesh
     {
     public:
-        GLMesh(const std::vector<SubMeshData>& cpudata);
+        GLMesh(const ModelData& modeldata);
         ~GLMesh() override;
         void bind(size_t index) override;
         size_t getSubMeshCount() const override;
@@ -56,9 +56,9 @@ namespace Lumos
             return std::make_unique<GLTexture>(path);
         }
 
-        std::unique_ptr<IMesh> createMesh(const std::vector<SubMeshData>& submeshes) override
+        std::unique_ptr<IMesh> createMesh(const ModelData& modeldata) override
         {
-            return std::make_unique<GLMesh>(submeshes);
+            return std::make_unique<GLMesh>(modeldata);
         }
 
     };

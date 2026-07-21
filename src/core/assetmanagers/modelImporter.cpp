@@ -1,9 +1,6 @@
-#include "meshManager.h"
-#include "string_hash.h"
-#define TINYGLTF3_IMPLEMENTATION
-
+#include "modelImporter.h"
 #include <print>
-
+#define TINYGLTF3_IMPLEMENTATION
 
 namespace Lumos
 {
@@ -35,66 +32,17 @@ namespace Lumos
         }
     }
 
-    bool isGltfFile(std::string_view file) {
-        return file.ends_with(".gltf");
-    }
-
-    bool isGlbFile(std::string_view file) {
-        return file.ends_with(".glb");
-    }
-
-    MeshManager::MeshManager(IGPUResourceFactory& resourcefactory, TextureManager& texturemanager)
-        :m_texturemanager(texturemanager)
-        ,m_resourcefactory(resourcefactory)
+    ModelData ModelImporter::import(const std::string& path)
     {
-    }
-
-    AssetHandle MeshManager::load(const std::string& filepath)
-    {
-        uint64_t id = StringHash::hash(filepath);
-
-        if (m_meshes.find(id) != m_meshes.end()) {
-            m_metadata[id].refcount++;
-            return AssetHandle{ id };
-        }
-
         tg3_error_stack errors;
-        tg3_model model = parsemodel(filepath, errors);
-        std::vector<AssetHandle> texturehandles = loadTextures(model);
-         
-        auto modeldata = buildSubMeshes(model, texturehandles);
+        tg3_model model = parsemodel(path, errors);
 
-        tg3_model_free(&model);
-        tg3_error_stack_free(&errors);
-        m_meshes[id] = m_resourcefactory.createMesh(modeldata);
-        m_metadata[id] = AssetRecord{ 1, filepath };
-        return AssetHandle { id };
+        ModelData data = parseSubMeshes(model);
+        return data;
     }
 
-    IMesh* MeshManager::get(AssetHandle handle)
-    {
-        auto it = m_meshes.find(handle.id);
-        if (it != m_meshes.end()) {
-            return it->second.get();
-        }
-        return nullptr;
-    }
-
-    void MeshManager::unloadUnused()
-    {
-        for (auto it = m_metadata.begin(); it != m_metadata.end();) {
-            if (it->second.refcount == 0) {
-                m_meshes.erase(it->first);
-                it = m_metadata.erase(it);
-            }
-            else {
-                ++it;
-            }
-        }
-
-    }
-
-    tg3_model MeshManager::parsemodel(const std::string& path, tg3_error_stack& errors)
+    //private functions
+    tg3_model ModelImporter::parsemodel(const std::string& path, tg3_error_stack& errors)
     {
         tg3_parse_options opts;
         tg3_model model;
@@ -117,22 +65,23 @@ namespace Lumos
         return model;
     }
 
-    std::vector<AssetHandle> MeshManager::loadTextures(const tg3_model& model)
+    std::vector<TextureSource> ModelImporter::loadTextures(const tg3_model& model)
     {
-        std::vector<AssetHandle> texturehandles;
-        texturehandles.resize(model.images_count);
+        std::vector<TextureSource> sources;
+        sources.resize(model.images_count);
 
         for (size_t i = 0; i < model.images_count; i++) {
             if (model.images[i].uri.data && model.images[i].uri.len > 0) {
                 std::string texturepath = std::string(model.images[i].uri.data,
                         model.images[i].uri.len);
-                texturehandles[i] = m_texturemanager.load(texturepath);
+                sources[i].cachekey = texturepath;
+                sources[i].sources = texturepath;
             }
         }
-        return texturehandles;
+        return sources;
     }
 
-    ModelData MeshManager::buildSubMeshes(const tg3_model& model, const std::vector<AssetHandle>& textures)
+    ModelData ModelImporter::parseSubMeshes(const tg3_model& model)
     {
         ModelData modeldata;
         for (size_t i = 0; i < model.meshes_count; i++) {
@@ -141,24 +90,24 @@ namespace Lumos
                 const auto& primitive = mesh.primitives[i];
                 SubMeshData submeshdata;
 
-                if (primitive.material >= 0 && primitive.material < model.materials_count) {
-                    const auto& material = model.materials[primitive.material];
-                    int32_t basecoloridx = material.pbr_metallic_roughness.base_color_texture.index;
-                    if (basecoloridx >= 0 && basecoloridx < static_cast<int32_t>(model.textures_count)) {
-                        int32_t imgsource = model.textures[basecoloridx].source;
-                        submeshdata.basecolorHandle = textures[imgsource];
-                    }
-                    int32_t normalidx = material.normal_texture.index;
-                    if (normalidx >= 0 && normalidx < static_cast<int32_t>(model.textures_count)) {
-                        int32_t imgsource = model.textures[normalidx].source;
-                        submeshdata.normalHandle = textures[imgsource];
-                    }
-                    int32_t metrough = material.pbr_metallic_roughness.metallic_roughness_texture.index;
-                    if (metrough >= 0 && metrough < static_cast<int32_t>(model.textures_count)) {
-                        int32_t imgsource = model.textures[metrough].source;
-                        submeshdata.metallicroughnessHandle = textures[imgsource];
-                    }
-                }
+                // if (primitive.material >= 0 && primitive.material < model.materials_count) {
+                //     const auto& material = model.materials[primitive.material];
+                //     int32_t basecoloridx = material.pbr_metallic_roughness.base_color_texture.index;
+                //     if (basecoloridx >= 0 && basecoloridx < static_cast<int32_t>(model.textures_count)) {
+                //         int32_t imgsource = model.textures[basecoloridx].source;
+                //         submeshdata.basecolorHandle = textures[imgsource];
+                //     }
+                //     int32_t normalidx = material.normal_texture.index;
+                //     if (normalidx >= 0 && normalidx < static_cast<int32_t>(model.textures_count)) {
+                //         int32_t imgsource = model.textures[normalidx].source;
+                //         submeshdata.normalHandle = textures[imgsource];
+                //     }
+                //     int32_t metrough = material.pbr_metallic_roughness.metallic_roughness_texture.index;
+                //     if (metrough >= 0 && metrough < static_cast<int32_t>(model.textures_count)) {
+                //         int32_t imgsource = model.textures[metrough].source;
+                //         submeshdata.metallicroughnessHandle = textures[imgsource];
+                //     }
+                // }
 
                 uint64_t totalvertcount = 0;
                 for (size_t v = 0; v < primitive.attributes_count; v++) {
@@ -249,39 +198,4 @@ namespace Lumos
 
         return modeldata;
     }
-};
-
-        // std::println("-------------------------------------------");
-        // std::println("accessor count: {}", model.accessors_count);
-        // std::println("anim count count: {}", model.animations_count);
-        // std::println("buffer count: {}", model.buffers_count);
-        // std::println("bufferviews count: {}", model.buffer_views_count);
-        // std::println("meshes count count: {}", model.meshes_count);
-        // std::println("nodes count: {}", model.nodes_count);
-        // std::println("textures count: {}", model.textures_count);
-        // std::println("images count: {}", model.images_count);
-        // std::println("skins count: {}", model.skins_count);
-        // std::println("cameras count: {}", model.cameras_count);
-        // std::println("sampler count: {}", model.samplers_count);
-        // std::println("scenes count: {}", model.scenes_count);
-        // std::println("lights count: {}", model.lights_count);
-        // std::println("audio emitter count: {}", model.audio_emitters_count);
-        // std::println("audio source count: {}", model.audio_sources_count);
-        // std::println("material count: {}", model.materials_count);
-        // std::println("-------------------------------------------");
-        // const auto& image = model.images[i];
-        // std::println("-----------------------------");
-        // std::println("pixeltype: {}",model.images[i].pixel_type);
-        // std::println("bufferview: {}",model.images[i].buffer_view);
-        // std::println("channels: {}",model.images[i].component);
-        // std::println("bits per channel: {}",model.images[i].bits);
-        // std::println("name: {}",std::string(model.images[i].name.data, model.images[i].name.len));
-        // std::println("as is: {}",model.images[i].as_is);
-        // // std::println("image.count: {}",model.images[i].image.count);
-        // // std::println("image.data: {}",*model.images[i].image.data);
-        // std::println("image uri data: {}", std::string(model.images[i].uri.data, model.images[i].uri.len));
-        // std::println("width: {}", model.images[i].width);
-        // std::println("height: {}", model.images[i].height);
-        // std::println("mime type: {}", model.images[i].mime_type.data ? model.images[i].mime_type.data : "<null>");
-        // std::println("-----------------------------");
-
+}//namespace Lumos

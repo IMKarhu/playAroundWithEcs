@@ -6,9 +6,9 @@
 
 namespace Lumos
 {
-    GLMesh::GLMesh(const std::vector<SubMeshData>& cpudata)
+    GLMesh::GLMesh(const ModelData& modeldata)
     {
-        for (const auto& data : cpudata) {
+        for (const auto& data : modeldata.submeshes) {
             GLSubMesh mesh;
             mesh.indexcount = static_cast<uint32_t>(data.indices.size());
             mesh.basecolorhandle = data.basecolorHandle;
