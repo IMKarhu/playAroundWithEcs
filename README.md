@@ -6,4 +6,4 @@ OpenGL 4.5 required.
 
 gltf files are not included here.
 
-![picture1](./pictures/deferred_opengl.png)
+![picture1](./pictures/deferred_opengl1.png)
