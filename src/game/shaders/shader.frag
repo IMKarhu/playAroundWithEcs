@@ -20,5 +20,5 @@ void main()
     vec3 worldnormal = normalize(tbn * localnormal);
     gnormal = worldnormal;
     galbedo.xyz = texture(ubasecolortexture, texcoord).rgb;
-    galbedo.a = 1.0f; //roughness, can be hardcoded to 1.0 for now
+    galbedo.a = 1.0f; //specular
 }

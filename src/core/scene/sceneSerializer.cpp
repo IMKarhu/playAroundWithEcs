@@ -57,14 +57,14 @@ namespace Lumos
                 auto primary = jsonent["CameraComponent"]["Primary"];
                 auto up = jsonent["CameraComponent"]["Up"];
                 Camera cam = {
+                    .upvector = glm::vec3(up[0], up[1], up[2]),
+                    .view = glm::mat4(view),
+                    .proj = glm::mat4(proj),
                     .fov = fov,
                     .nearclip = near,
                     .farclip = far,
                     .aspectratio = ratio,
-                    .view = glm::mat4(view),
-                    .proj = glm::mat4(proj),
                     .primary = primary,
-                    .upvector = glm::vec3(up[0], up[1], up[2])
                 };
                 ecs.addComponent<Camera>(entity, cam);
             }

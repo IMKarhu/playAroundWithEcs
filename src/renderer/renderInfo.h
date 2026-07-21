@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <glm/glm.hpp>
+#include "ecsImpl/components.h"
 #include "assetmanagers/assetbase.h"
 
 namespace Lumos
@@ -17,8 +18,9 @@ namespace Lumos
         std::string shadername;
         glm::mat4 viewproj;
         glm::mat4 model;
-        glm::vec3 lightdir;
-        glm::vec3 lightcolor;
+        glm::vec3 camerapos;
+        Light lightdata;
+        glm::vec3 lightpos;
         IMesh* mesh;
         AssetHandle screenpasscolorattachment;
         GBufferHandles attachments;

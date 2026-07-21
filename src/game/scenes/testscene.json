@@ -42,7 +42,7 @@
         {
             "Name": "Directional light",
             "TransformComponent": {
-                "Position": [0.0, 0.0, 0.0],
+                "Position": [0.0, 10.0, 0.0],
                 "Rotation": [0.0, 0.0, 0.0],
                 "Scale": [1, 1, 1],
                 "Modelmat": 1,
@@ -53,7 +53,7 @@
                 "Color": [1, 1, 1],
                 "Direction": [0.0, -1.0, 0.0],
                 "Intensity": 1.0,
-                "Radius": 1.0
+                "Radius": 5.0
             }
         }
     ]

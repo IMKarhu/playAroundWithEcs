@@ -19,6 +19,11 @@ LightingPass::~LightingPass()
 
 void LightingPass::update(const Ecs &ecs, Lumos::Renderer &renderer, Lumos::FrameBufferManager& framebuffermanager)
 {
+    glm::vec3 campos = glm::vec3(1);
+    for (auto ent : ecs.view<Lumos::Camera, Lumos::Transform>()) {
+        auto& transform = ecs.getComponent<Lumos::Transform>(ent);
+        campos = transform.position;
+    }
     for (auto ent : ecs.view<Lumos::Transform, Lumos::Light>()) {
         auto& transform = ecs.getComponent<Lumos::Transform>(ent);
         auto& light = ecs.getComponent<Lumos::Light>(ent);
@@ -29,8 +34,10 @@ void LightingPass::update(const Ecs &ecs, Lumos::Renderer &renderer, Lumos::Fram
         info.attachments.attachment0.id = gbuffer->colorAttachment(0).id;
         info.attachments.attachment1.id = gbuffer->colorAttachment(1).id;
         info.attachments.attachment2.id = gbuffer->colorAttachment(2).id;
-        info.lightcolor = light.color;
-        info.lightdir = light.direction;
+        info.lightdata = light;
+        info.lightpos = transform.position;
+
+        info.camerapos = campos;
         renderer.submit(info);
     }
 }

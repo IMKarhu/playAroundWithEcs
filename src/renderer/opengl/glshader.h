@@ -1,6 +1,8 @@
 #pragma once
 #include "shader.h"
+#include <glad/glad.h>
 #include <string>
+#include <unordered_map>
 #include <glm/glm.hpp>
 
 namespace Lumos
@@ -17,8 +19,16 @@ namespace Lumos
             void setUniformVec3(const std::string& name, const glm::vec3& vec3);
             void setUniformTexture(const std::string& name, int value);
             void setUniformInt(const std::string& name, const int& value);
+            void setUniformfloat(const std::string& name, const int& value);
+
         private:
+            struct UniformInfo
+            {
+                GLint loc;
+                GLsizei count;
+            };
             uint32_t m_shaderprogram;
+            std::unordered_map<std::string, UniformInfo> m_uniforms;
     };
 }// namespace Lumos
 

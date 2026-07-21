@@ -120,8 +120,12 @@ namespace Lumos
                     glDrawArrays(GL_TRIANGLES, 0, 6);
                     break;
                 case InfoType::Lighting:
-                    shader->setUniformVec3("u_lightdir", info.lightdir);
-                    shader->setUniformVec3("u_lightcolor", info.lightcolor);
+                    shader->setUniformVec3("u_viewpos", info.camerapos);
+                    shader->setUniformVec3("u_lights.position", info.lightpos);
+                    shader->setUniformVec3("u_lights.lightdirection", info.lightdata.direction);
+                    shader->setUniformVec3("u_lights.color", info.lightdata.color);
+                    shader->setUniformfloat("u_lights.intensity", info.lightdata.intensity);
+                    shader->setUniformfloat("u_lights.radius", info.lightdata.radius);
                     glBindTextureUnit(0, info.attachments.attachment0.id);
                     glBindTextureUnit(1, info.attachments.attachment1.id);
                     glBindTextureUnit(2, info.attachments.attachment2.id);
@@ -161,7 +165,7 @@ namespace Lumos
                 default:
                     std::println("info type did not match to any of these: LIGHTING, GEOMETRY, SCREEN");
             }
-            shader->unbind();
+            // shader->unbind();
         }
         m_renderqueue.clear();
     }

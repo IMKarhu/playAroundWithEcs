@@ -61,14 +61,14 @@ namespace Lumos
 
     struct Camera
     {
+        glm::vec3 upvector = glm::vec3(0.0f, 1.0f, 0.0f);
+        glm::mat4 view = glm::mat4(1.0f);
+        glm::mat4 proj = glm::mat4(1.0f);
         float fov = 45.0f;
         float nearclip = 0.1f;
         float farclip = 100.0f;
         float aspectratio = 1.777f;
-        glm::mat4 view = glm::mat4(1.0f);
-        glm::mat4 proj = glm::mat4(1.0f);
         bool primary = false;
-        glm::vec3 upvector = glm::vec3(0.0f, 1.0f, 0.0f);
     };
 
     struct Id
