@@ -34,14 +34,20 @@ namespace Lumos
     }
 
     ModelImporter::ModelImporter() {}
-    ModelImporter::~ModelImporter() {}
 
-    ModelData ModelImporter::import(const std::string& path)
+    ModelImporter::~ModelImporter()
+    {
+        destroyctx();
+    }
+
+    ModelImportData ModelImporter::import(const std::string& path)
     {
         m_model = parsemodel(path);
 
-        ModelData data = parseSubMeshes(m_model);
-        // data.texturesources = loadTextures(m_model);
+        ModelImportData data = parseSubMeshes(m_model);
+        parseIndices(data, m_model);
+        data.texsources = parseImages();
+        parseMaterials(data);
         return data;
     }
 
@@ -49,6 +55,49 @@ namespace Lumos
     {
         tg3_model_free(&m_model);
         tg3_error_stack_free(&m_errors);
+    }
+
+
+    std::vector<TextureSource> ModelImporter::parseImages()
+    {
+        std::vector<TextureSource> sources;
+        sources.resize(m_model.images_count);
+
+        for (size_t i = 0; i < m_model.images_count; i++) {
+            const auto& image = m_model.images[i];
+            if (image.uri.data && image.uri.len > 0) {
+                std::string texturepath = std::string(image.uri.data, image.uri.len);
+                sources[i].cachekey = texturepath;
+                sources[i].path = texturepath;
+            }
+        }
+        return sources;
+    }
+
+    void ModelImporter::parseMaterials(ModelImportData& modeldata)
+    {
+        for (size_t i = 0; i < m_model.meshes_count; i++) {
+            auto& mesh = m_model.meshes[i];
+            for (size_t j = 0; j < mesh.primitives_count; j++) {
+                auto& primitive = mesh.primitives[j];
+                MaterialData data;
+                if (primitive.material >= 0 && primitive.material < m_model.materials_count) {
+                    const auto& material = m_model.materials[primitive.material];
+                    int32_t basecoloridx = material.pbr_metallic_roughness.base_color_texture.index;
+                    if (basecoloridx >= 0 && basecoloridx < static_cast<int32_t>(m_model.textures_count)) {
+                        modeldata.submeshes[i].indexes.basecolor = m_model.textures[basecoloridx].source;
+                    }
+                    int32_t normalidx = material.normal_texture.index;
+                    if (normalidx >= 0 && normalidx < static_cast<int32_t>(m_model.textures_count)) {
+                        modeldata.submeshes[i].indexes.normal = m_model.textures[normalidx].source;
+                    }
+                    int32_t metrough = material.pbr_metallic_roughness.metallic_roughness_texture.index;
+                    if (metrough >= 0 && metrough < static_cast<int32_t>(m_model.textures_count)) {
+                        modeldata.submeshes[i].indexes.metrough = m_model.textures[metrough].source;
+                    }
+                }
+            }
+        }
     }
 
     //private functions
@@ -75,73 +124,14 @@ namespace Lumos
         return model;
     }
 
-    std::vector<TextureSource> ModelImporter::parseImages()
+    ModelImportData ModelImporter::parseSubMeshes(const tg3_model& model)
     {
-        std::vector<TextureSource> sources;
-        sources.resize(m_model.images_count);
-
-        for (size_t i = 0; i < m_model.images_count; i++) {
-            const auto& image = m_model.images[i];
-            if (image.uri.data && image.uri.len > 0) {
-                std::string texturepath = std::string(image.uri.data, image.uri.len);
-                sources[i].cachekey = texturepath;
-                sources[i].path = texturepath;
-            }
-        }
-        return sources;
-    }
-
-    void ModelImporter::parseMaterials(ModelData& modeldata, std::vector<AssetHandle>& textures)
-    {
-        std::println("size: {}",modeldata.submeshes.size());
-        std::println("textures size: {}", textures.size());
-        for (size_t i = 0; i < m_model.meshes_count; i++) {
-            const auto& mesh = m_model.meshes[i];
-            for (size_t j = 0; j< mesh.primitives_count; j++) {
-                std::println("im definitely her");
-                const auto& primitive = mesh.primitives[j];
-                MaterialData data;
-                if (primitive.material >= 0 && primitive.material < m_model.materials_count) {
-                    const auto& material = m_model.materials[primitive.material];
-                    int32_t basecoloridx = material.pbr_metallic_roughness.base_color_texture.index;
-                    if (basecoloridx >= 0 && basecoloridx < static_cast<int32_t>(m_model.textures_count)) {
-                        int32_t imgsource = m_model.textures[basecoloridx].source;
-                        data.basecolorHandle = textures[imgsource];
-                        std::println("im definitely here basecolr");
-                        std::println("texture name: {}",std::string(m_model.textures[basecoloridx].name.data,
-                                                                    m_model.textures[basecoloridx].name.len));
-                    }
-                    int32_t normalidx = material.normal_texture.index;
-                    if (normalidx >= 0 && normalidx < static_cast<int32_t>(m_model.textures_count)) {
-                        int32_t imgsource = m_model.textures[normalidx].source;
-                        data.normalHandle = textures[imgsource];
-                        std::println("im definitely here normal");
-                        std::println("texture name: {}",std::string(m_model.textures[normalidx].name.data,
-                                                                    m_model.textures[normalidx].name.len));
-                    }
-                    int32_t metrough = material.pbr_metallic_roughness.metallic_roughness_texture.index;
-                    if (metrough >= 0 && metrough < static_cast<int32_t>(m_model.textures_count)) {
-                        int32_t imgsource = m_model.textures[metrough].source;
-                        data.metallicroughnessHandle = textures[imgsource];
-                        std::println("im definitely here metrough");
-                        std::println("texture name: {}",std::string(m_model.textures[metrough].name.data,
-                                                                    m_model.textures[metrough].name.len));
-                    }
-                }
-                modeldata.submeshes[j].materialdata = data;
-            }
-        }
-
-    }
-
-    ModelData ModelImporter::parseSubMeshes(const tg3_model& model)
-    {
-        ModelData modeldata;
+        ModelImportData data;
         for (size_t i = 0; i < model.meshes_count; i++) {
             const auto& mesh = model.meshes[i];
-            for (size_t i = 0; i < mesh.primitives_count; i++) {
-                const auto& primitive = mesh.primitives[i];
-                SubMeshData submeshdata;
+            for (size_t j = 0; j < mesh.primitives_count; j++) {
+                const auto& primitive = mesh.primitives[j];
+                ModelImportSubMeshData submeshdata;
 
                 uint64_t totalvertcount = 0;
                 for (size_t v = 0; v < primitive.attributes_count; v++) {
@@ -156,9 +146,8 @@ namespace Lumos
                     continue;
                 }
                 submeshdata.vertices.resize(totalvertcount);
-                for (size_t i = 0; i < primitive.attributes_count; i++) {
-                    const auto& attribute = primitive.attributes[i];
-                    std::string_view view(attribute.key.data, attribute.key.len);
+                for (size_t a = 0; a < primitive.attributes_count; a++) {
+                    const auto& attribute = primitive.attributes[a];
                     int32_t accessorIndex = attribute.value;
                     const auto& accessor = model.accessors[accessorIndex];
                     const auto& bufferview = model.buffer_views[accessor.buffer_view];
@@ -168,42 +157,52 @@ namespace Lumos
                     if (stride == 0) {
                         stride = getComponentCount(accessor.type) * getComponentSizeInBytes(accessor.component_type);
                     }
-                    if (view == "POSITION") {
-                        for (uint64_t v = 0; v < accessor.count; v++) {
-                            const auto* vertex = reinterpret_cast<const float*>(dataPtr + (v * stride));
-                            submeshdata.vertices[v].position[0] = vertex[0];
-                            submeshdata.vertices[v].position[1] = vertex[1];
-                            submeshdata.vertices[v].position[2] = vertex[2];
-                        }
-    
-                    }
-                    if (view == "TEXCOORD_0") {
-                        for (uint64_t v = 0; v < accessor.count; v++) {
-                            const auto* uv = reinterpret_cast<const float*>(dataPtr + (v * stride));
-                            submeshdata.vertices[v].texcoords[0] = uv[0];
-                            submeshdata.vertices[v].texcoords[1] = uv[1];
-                        }
-    
-                    }
-                    if (view == "NORMAL") {
-                        for (uint64_t v = 0; v < accessor.count; v++) {
-                            const auto* normals = reinterpret_cast<const float*>(dataPtr + (v * stride));
-                            submeshdata.vertices[v].normal[0] = normals[0];
-                            submeshdata.vertices[v].normal[1] = normals[1];
-                            submeshdata.vertices[v].normal[2] = normals[2];
-                        }
-                    }
-                    if (view == "TANGENT") {
-                        for (uint64_t v = 0; v < accessor.count; v++) {
-                            const auto* tangents = reinterpret_cast<const float*>(dataPtr + (v * stride));
-                            submeshdata.vertices[v].tangents[0] = tangents[0];
-                            submeshdata.vertices[v].tangents[1] = tangents[1];
-                            submeshdata.vertices[v].tangents[2] = tangents[2];
-                            submeshdata.vertices[v].tangents[3] = tangents[3];
-                        }
+                    std::string_view attributename(attribute.key.data, attribute.key.len);
+                    switch(attributeType(attributename)) {
+                        case VertexAttributeType::Position:
+                            for (uint64_t k = 0; k < accessor.count; k++) {
+                                const auto* offset = reinterpret_cast<const float*>(dataPtr + (k * stride));
+                                submeshdata.vertices[k].position = readPositions(offset);
+                            }
+                            break;
+                        case VertexAttributeType::Texcoord:
+                            for (uint64_t k = 0; k < accessor.count; k++) {
+                                const auto* offset = reinterpret_cast<const float*>(dataPtr + (k * stride));
+                                submeshdata.vertices[k].texcoords = readTexcoords(offset);
+                            }
+                            break;
+                        case VertexAttributeType::Normal:
+                            for (uint64_t k = 0; k < accessor.count; k++) {
+                                const auto* offset = reinterpret_cast<const float*>(dataPtr + (k * stride));
+                                submeshdata.vertices[k].normal = readNormals(offset);
+                            }
+                            break;
+                        case VertexAttributeType::Tangent:
+                            for (uint64_t k = 0; k < accessor.count; k++) {
+                                const auto* offset = reinterpret_cast<const float*>(dataPtr + (k * stride));
+                                submeshdata.vertices[k].tangents = readTangents(offset);
+                            }
+                            break;
+                        case VertexAttributeType::Unknown:
+                            //TODO: handle unknown cases
+                            break;
+                        default:
+                            //TODO: handle default case
+                            break;
                     }
                 }
+                data.submeshes.push_back(std::move(submeshdata));
+            }
+        }
+        return data;
+    }
 
+    void ModelImporter::parseIndices(ModelImportData& data, const tg3_model& model)
+    {
+        for (size_t i = 0; i < model.meshes_count; i++) {
+            const auto& mesh = model.meshes[i];
+            for (size_t j = 0; j < mesh.primitives_count; j++) {
+                const auto& primitive = mesh.primitives[j];
                 if (primitive.indices > -1) {
                     const auto& accessor = model.accessors[primitive.indices];
                     const auto& bufferview = model.buffer_views[accessor.buffer_view];
@@ -213,22 +212,57 @@ namespace Lumos
                     if (stride == 0) {
                         stride = getComponentCount(accessor.type) * getComponentSizeInBytes(accessor.component_type);
                     }
-                    for (size_t i = 0; i < accessor.count; ++i) {
+                    for (size_t idx = 0; idx < accessor.count; ++idx) {
                         uint32_t index = 0;
                         if (accessor.component_type == TG3_COMPONENT_TYPE_UNSIGNED_INT) {
-                            index = *reinterpret_cast<const uint32_t*>(dataPtr + (i * stride));
+                            index = *reinterpret_cast<const uint32_t*>(dataPtr + (idx * stride));
                         } else if (accessor.component_type == TG3_COMPONENT_TYPE_UNSIGNED_SHORT) {
-                            index = *reinterpret_cast<const uint16_t*>(dataPtr + (i * stride));
+                            index = *reinterpret_cast<const uint16_t*>(dataPtr + (idx * stride));
                         } else if (accessor.component_type == TG3_COMPONENT_TYPE_UNSIGNED_BYTE) {
-                            index = *reinterpret_cast<const uint8_t*>(dataPtr + (i * stride));
+                            index = *reinterpret_cast<const uint8_t*>(dataPtr + (idx * stride));
                         }
-                        submeshdata.indices.push_back(index);
+                        data.submeshes[i].indices.push_back(index);
                     }
                 }
-                modeldata.submeshes.push_back(std::move(submeshdata));
             }
         }
-
-        return modeldata;
     }
+
+    ModelImporter::VertexAttributeType ModelImporter::attributeType(std::string_view name)
+    {
+        if (name == "POSITION") {
+            return VertexAttributeType::Position;
+        }
+        if (name == "TEXCOORD_0") {
+            return VertexAttributeType::Texcoord;
+        }
+        if (name == "NORMAL") {
+            return VertexAttributeType::Normal;
+        }
+        if (name == "TANGENT") {
+            return VertexAttributeType::Tangent;
+        }
+        return VertexAttributeType::Unknown;
+    }
+
+    glm::vec3 ModelImporter::readPositions(const float* offset)
+    {
+        return glm::vec3(offset[0], offset[1], offset[2]);
+    }
+
+    glm::vec2 ModelImporter::readTexcoords(const float* offset)
+    {
+        return glm::vec2(offset[0], offset[1]);
+    }
+
+    glm::vec3 ModelImporter::readNormals(const float* offset)
+    {
+        return glm::vec3(offset[0], offset[1], offset[2]);
+    }
+
+    glm::vec4 ModelImporter::readTangents(const float* offset)
+    {
+        return glm::vec4(offset[0], offset[1], offset[2], offset[3]);
+    }
+
 }//namespace Lumos

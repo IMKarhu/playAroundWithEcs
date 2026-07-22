@@ -1,6 +1,7 @@
 #pragma once
 #include "assetbase.hpp"
 #include "textureManager.h"
+#include "ModelImporter.h"
 #include <vector>
 
 #ifdef _WIN32
@@ -29,6 +30,8 @@ namespace Lumos
         std::unordered_map<uint64_t, AssetRecord> m_metadata;
         TextureManager& m_texturemanager;
         IGPUResourceFactory& m_resourcefactory;
+
+        void resolveMaterials(std::vector<AssetHandle>& textures, ModelImportData& importdata, ModelData& data);
     };
 }//namespace Lumos
 

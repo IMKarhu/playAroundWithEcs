@@ -63,7 +63,7 @@ namespace Lumos
     {
         glm::vec3 position;
         glm::vec3 normal;
-        glm::vec3 texcoords;
+        glm::vec2 texcoords;
         glm::vec4 tangents;
     };
     struct MaterialData

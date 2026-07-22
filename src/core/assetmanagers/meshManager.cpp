@@ -1,5 +1,4 @@
 #include "meshManager.h"
-#include "ModelImporter.h"
 #include "string_hash.h"
 
 #include <print>
@@ -32,14 +31,18 @@ namespace Lumos
 
         ModelImporter importer;
 
-        auto modeldata = importer.import(filepath);
+        auto modelimportdata = importer.import(filepath);
+        ModelData modeldata;
+        modeldata.submeshes.resize(modelimportdata.submeshes.size());
+        for(size_t i = 0; i < modelimportdata.submeshes.size(); i++) {
+            modeldata.submeshes[i].vertices = modelimportdata.submeshes[i].vertices;
+            modeldata.submeshes[i].indices = modelimportdata.submeshes[i].indices;
+        }
         std::vector<AssetHandle> texturehandles;
-        auto textures = importer.parseImages();
-        for (const auto& tex : textures) {
+        for (const auto& tex : modelimportdata.texsources) {
             texturehandles.push_back(m_texturemanager.load(tex.path));
         }
-        importer.parseMaterials(modeldata, texturehandles);
-        importer.destroyctx();
+        resolveMaterials(texturehandles, modelimportdata, modeldata);
 
         m_meshes[id] = m_resourcefactory.createMesh(modeldata);
         m_metadata[id] = AssetRecord{ 1, filepath };
@@ -67,5 +70,14 @@ namespace Lumos
             }
         }
 
+    }
+
+    void MeshManager::resolveMaterials(std::vector<AssetHandle>& textures, ModelImportData& importdata, ModelData& data)
+    {
+        for (size_t i = 0; i < importdata.submeshes.size(); i++) {
+            data.submeshes[i].materialdata.basecolorHandle = textures[importdata.submeshes[i].indexes.basecolor];
+            data.submeshes[i].materialdata.normalHandle = textures[importdata.submeshes[i].indexes.normal];
+            data.submeshes[i].materialdata.metallicroughnessHandle = textures[importdata.submeshes[i].indexes.metrough];
+        }
     }
 }
