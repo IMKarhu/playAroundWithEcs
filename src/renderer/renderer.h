@@ -2,7 +2,7 @@
 #include <functional>
 #include "renderInfo.h"
 #include "renderPassDesc.h"
-#include "assetmanagers/assetbase.h"
+#include "assetmanagers/assetbase.hpp"
 
 namespace Lumos
 {

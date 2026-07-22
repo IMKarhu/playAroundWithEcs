@@ -6,11 +6,14 @@ file(GLOB_RECURSE CORE_SOURCES
     "scene/*.cpp"
     "scene/*.hpp"
     "assetmanagers/*.h"
+    "assetmanagers/*.hpp"
     "assetmanagers/*.cpp"
     "assetmanagers/*.c"
     "platform.h"
     "layer.h"
-    "assetbase.h"
+    "imageDecoder.h"
+    "imageDecoder.cpp"
+    "stb_image.h"
     "string_hash.h"
 )
 

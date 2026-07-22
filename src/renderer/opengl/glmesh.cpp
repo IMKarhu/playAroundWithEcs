@@ -1,19 +1,14 @@
 #include "glmesh.hpp"
 #include <print>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 namespace Lumos
 {
-    GLMesh::GLMesh(const std::vector<SubMeshData>& cpudata)
+    GLMesh::GLMesh(const ModelData& modeldata)
     {
-        for (const auto& data : cpudata) {
+        for (const auto& data : modeldata.submeshes) {
             GLSubMesh mesh;
             mesh.indexcount = static_cast<uint32_t>(data.indices.size());
-            mesh.basecolorhandle = data.basecolorHandle;
-            mesh.normalhandle = data.normalHandle;
-            mesh.metallicroughnesshandle = data.metallicroughnessHandle;
+            mesh.materialdata = data.materialdata;
             glCreateVertexArrays(1, &mesh.vao);
             glCreateBuffers(1, &mesh.vbo);
             glCreateBuffers(1, &mesh.ebo);
@@ -109,9 +104,7 @@ namespace Lumos
         RenderPacket packet;
         if (index < m_submeshes.size()) {
             const auto& sub = m_submeshes[index];
-            packet.basecolorHandle = sub.basecolorhandle;
-            packet.normalHandle = sub.normalhandle;
-            packet.metallicroughnessHandle = sub.metallicroughnesshandle;
+            packet.materialdata = sub.materialdata;
             packet.basecolorfactor = sub.basecolorfactor;
             packet.metallicroughnessfactor = sub.metallicroughnessfactor;
         }
@@ -131,25 +124,16 @@ namespace Lumos
 
     /*TEXTURE*/
 
-    GLTexture::GLTexture(const std::string& filepath)
+    GLTexture::GLTexture(const ImageData& data)
     {
-        std::string fullpath = "../src/game/assets/"+filepath;
-        std::println("full filepath: {}", fullpath);
-        stbi_uc* pixels = stbi_load(fullpath.c_str(), &m_width, &m_height, &channels, STBI_rgb_alpha);
-        if (!pixels) {
-            std::println("failed to load texture file");
-            return;
-        }
-
         glCreateTextures(GL_TEXTURE_2D, 1, &m_rendererID);
         glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
         glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
         glTextureParameteri(m_rendererID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTextureParameteri(m_rendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-        glTextureStorage2D(m_rendererID, 1, GL_RGBA8, m_width, m_height);
-        glTextureSubImage2D(m_rendererID, 0, 0, 0, m_width, m_height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-        stbi_image_free(pixels);
+        glTextureStorage2D(m_rendererID, 1, GL_RGBA8, data.width, data.height);
+        glTextureSubImage2D(m_rendererID, 0, 0, 0, data.width, data.height, GL_RGBA, GL_UNSIGNED_BYTE, data.pixels.data());
     }
 
     GLTexture::~GLTexture()

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <filesystem>
 #include <memory>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -10,6 +11,9 @@ namespace Lumos
 {
     GLShader::GLShader(std::string vertexshader, std::string fragmentshader)
     {
+        if(std::filesystem::exists(vertexshader.data())) {
+            std::println("this infact does exist");
+        }
         uint32_t vertexid;
         uint32_t fragmentid;
         std::string vertexCode;

@@ -139,20 +139,20 @@ namespace Lumos
 
                         for (size_t i = 0; i < glmesh->getSubMeshCount(); i++) {
                             Lumos::RenderPacket packet = glmesh->getSubMeshPacket(i);
-                            if (packet.basecolorHandle.isValid()) {
-                                auto* tex = assetmanager.getTextureManager().get(packet.basecolorHandle);
+                            if (packet.materialdata.basecolorHandle.isValid()) {
+                                auto* tex = assetmanager.getTextureManager().get(packet.materialdata.basecolorHandle);
                                 if (tex) {
                                     glBindTextureUnit(0, static_cast<Lumos::GLTexture*>(tex)->rendererID());
                                 }
                             }
-                            if (packet.normalHandle.isValid()) {
-                                auto* tex = assetmanager.getTextureManager().get(packet.normalHandle);
+                            if (packet.materialdata.normalHandle.isValid()) {
+                                auto* tex = assetmanager.getTextureManager().get(packet.materialdata.normalHandle);
                                 if (tex) {
                                     glBindTextureUnit(1, static_cast<Lumos::GLTexture*>(tex)->rendererID());
                                 }
                             }
-                            if (packet.metallicroughnessHandle.isValid()) {
-                                auto* tex = assetmanager.getTextureManager().get(packet.metallicroughnessHandle);
+                            if (packet.materialdata.metallicroughnessHandle.isValid()) {
+                                auto* tex = assetmanager.getTextureManager().get(packet.materialdata.metallicroughnessHandle);
                                 if (tex) {
                                     glBindTextureUnit(2, static_cast<Lumos::GLTexture*>(tex)->rendererID());
                                 }

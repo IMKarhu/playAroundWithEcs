@@ -3,6 +3,9 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <variant>
+#include <filesystem>
+#include <span>
 #include <glm/glm.hpp>
 
 namespace Lumos
@@ -60,28 +63,58 @@ namespace Lumos
     {
         glm::vec3 position;
         glm::vec3 normal;
-        glm::vec3 texcoords;
+        glm::vec2 texcoords;
         glm::vec4 tangents;
+    };
+    struct MaterialData
+    {
+        AssetHandle basecolorHandle;
+        AssetHandle normalHandle;
+        AssetHandle metallicroughnessHandle;
     };
 
     struct SubMeshData
     {
         std::vector<Vertex> vertices;
         std::vector<uint32_t> indices;
-        AssetHandle basecolorHandle;
-        AssetHandle normalHandle;
-        AssetHandle metallicroughnessHandle;
+        MaterialData materialdata;
+    };
+
+    struct TextureSource
+    {
+        enum class Type
+        {
+            File,
+            Byte
+        };
+        Type type;
+        std::string cachekey;
+        std::filesystem::path path;
+        std::span<const uint8_t> bytes;
+        std::string mimetype;
+    };
+
+    struct ModelData
+    {
+        std::vector<SubMeshData> submeshes;
+        std::vector<TextureSource> texturesources;
     };
 
     struct RenderPacket
     {
-        AssetHandle basecolorHandle;
-        AssetHandle normalHandle;
-        AssetHandle metallicroughnessHandle;
-
+        MaterialData materialdata;
         glm::vec3 basecolorfactor = glm::vec3(1);
         glm::vec3 metallicroughnessfactor = glm::vec3(1);
     };
+
+    struct ImageData
+    {
+        int width;
+        int height;
+        int channels;
+        std::vector<uint8_t> pixels;
+    };
+
 
     class IMesh : public IAsset
     {
@@ -96,8 +129,8 @@ namespace Lumos
     {
     public:
         virtual ~IGPUResourceFactory() = default;
-        virtual std::unique_ptr<ITexture> createTexture(const std::string& path) = 0;
-        virtual std::unique_ptr<IMesh> createMesh(const std::vector<SubMeshData>& submeshes) = 0;
+        virtual std::unique_ptr<ITexture> createTexture(const ImageData& data) = 0;
+        virtual std::unique_ptr<IMesh> createMesh(const ModelData& modeldata) = 0;
     };
 
 } //namespace Lumos

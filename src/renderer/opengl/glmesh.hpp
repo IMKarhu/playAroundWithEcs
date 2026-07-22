@@ -1,5 +1,5 @@
 #pragma once
-#include <assetmanagers/assetbase.h>
+#include <assetmanagers/assetbase.hpp>
 #include <glad/glad.h>
 
 namespace Lumos
@@ -10,9 +10,7 @@ namespace Lumos
         uint32_t vbo = 0;
         uint32_t ebo = 0;
         uint32_t indexcount = 0;
-        AssetHandle basecolorhandle;
-        AssetHandle normalhandle;
-        AssetHandle metallicroughnesshandle;
+        MaterialData materialdata;
         glm::vec3 basecolorfactor = glm::vec3(1);
         glm::vec3 metallicroughnessfactor = glm::vec3(1);
     };
@@ -20,7 +18,7 @@ namespace Lumos
     class GLMesh : public IMesh
     {
     public:
-        GLMesh(const std::vector<SubMeshData>& cpudata);
+        GLMesh(const ModelData& modeldata);
         ~GLMesh() override;
         void bind(size_t index) override;
         size_t getSubMeshCount() const override;
@@ -35,7 +33,7 @@ namespace Lumos
     class GLTexture : public ITexture
     {
     public:
-        GLTexture(const std::string& filepath);
+        GLTexture(const ImageData& data);
         ~GLTexture() override;
 
         int width() const override;
@@ -51,14 +49,15 @@ namespace Lumos
     class GLResourceFactory : public IGPUResourceFactory
     {
     public:
-        std::unique_ptr<ITexture> createTexture(const std::string& path) override
+        std::unique_ptr<ITexture> createTexture(const ImageData& data) override
         {
-            return std::make_unique<GLTexture>(path);
+            return std::make_unique<GLTexture>(data);
         }
 
-        std::unique_ptr<IMesh> createMesh(const std::vector<SubMeshData>& submeshes) override
+        std::unique_ptr<IMesh> createMesh(const ModelData& modeldata) override
         {
-            return std::make_unique<GLMesh>(submeshes);
+            return std::make_unique<GLMesh>(modeldata);
         }
+
     };
 }//namespace Lumos
