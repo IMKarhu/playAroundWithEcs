@@ -30,6 +30,7 @@ namespace Lumos
         std::unordered_map<uint64_t, AssetRecord> m_metadata;
         TextureManager& m_texturemanager;
         IGPUResourceFactory& m_resourcefactory;
+        ModelImporter m_importer;
 
         void resolveMaterials(std::vector<AssetHandle>& textures, ModelImportData& importdata, ModelData& data);
     };

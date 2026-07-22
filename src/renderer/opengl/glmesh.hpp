@@ -33,7 +33,7 @@ namespace Lumos
     class GLTexture : public ITexture
     {
     public:
-        GLTexture(const std::string& filepath);
+        GLTexture(const ImageData& data);
         ~GLTexture() override;
 
         int width() const override;
@@ -49,9 +49,9 @@ namespace Lumos
     class GLResourceFactory : public IGPUResourceFactory
     {
     public:
-        std::unique_ptr<ITexture> createTexture(const std::string& path) override
+        std::unique_ptr<ITexture> createTexture(const ImageData& data) override
         {
-            return std::make_unique<GLTexture>(path);
+            return std::make_unique<GLTexture>(data);
         }
 
         std::unique_ptr<IMesh> createMesh(const ModelData& modeldata) override

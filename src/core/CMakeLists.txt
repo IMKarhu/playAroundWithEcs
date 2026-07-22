@@ -11,7 +11,9 @@ file(GLOB_RECURSE CORE_SOURCES
     "assetmanagers/*.c"
     "platform.h"
     "layer.h"
-    "assetbase.h"
+    "imageDecoder.h"
+    "imageDecoder.cpp"
+    "stb_image.h"
     "string_hash.h"
 )
 

@@ -82,11 +82,15 @@ namespace Lumos
 
     struct TextureSource
     {
+        enum class Type
+        {
+            File,
+            Byte
+        };
+        Type type;
         std::string cachekey;
-        std::string path;
-        // std::variant<std::filesystem::path,
-        //     std::span<const uint8_t>> sources;
-
+        std::filesystem::path path;
+        std::span<const uint8_t> bytes;
         std::string mimetype;
     };
 
@@ -103,6 +107,14 @@ namespace Lumos
         glm::vec3 metallicroughnessfactor = glm::vec3(1);
     };
 
+    struct ImageData
+    {
+        int width;
+        int height;
+        int channels;
+        std::vector<uint8_t> pixels;
+    };
+
 
     class IMesh : public IAsset
     {
@@ -117,7 +129,7 @@ namespace Lumos
     {
     public:
         virtual ~IGPUResourceFactory() = default;
-        virtual std::unique_ptr<ITexture> createTexture(const std::string& path) = 0;
+        virtual std::unique_ptr<ITexture> createTexture(const ImageData& data) = 0;
         virtual std::unique_ptr<IMesh> createMesh(const ModelData& modeldata) = 0;
     };
 

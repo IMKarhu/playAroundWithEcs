@@ -67,8 +67,20 @@ namespace Lumos
             const auto& image = m_model.images[i];
             if (image.uri.data && image.uri.len > 0) {
                 std::string texturepath = std::string(image.uri.data, image.uri.len);
+                sources[i].type = TextureSource::Type::File;
                 sources[i].cachekey = texturepath;
                 sources[i].path = texturepath;
+            }else if (image.buffer_view) {
+                const auto& bufview = m_model.buffer_views[image.buffer_view];
+                const auto& buf = m_model.buffers[bufview.buffer];
+                sources[i].type = TextureSource::Type::Byte;
+                sources[i].cachekey = "image/" + std::to_string(i);
+                sources[i].path = "image/" + std::to_string(i);
+                sources[i].mimetype = std::string(image.mime_type.data, image.mime_type.len);
+                sources[i].bytes = {
+                    buf.data.data + bufview.byte_offset,
+                    buf.byte_length
+                };
             }
         }
         return sources;

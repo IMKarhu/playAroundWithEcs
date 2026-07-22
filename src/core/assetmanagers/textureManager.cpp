@@ -1,5 +1,6 @@
 #include "textureManager.h"
 #include "string_hash.h"
+#include "imageDecoder.h"
 #include <print>
 
 namespace Lumos
@@ -9,17 +10,20 @@ namespace Lumos
     {
     }
 
-    AssetHandle TextureManager::load(const std::string& filepath)
+    AssetHandle TextureManager::load(const TextureSource& src)
     {
-        uint64_t id = StringHash::hash(filepath);
+        uint64_t id = StringHash::hash(src.cachekey);
 
         if (m_textures.find(id) != m_textures.end()) {
             m_metadata[id].refcount++;
             return AssetHandle { id };
         }
 
-        m_textures[id] = m_resourcefactory.createTexture(filepath);
-        m_metadata[id] = AssetRecord{ 1, filepath };
+        ImageDecoder decoder;
+        ImageData imgdata = decoder.decode(src);
+
+        m_textures[id] = m_resourcefactory.createTexture(imgdata);
+        m_metadata[id] = AssetRecord{ 1, src.path.string() };
 
         return AssetHandle{ id };
     }

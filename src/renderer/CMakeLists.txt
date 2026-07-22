@@ -15,7 +15,6 @@ file(GLOB_RECURSE RENDERER_SOURCES
     "renderInfo.h"
     "renderPassDesc.h"
     "shader.h"
-    "stb_image.h"
 )
 
 add_library(renderer

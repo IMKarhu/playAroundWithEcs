@@ -23,8 +23,7 @@ namespace Lumos
     public:
         TextureManager(IGPUResourceFactory& resourcefactory);
 
-        AssetHandle load(const std::string& filepath);
-
+        AssetHandle load(const TextureSource& src);
         ITexture* get(AssetHandle handle);
         void unloadUnused() override;
     private:

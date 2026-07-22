@@ -29,9 +29,7 @@ namespace Lumos
             return AssetHandle{ id };
         }
 
-        ModelImporter importer;
-
-        auto modelimportdata = importer.import(filepath);
+        auto modelimportdata = m_importer.import(filepath);
         ModelData modeldata;
         modeldata.submeshes.resize(modelimportdata.submeshes.size());
         for(size_t i = 0; i < modelimportdata.submeshes.size(); i++) {
@@ -40,7 +38,7 @@ namespace Lumos
         }
         std::vector<AssetHandle> texturehandles;
         for (const auto& tex : modelimportdata.texsources) {
-            texturehandles.push_back(m_texturemanager.load(tex.path));
+            texturehandles.push_back(m_texturemanager.load(tex));
         }
         resolveMaterials(texturehandles, modelimportdata, modeldata);
 
