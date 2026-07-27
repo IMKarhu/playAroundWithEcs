@@ -49,7 +49,12 @@ private:
 template<typename EcsType, typename... components>
 View<EcsType, components...>::View(EcsType& ecs) : m_ecs(ecs) {
     m_pools = { m_ecs.template getComponentPool<components>()... };
-    // std::println("m_pools size {}",m_pools.size());
+    for (auto* pools : m_pools) {
+        if (!pools) {
+            m_smallestpool = nullptr;
+            return;
+        }
+    }
 
     if (!m_pools.empty()) {
         m_smallestpool = findSmallestPool();
@@ -68,6 +73,9 @@ View<EcsType, components...>::Iterator& View<EcsType, components...>::Iterator::
 
 template<typename EcsType, typename... components>
 bool View<EcsType, components...>::Iterator::isValid() const {
+    if (!smallestpool || index >= smallestpool->size()) {
+        return false;
+    }
     Entity ent = smallestpool->getEntity(index);
 
     return (ecs.template hasComponent<components>(ent) && ...);
@@ -88,12 +96,12 @@ View<EcsType, components...>::Iterator View<EcsType, components...>::begin() {
     if (!m_smallestpool || m_smallestpool->size() == 0) {
         return end();
     }
-   size_t first = 0;
+    Iterator it {m_ecs, m_smallestpool, 0};
 
-    while(first < m_smallestpool->size() && !Iterator{m_ecs, m_smallestpool, first}.isValid()) {
-        first++;
+    while(it.isValid()) {
+        ++it;
     }
-    return Iterator{m_ecs, m_smallestpool, first};
+    return it;
 }
 
 template<typename EcsType, typename... components>
