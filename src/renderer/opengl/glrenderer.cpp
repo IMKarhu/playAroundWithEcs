@@ -109,6 +109,9 @@ namespace Lumos
     void GLRenderer::flush(std::function<void()> func, Lumos::AssetManager& assetmanager)
     {
         func();
+        if (m_renderqueue.empty()) {
+            return;
+        }
         for(const auto& info : m_renderqueue) {
             auto shaderelement = m_shadercache.find(info.shadername);
             GLShader *shader = static_cast<GLShader*>(shaderelement->second);
