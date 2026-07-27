@@ -96,12 +96,12 @@ View<EcsType, components...>::Iterator View<EcsType, components...>::begin() {
     if (!m_smallestpool || m_smallestpool->size() == 0) {
         return end();
     }
-    Iterator it {m_ecs, m_smallestpool, 0};
+    uint32_t first = 0;
 
-    while(it.isValid()) {
-        ++it;
+    while(first < m_smallestpool->size() && !Iterator{m_ecs, m_smallestpool, first}.isValid()) {
+        first++;
     }
-    return it;
+    return Iterator{m_ecs, m_smallestpool, first};
 }
 
 template<typename EcsType, typename... components>
