@@ -1,6 +1,7 @@
 #pragma once
 #include "textureManager.h"
 #include "meshManager.h"
+#include "materialManager.h"
 #include "assetbase.hpp"
 
 #ifdef _WIN32
@@ -24,8 +25,10 @@ namespace Lumos
         void garbageCollect();
         TextureManager& getTextureManager();
         MeshManager& getMeshManager();
+        MaterialManager& getMaterialManager();
     private:
         std::unique_ptr<TextureManager> m_texturemanager;
         std::unique_ptr<MeshManager> m_meshmanager;
+        std::unique_ptr<MaterialManager> m_materialmanager;
     };
 }//namespace Lumos

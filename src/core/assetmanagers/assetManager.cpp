@@ -5,7 +5,8 @@ namespace Lumos
     AssetManager::AssetManager(IGPUResourceFactory& graphicsdevice)
     {
         m_texturemanager = std::make_unique<TextureManager>(graphicsdevice);
-        m_meshmanager = std::make_unique<MeshManager>(graphicsdevice, *m_texturemanager);
+        m_materialmanager = std::make_unique<MaterialManager>();
+        m_meshmanager = std::make_unique<MeshManager>(graphicsdevice, *m_texturemanager, *m_materialmanager);
     }
 
     void AssetManager::garbageCollect()
@@ -22,5 +23,10 @@ namespace Lumos
     MeshManager& AssetManager::getMeshManager()
     {
         return *m_meshmanager;
+    }
+
+    MaterialManager& AssetManager::getMaterialManager()
+    {
+        return *m_materialmanager;
     }
 }//namespace Lumos

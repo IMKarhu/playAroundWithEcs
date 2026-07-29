@@ -9,7 +9,7 @@ namespace Lumos
         m_windowdata = {
             .m_width = 600,
             .m_height = 400,
-            .m_title = "Ecs testing"
+            .m_title = "Lumos engine test."
         };
         Platform platform;
         initWindow(platform, m_windowdata.m_width, m_windowdata.m_height, m_windowdata.m_title);
@@ -50,6 +50,11 @@ namespace Lumos
     void Window::setWindowShouldClose(bool close)
     {
         glfwSetWindowShouldClose(m_window, GLFW_TRUE);
+    }
+
+    void Window::setWindowTitle(const std::string& title)
+    {
+        glfwSetWindowTitle(m_window, title.c_str());
     }
 
     void Window::pollEvents()
@@ -103,6 +108,7 @@ namespace Lumos
             return ;
         }
         glfwMakeContextCurrent(m_window);
+        // glfwSwapInterval(0);
         glfwSetWindowUserPointer(m_window, &m_windowdata);
         glfwSetFramebufferSizeCallback(m_window, framebufferCallback);
         glfwSetKeyCallback(m_window, keyCallback);

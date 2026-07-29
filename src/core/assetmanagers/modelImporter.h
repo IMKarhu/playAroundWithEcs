@@ -23,6 +23,9 @@ namespace Lumos
         int32_t basecolor = -1;
         int32_t normal = -1;
         int32_t metrough = -1;
+        glm::vec3 basecolorfactor = glm::vec3(1.0f);
+        float metallicfactor = 1.0f;
+        float roughnessfactor = 1.0f;
     };
 
     struct ModelImportSubMeshData

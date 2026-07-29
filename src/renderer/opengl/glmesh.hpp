@@ -10,9 +10,7 @@ namespace Lumos
         uint32_t vbo = 0;
         uint32_t ebo = 0;
         uint32_t indexcount = 0;
-        MaterialData materialdata;
-        glm::vec3 basecolorfactor = glm::vec3(1);
-        glm::vec3 metallicroughnessfactor = glm::vec3(1);
+        MaterialHandle materialhandle;
     };
 
     class GLMesh : public IMesh
@@ -41,6 +39,7 @@ namespace Lumos
         uint64_t rendererID() const override;
     private:
         uint32_t m_rendererID = 0;
+        GLuint64 m_bindlesshandle;
         int m_width = 0;
         int m_height = 0;
         int channels = 0;

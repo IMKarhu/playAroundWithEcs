@@ -1,6 +1,7 @@
 #pragma once
 #include "assetbase.hpp"
 #include "textureManager.h"
+#include "materialManager.h"
 #include "ModelImporter.h"
 #include <vector>
 
@@ -20,15 +21,17 @@ namespace Lumos
     class CORE_API MeshManager : public ISubAssetManager
     {
     public:
-        MeshManager(IGPUResourceFactory& resourcefactory, TextureManager& texturemanager);
+        MeshManager(IGPUResourceFactory& resourcefactory, TextureManager& texturemanager, MaterialManager& materialmanager);
 
         AssetHandle load(const std::string& filepath);
+        AssetHandle load(const ModelData& data);
         IMesh* get(AssetHandle handle);
         void unloadUnused() override;
     private:
         std::unordered_map<uint64_t, std::shared_ptr<IMesh>> m_meshes;
         std::unordered_map<uint64_t, AssetRecord> m_metadata;
         TextureManager& m_texturemanager;
+        MaterialManager& m_materialmanager;
         IGPUResourceFactory& m_resourcefactory;
         ModelImporter m_importer;
 

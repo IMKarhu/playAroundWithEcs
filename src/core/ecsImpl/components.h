@@ -15,24 +15,6 @@ namespace Lumos
         }
     };
 
-    struct MaterialResource
-    {
-        TextureHandle basecolor;
-        TextureHandle normal;
-        TextureHandle metallicroughness;
-
-        glm::vec4 basecolorfactor = glm::vec4(1);
-        float metallicfactor = 1.0f;
-        float roughnessfactor = 1.0f;
-
-        bool doublesided = false;
-    };
-
-    struct MaterialHandle
-    {
-        uint32_t id = 0;
-    };
-
     struct MeshHandle
     {
         uint32_t id = 0;

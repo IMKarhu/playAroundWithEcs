@@ -14,8 +14,9 @@ namespace Lumos
         return file.ends_with(".glb");
     }
 
-    MeshManager::MeshManager(IGPUResourceFactory& resourcefactory, TextureManager& texturemanager)
+    MeshManager::MeshManager(IGPUResourceFactory& resourcefactory, TextureManager& texturemanager, MaterialManager& materialmanager)
         :m_texturemanager(texturemanager)
+        ,m_materialmanager(materialmanager)
         ,m_resourcefactory(resourcefactory)
     {
     }
@@ -47,6 +48,19 @@ namespace Lumos
         return AssetHandle { id };
     }
 
+    AssetHandle MeshManager::load(const ModelData& data)
+    {
+        std::string test = "testmap";
+        uint64_t id = StringHash::hash(test);
+        if (m_meshes.find(id) != m_meshes.end()) {
+            m_metadata[id].refcount++;
+            return AssetHandle{ id };
+        }
+        m_meshes[id] = m_resourcefactory.createMesh(data);
+        m_metadata[id] = AssetRecord{ 1, test};
+        return AssetHandle { id };
+    }
+
     IMesh* MeshManager::get(AssetHandle handle)
     {
         auto it = m_meshes.find(handle.id);
@@ -72,10 +86,22 @@ namespace Lumos
 
     void MeshManager::resolveMaterials(std::vector<AssetHandle>& textures, ModelImportData& importdata, ModelData& data)
     {
+        std::string name = "material";
         for (size_t i = 0; i < importdata.submeshes.size(); i++) {
-            data.submeshes[i].materialdata.basecolorHandle = textures[importdata.submeshes[i].indexes.basecolor];
-            data.submeshes[i].materialdata.normalHandle = textures[importdata.submeshes[i].indexes.normal];
-            data.submeshes[i].materialdata.metallicroughnessHandle = textures[importdata.submeshes[i].indexes.metrough];
+            MaterialResource resource;
+            if (importdata.submeshes[i].indexes.basecolor >= 0) {
+                resource.basecolor = textures[importdata.submeshes[i].indexes.basecolor];
+            }
+            if (importdata.submeshes[i].indexes.normal >= 0) {
+                resource.normal = textures[importdata.submeshes[i].indexes.normal];
+            }
+            if (importdata.submeshes[i].indexes.metrough >= 0) {
+                resource.metallicroughness = textures[importdata.submeshes[i].indexes.metrough];
+            }
+            resource.basecolorfactor = importdata.submeshes[i].indexes.basecolorfactor;
+            resource.metallicfactor = importdata.submeshes[i].indexes.metallicfactor;
+            resource.roughnessfactor = importdata.submeshes[i].indexes.roughnessfactor;
+            data.submeshes[i].materialhandle = m_materialmanager.create(name+std::to_string(i),resource);
         }
     }
 }

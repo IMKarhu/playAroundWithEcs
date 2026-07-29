@@ -8,7 +8,7 @@ namespace Lumos
         for (const auto& data : modeldata.submeshes) {
             GLSubMesh mesh;
             mesh.indexcount = static_cast<uint32_t>(data.indices.size());
-            mesh.materialdata = data.materialdata;
+            mesh.materialhandle = data.materialhandle;
             glCreateVertexArrays(1, &mesh.vao);
             glCreateBuffers(1, &mesh.vbo);
             glCreateBuffers(1, &mesh.ebo);
@@ -104,9 +104,7 @@ namespace Lumos
         RenderPacket packet;
         if (index < m_submeshes.size()) {
             const auto& sub = m_submeshes[index];
-            packet.materialdata = sub.materialdata;
-            packet.basecolorfactor = sub.basecolorfactor;
-            packet.metallicroughnessfactor = sub.metallicroughnessfactor;
+            packet.handle = sub.materialhandle;
         }
         return packet;
     }
@@ -134,10 +132,14 @@ namespace Lumos
 
         glTextureStorage2D(m_rendererID, 1, GL_RGBA8, data.width, data.height);
         glTextureSubImage2D(m_rendererID, 0, 0, 0, data.width, data.height, GL_RGBA, GL_UNSIGNED_BYTE, data.pixels.data());
+
+        m_bindlesshandle = glGetTextureHandleARB(m_rendererID);
+        glMakeTextureHandleResidentARB(m_bindlesshandle);
     }
 
     GLTexture::~GLTexture()
     {
+        glMakeTextureHandleNonResidentARB(m_bindlesshandle);
         glDeleteTextures(1, &m_rendererID);
     }
 

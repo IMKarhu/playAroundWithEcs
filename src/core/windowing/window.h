@@ -34,6 +34,7 @@ namespace Lumos
 
             bool shouldClose() const;
             void setWindowShouldClose(bool close);
+            void setWindowTitle(const std::string& title);
             void pollEvents();
             void swapBuffers();
             void makeCtxCurrent(GLFWwindow *ctx);

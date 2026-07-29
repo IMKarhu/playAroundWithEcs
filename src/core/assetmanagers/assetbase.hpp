@@ -23,6 +23,39 @@ namespace Lumos
         }
     };
 
+    enum MaterialFlags : uint32_t
+    {
+        MaterialNone = 0,
+        MaterialBasecolorMap = 1 << 0,
+        MaterialNormalMap = 1 << 1,
+        MaterialMetalroughMap = 1 << 2
+    };
+
+    struct MaterialHandle
+    {
+        uint64_t id = 0;
+        bool isValid() const
+        {
+            return id != 0;
+        }
+        bool operator==(const MaterialHandle& other) const
+        {
+            return id == other.id;
+        }
+    };
+
+    struct MaterialResource
+    {
+        AssetHandle basecolor;
+        AssetHandle normal;
+        AssetHandle metallicroughness;
+
+        glm::vec3 basecolorfactor = glm::vec3(1.0f);
+        float metallicfactor = 1.0f;
+        float roughnessfactor = 1.0f;
+        uint32_t flags = MaterialNone;
+    };
+
     struct GBufferHandles
     {
         AssetHandle attachment0;
@@ -77,7 +110,7 @@ namespace Lumos
     {
         std::vector<Vertex> vertices;
         std::vector<uint32_t> indices;
-        MaterialData materialdata;
+        MaterialHandle materialhandle;
     };
 
     struct TextureSource
@@ -102,9 +135,7 @@ namespace Lumos
 
     struct RenderPacket
     {
-        MaterialData materialdata;
-        glm::vec3 basecolorfactor = glm::vec3(1);
-        glm::vec3 metallicroughnessfactor = glm::vec3(1);
+        MaterialHandle handle;
     };
 
     struct ImageData
@@ -114,7 +145,6 @@ namespace Lumos
         int channels;
         std::vector<uint8_t> pixels;
     };
-
 
     class IMesh : public IAsset
     {

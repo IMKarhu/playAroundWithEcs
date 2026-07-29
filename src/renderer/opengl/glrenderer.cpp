@@ -141,23 +141,26 @@ namespace Lumos
                         Lumos::GLMesh* glmesh = static_cast<Lumos::GLMesh*>(info.mesh);
 
                         for (size_t i = 0; i < glmesh->getSubMeshCount(); i++) {
-                            Lumos::RenderPacket packet = glmesh->getSubMeshPacket(i);
-                            if (packet.materialdata.basecolorHandle.isValid()) {
-                                auto* tex = assetmanager.getTextureManager().get(packet.materialdata.basecolorHandle);
-                                if (tex) {
-                                    glBindTextureUnit(0, static_cast<Lumos::GLTexture*>(tex)->rendererID());
+                            RenderPacket packet = glmesh->getSubMeshPacket(i);
+                            MaterialResource* res = assetmanager.getMaterialManager().get(packet.handle);
+                            if (res) {
+                                if (res->basecolor.isValid()) {
+                                    auto* tex = assetmanager.getTextureManager().get(res->basecolor);
+                                    if (tex) {
+                                        glBindTextureUnit(0, static_cast<Lumos::GLTexture*>(tex)->rendererID());
+                                    }
                                 }
-                            }
-                            if (packet.materialdata.normalHandle.isValid()) {
-                                auto* tex = assetmanager.getTextureManager().get(packet.materialdata.normalHandle);
-                                if (tex) {
-                                    glBindTextureUnit(1, static_cast<Lumos::GLTexture*>(tex)->rendererID());
+                                if (res->normal.isValid()) {
+                                    auto* tex = assetmanager.getTextureManager().get(res->normal);
+                                    if (tex) {
+                                        glBindTextureUnit(1, static_cast<Lumos::GLTexture*>(tex)->rendererID());
+                                    }
                                 }
-                            }
-                            if (packet.materialdata.metallicroughnessHandle.isValid()) {
-                                auto* tex = assetmanager.getTextureManager().get(packet.materialdata.metallicroughnessHandle);
-                                if (tex) {
-                                    glBindTextureUnit(2, static_cast<Lumos::GLTexture*>(tex)->rendererID());
+                                if (res->metallicroughness.isValid()) {
+                                    auto* tex = assetmanager.getTextureManager().get(res->metallicroughness);
+                                    if (tex) {
+                                        glBindTextureUnit(2, static_cast<Lumos::GLTexture*>(tex)->rendererID());
+                                    }
                                 }
                             }
                             glmesh->prepareSubMesh(i);
