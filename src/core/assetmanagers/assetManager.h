@@ -20,7 +20,7 @@ namespace Lumos
     class CORE_API AssetManager
     {
     public:
-        AssetManager(IGPUResourceFactory& graphicsdevice);
+        AssetManager(IGPUResourceFactory& graphicsfactory);
 
         void garbageCollect();
         TextureManager& getTextureManager();

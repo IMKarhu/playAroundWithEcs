@@ -7,9 +7,10 @@
 #include "framebufferBuilder.h"
 #include "assetmanagers/assetManager.h"
 #include "scene/scene.h"
+#include "lookupTables.h"
 
 #include <print>
-#include <glm/glm.hpp>
+#include <array>
 #include <glm/gtc/matrix_transform.hpp>
 
 GameLayer::GameLayer(Lumos::Renderer& renderer, Lumos::AssetManager& assetmanager, const Lumos::Window& window)
@@ -53,6 +54,7 @@ void GameLayer::detach()
 void GameLayer::update(float dt, const std::shared_ptr<Lumos::Scene>& scene)
 {
     if(!scene) {
+        std::println("scene does not exist. return from gameLayer update");
         return;
     }
     auto& ecs = scene->getEcs();
@@ -147,7 +149,7 @@ void GameLayer::updateTransform(float dt, Ecs& ecs)
          auto& m = ecs.getComponent<Lumos::Movement>(ent);
          auto& t = ecs.getComponent<Lumos::Transform>(ent);
          if (m.button == 65) {
-             t.position.x += m.speed * dt;
+             t.position.x += m.speed* dt;
              m.moved = false;
              m.button = -1;
          }
@@ -185,7 +187,6 @@ void GameLayer::updateTransform(float dt, Ecs& ecs)
         auto& camtransform = ecs.getComponent<Lumos::Transform>(ent);
         auto& camera = ecs.getComponent<Lumos::Camera>(ent);
         if (camera.primary) {
-
             view = glm::lookAt(camtransform.position, camtransform.position + glm::vec3(0.0f,0.0f, -1.0f), camera.upvector);
             proj = glm::perspective(glm::radians(camera.fov), camera.aspectratio, camera.nearclip, camera.farclip);
             break;
@@ -204,3 +205,4 @@ void GameLayer::updateTransform(float dt, Ecs& ecs)
         transform.mvp  = proj * view;
     }
 }
+

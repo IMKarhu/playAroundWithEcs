@@ -10,6 +10,7 @@ add_executable(game
     screenPass.cpp
     lightingPass.h
     lightingPass.cpp
+    lookupTables.h
 )
 
 set_property(TARGET game PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/buildvs")

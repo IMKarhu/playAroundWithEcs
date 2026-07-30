@@ -19,6 +19,7 @@ namespace Lumos
     //also should handle binary files
     bool SceneSerializer::deSerialize(const std::string& filepath, AssetManager& assetmanager)
     {
+        std::println("start of deserialization");
         std::ifstream file(filepath);
         if (!file.is_open()) {
             std::println("failed to load file");
@@ -96,6 +97,7 @@ namespace Lumos
             }
         }
         file.close();
+        std::println("end of deserialization");
         return true;
     }
 }// namespace Lumos

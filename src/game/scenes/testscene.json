@@ -22,7 +22,7 @@
             },
             "MovementComponent": {
                 "Moved": false,
-                "Speed": 0.01,
+                "Speed": 10.0,
                 "Button": -1
             }
         },

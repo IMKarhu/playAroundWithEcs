@@ -5,6 +5,7 @@
 #include "lightingPass.h"
 #include "framebufferManager.h"
 #include <memory>
+#include <glm/glm.hpp>
 
 
 class Ecs;
@@ -35,4 +36,5 @@ private:
     Lumos::Renderer& m_renderer;
     const Lumos::Window& m_window;
     Lumos::AssetManager& m_assetmanager;
+
 };

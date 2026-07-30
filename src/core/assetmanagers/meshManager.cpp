@@ -17,9 +17,7 @@ namespace Lumos
     MeshManager::MeshManager(IGPUResourceFactory& resourcefactory, TextureManager& texturemanager, MaterialManager& materialmanager)
         :m_texturemanager(texturemanager)
         ,m_materialmanager(materialmanager)
-        ,m_resourcefactory(resourcefactory)
-    {
-    }
+        ,m_resourcefactory(resourcefactory) {}
 
     AssetHandle MeshManager::load(const std::string& filepath)
     {
@@ -101,7 +99,8 @@ namespace Lumos
             resource.basecolorfactor = importdata.submeshes[i].indexes.basecolorfactor;
             resource.metallicfactor = importdata.submeshes[i].indexes.metallicfactor;
             resource.roughnessfactor = importdata.submeshes[i].indexes.roughnessfactor;
-            data.submeshes[i].materialhandle = m_materialmanager.create(name+std::to_string(i),resource);
+            data.submeshes[i].materialhandle = m_materialmanager.create(name+std::to_string(i), resource, m_texturemanager);
         }
+        m_materialmanager.createssbobuffer();
     }
 }

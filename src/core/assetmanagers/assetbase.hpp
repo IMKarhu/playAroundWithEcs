@@ -55,6 +55,17 @@ namespace Lumos
         float roughnessfactor = 1.0f;
         uint32_t flags = MaterialNone;
     };
+    
+    struct GpuMaterial
+    {
+        uint64_t basecolor;
+        uint64_t normal;
+        uint64_t metallicroughness;
+        glm::vec3 basecolorfactor = glm::vec3(1.0f);
+        float metallicfactor = 1.0f;
+        float roughnessfactor = 1.0f;
+        uint32_t flags = MaterialNone;
+    };
 
     struct GBufferHandles
     {
@@ -90,6 +101,7 @@ namespace Lumos
         virtual int width() const = 0;
         virtual int height() const = 0;
         virtual uint64_t rendererID() const = 0;
+        virtual uint64_t bindlessID() const = 0;
     };
 
     struct Vertex
@@ -144,6 +156,7 @@ namespace Lumos
         int height;
         int channels;
         std::vector<uint8_t> pixels;
+        bool bindless = true;
     };
 
     class IMesh : public IAsset
@@ -161,6 +174,7 @@ namespace Lumos
         virtual ~IGPUResourceFactory() = default;
         virtual std::unique_ptr<ITexture> createTexture(const ImageData& data) = 0;
         virtual std::unique_ptr<IMesh> createMesh(const ModelData& modeldata) = 0;
+        virtual uint32_t createSSBO(std::vector<GpuMaterial>& materials) = 0;
     };
 
 } //namespace Lumos

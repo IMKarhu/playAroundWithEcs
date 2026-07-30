@@ -133,8 +133,10 @@ namespace Lumos
         glTextureStorage2D(m_rendererID, 1, GL_RGBA8, data.width, data.height);
         glTextureSubImage2D(m_rendererID, 0, 0, 0, data.width, data.height, GL_RGBA, GL_UNSIGNED_BYTE, data.pixels.data());
 
-        m_bindlesshandle = glGetTextureHandleARB(m_rendererID);
-        glMakeTextureHandleResidentARB(m_bindlesshandle);
+        if (data.bindless) {
+            m_bindlesshandle = glGetTextureHandleARB(m_rendererID);
+            glMakeTextureHandleResidentARB(m_bindlesshandle);
+        }
     }
 
     GLTexture::~GLTexture()
@@ -156,6 +158,11 @@ namespace Lumos
     uint64_t GLTexture::rendererID() const
     {
         return static_cast<uint64_t>(m_rendererID);
+    }
+
+    uint64_t GLTexture::bindlessID() const
+    {
+        return m_bindlesshandle;
     }
 
 }//namespace Lumos

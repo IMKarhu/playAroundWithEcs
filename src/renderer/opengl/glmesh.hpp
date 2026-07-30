@@ -37,6 +37,7 @@ namespace Lumos
         int width() const override;
         int height() const override;
         uint64_t rendererID() const override;
+        uint64_t bindlessID() const override;
     private:
         uint32_t m_rendererID = 0;
         GLuint64 m_bindlesshandle;
@@ -57,6 +58,15 @@ namespace Lumos
         {
             return std::make_unique<GLMesh>(modeldata);
         }
-
+        uint32_t createSSBO(std::vector<GpuMaterial>& materials) override
+        {
+            uint32_t id;
+            glCreateBuffers(1, &id);
+            glNamedBufferStorage(id,
+                    materials.size() * sizeof(GpuMaterial),
+                    materials.data(), GL_DYNAMIC_STORAGE_BIT);
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, id);
+            return id;
+        }
     };
 }//namespace Lumos

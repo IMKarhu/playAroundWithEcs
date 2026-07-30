@@ -1,5 +1,6 @@
 #pragma once
 #include "assetbase.hpp"
+#include "textureManager.h"
 #include <string_view>
 #include <unordered_map>
 
@@ -19,8 +20,9 @@ namespace Lumos
     class CORE_API MaterialManager : public ISubAssetManager
     {
     public:
-        MaterialManager();
-        MaterialHandle create(std::string_view name, const MaterialResource& resource);
+        MaterialManager(IGPUResourceFactory& resourcefactory);
+        MaterialHandle create(std::string_view name, const MaterialResource& resource, TextureManager& texturemanager);
+        void createssbobuffer();
         MaterialResource* get(MaterialHandle handle);
         const MaterialResource* get(MaterialHandle handle) const;
 
@@ -28,5 +30,9 @@ namespace Lumos
     private:
         std::unordered_map<uint64_t, MaterialResource> m_materials;
         std::unordered_map<uint64_t, AssetRecord> m_metadata;
+        //test code for bindless stuff and ssbo
+        std::vector<GpuMaterial> m_gpumaterials;
+        uint32_t m_materialssbo = 0;
+        IGPUResourceFactory& m_resourcefactory;
     };
 }//namespace Lumos
