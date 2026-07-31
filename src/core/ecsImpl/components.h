@@ -15,11 +15,6 @@ namespace Lumos
         }
     };
 
-    struct MeshHandle
-    {
-        uint32_t id = 0;
-    };
-
     struct MeshComponent
     {
         std::string name;

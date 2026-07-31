@@ -21,7 +21,7 @@ namespace Lumos
     {
     public:
         MaterialManager(IGPUResourceFactory& resourcefactory);
-        MaterialHandle create(std::string_view name, const MaterialResource& resource, TextureManager& texturemanager);
+        MaterialHandle create(std::string_view name, MaterialResource& resource, TextureManager& texturemanager);
         void createssbobuffer();
         MaterialResource* get(MaterialHandle handle);
         const MaterialResource* get(MaterialHandle handle) const;

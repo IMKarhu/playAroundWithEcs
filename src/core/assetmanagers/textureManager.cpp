@@ -1,7 +1,6 @@
 #include "textureManager.h"
 #include "string_hash.h"
 #include "imageDecoder.h"
-#include <print>
 
 namespace Lumos
 {

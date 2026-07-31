@@ -1,9 +1,6 @@
 #include "meshManager.h"
 #include "string_hash.h"
 
-#include <print>
-
-
 namespace Lumos
 {
     bool isGltfFile(std::string_view file) {

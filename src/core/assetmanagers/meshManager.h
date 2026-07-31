@@ -2,7 +2,7 @@
 #include "assetbase.hpp"
 #include "textureManager.h"
 #include "materialManager.h"
-#include "ModelImporter.h"
+#include "modelImporter.h"
 #include <vector>
 
 #ifdef _WIN32

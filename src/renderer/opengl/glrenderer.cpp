@@ -138,31 +138,11 @@ namespace Lumos
                     shader->setUniformMat4("u_model", info.model);
                     shader->setUniformMat4("u_viewproj", info.viewproj);
                     if (info.mesh) {
-                        Lumos::GLMesh* glmesh = static_cast<Lumos::GLMesh*>(info.mesh);
-
+                        GLMesh* glmesh = static_cast<Lumos::GLMesh*>(info.mesh);
                         for (size_t i = 0; i < glmesh->getSubMeshCount(); i++) {
                             RenderPacket packet = glmesh->getSubMeshPacket(i);
                             MaterialResource* res = assetmanager.getMaterialManager().get(packet.handle);
-                            if (res) {
-                                if (res->basecolor.isValid()) {
-                                    auto* tex = assetmanager.getTextureManager().get(res->basecolor);
-                                    if (tex) {
-                                        glBindTextureUnit(0, static_cast<Lumos::GLTexture*>(tex)->rendererID());
-                                    }
-                                }
-                                if (res->normal.isValid()) {
-                                    auto* tex = assetmanager.getTextureManager().get(res->normal);
-                                    if (tex) {
-                                        glBindTextureUnit(1, static_cast<Lumos::GLTexture*>(tex)->rendererID());
-                                    }
-                                }
-                                if (res->metallicroughness.isValid()) {
-                                    auto* tex = assetmanager.getTextureManager().get(res->metallicroughness);
-                                    if (tex) {
-                                        glBindTextureUnit(2, static_cast<Lumos::GLTexture*>(tex)->rendererID());
-                                    }
-                                }
-                            }
+                            shader->setUniformInt("u_materialidx", res->index);
                             glmesh->prepareSubMesh(i);
                             glDrawElements(GL_TRIANGLES, glmesh->getIndexCount(i), GL_UNSIGNED_INT, 0);
                         }
@@ -171,7 +151,6 @@ namespace Lumos
                 default:
                     std::println("info type did not match to any of these: LIGHTING, GEOMETRY, SCREEN");
             }
-            // shader->unbind();
         }
         m_renderqueue.clear();
     }
