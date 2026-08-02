@@ -64,8 +64,9 @@ namespace Lumos
             glCreateBuffers(1, &id);
             glNamedBufferStorage(id,
                     materials.size() * sizeof(GpuMaterial),
-                    materials.data(), GL_DYNAMIC_STORAGE_BIT);
-            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, id);
+                    materials.data(),
+                    GL_DYNAMIC_STORAGE_BIT
+            );
             return id;
         }
     };

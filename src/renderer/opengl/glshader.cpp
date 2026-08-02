@@ -141,6 +141,15 @@ namespace Lumos
         }
     }
 
+    void GLShader::setUniformUint32(const std::string& name, const uint32_t& value)
+    {
+        auto it = m_uniforms.find(name);
+        if(it != m_uniforms.end()) {
+            glProgramUniform1ui(m_shaderprogram, it->second.loc, value);
+        }
+    }
+
+
     void GLShader::setUniformfloat(const std::string& name, const int& value)
     {
         auto it = m_uniforms.find(name);

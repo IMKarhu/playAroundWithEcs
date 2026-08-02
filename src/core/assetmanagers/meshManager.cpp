@@ -93,9 +93,9 @@ namespace Lumos
             if (importdata.submeshes[i].indexes.metrough >= 0) {
                 resource.metallicroughness = textures[importdata.submeshes[i].indexes.metrough];
             }
-            resource.basecolorfactor = importdata.submeshes[i].indexes.basecolorfactor;
-            resource.metallicfactor = importdata.submeshes[i].indexes.metallicfactor;
-            resource.roughnessfactor = importdata.submeshes[i].indexes.roughnessfactor;
+            // resource.basecolorfactor = importdata.submeshes[i].indexes.basecolorfactor;
+            // resource.metallicfactor = importdata.submeshes[i].indexes.metallicfactor;
+            // resource.roughnessfactor = importdata.submeshes[i].indexes.roughnessfactor;
             data.submeshes[i].materialhandle = m_materialmanager.create(name+std::to_string(i), resource, m_texturemanager);
         }
         m_materialmanager.createssbobuffer();

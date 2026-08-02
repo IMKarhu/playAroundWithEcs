@@ -1,5 +1,6 @@
 #include "materialManager.h"
 #include "string_hash.h"
+#include <print>
 
 namespace Lumos
 {
@@ -14,6 +15,7 @@ namespace Lumos
             return MaterialHandle { id };
         }
         resource.index = static_cast<uint32_t>(m_gpumaterials.size());
+        std::println("material idx: {}", resource.index);
         m_materials[id] = resource;
         m_metadata[id] = AssetRecord{1, "test"};
 
@@ -28,6 +30,7 @@ namespace Lumos
     }
     void MaterialManager::createssbobuffer()
     {
+        std::println("size of gpumaterials: {}", m_gpumaterials.size());
         m_materialssbo = m_resourcefactory.createSSBO(m_gpumaterials);
     }
 
@@ -47,6 +50,11 @@ namespace Lumos
             return &it->second;
         }
         return nullptr;
+    }
+
+    uint32_t MaterialManager::ssboHandle()
+    {
+        return m_materialssbo;
     }
 
     void MaterialManager::unloadUnused()

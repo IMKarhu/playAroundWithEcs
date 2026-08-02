@@ -17,13 +17,13 @@ namespace Lumos
                     data.vertices.size() * sizeof(Vertex),
                     data.vertices.data(),
                     GL_DYNAMIC_STORAGE_BIT
-                    );
+            );
 
             glNamedBufferStorage(mesh.ebo,
                     data.indices.size() * sizeof(uint32_t),
                     data.indices.data(),
                     GL_DYNAMIC_STORAGE_BIT
-                    );
+            );
 
 
             glVertexArrayVertexBuffer(mesh.vao, 0, mesh.vbo, 0, sizeof(Vertex));
@@ -36,7 +36,7 @@ namespace Lumos
                     GL_FLOAT,
                     GL_FALSE,
                     offsetof(Vertex, position)
-                    );
+            );
             glVertexArrayAttribBinding(mesh.vao, 0, 0);
 
             glEnableVertexArrayAttrib(mesh.vao, 1);
@@ -46,7 +46,7 @@ namespace Lumos
                     GL_FLOAT,
                     GL_FALSE,
                     offsetof(Vertex, normal)
-                    );
+            );
             glVertexArrayAttribBinding(mesh.vao, 1, 0);
 
             glEnableVertexArrayAttrib(mesh.vao, 2);
@@ -56,7 +56,7 @@ namespace Lumos
                     GL_FLOAT,
                     GL_FALSE,
                     offsetof(Vertex, texcoords)
-                    );
+            );
             glVertexArrayAttribBinding(mesh.vao, 2, 0);
 
             glEnableVertexArrayAttrib(mesh.vao, 3);
@@ -66,7 +66,7 @@ namespace Lumos
                     GL_FLOAT,
                     GL_FALSE,
                     offsetof(Vertex, tangents)
-                    );
+            );
             glVertexArrayAttribBinding(mesh.vao, 3, 0);
 
             m_submeshes.push_back(mesh);
@@ -136,6 +136,7 @@ namespace Lumos
         if (data.bindless) {
             m_bindlesshandle = glGetTextureHandleARB(m_rendererID);
             glMakeTextureHandleResidentARB(m_bindlesshandle);
+            std::println("bindless texture handle: {}", m_bindlesshandle);
         }
     }
 

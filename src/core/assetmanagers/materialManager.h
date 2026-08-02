@@ -25,6 +25,7 @@ namespace Lumos
         void createssbobuffer();
         MaterialResource* get(MaterialHandle handle);
         const MaterialResource* get(MaterialHandle handle) const;
+        uint32_t ssboHandle();
 
         void unloadUnused() override;
     private:

@@ -9,27 +9,27 @@ in vec3 position;
 in vec2 texcoord;
 in vec3 normal;
 in mat3 tbn;
+flat in uint matidx;
 
 struct MaterialData
 {
     uint64_t baseColorHandle;
     uint64_t normalHandle;
     uint64_t metallicRoughnessHandle;
-    vec3 baseColorFactor;
-    float metallicFactor;
-    float roughnessFactor;
-    uint flags;
+    // vec4 baseColorFactor;
+    // float metallicFactor;
+    // float roughnessFactor;
+    // uint flags;
 };
 
 layout(std430, binding = 0) readonly buffer Materialbuffer
 {
     MaterialData materials[];
 };
-uniform int u_materialidx;
 
 void main()
 {
-    MaterialData material = materials[u_materialidx];
+    MaterialData material = materials[matidx];
     sampler2D basecolortexture = sampler2D(material.baseColorHandle);
     sampler2D normaltexture = sampler2D(material.normalHandle);
     gposition = position;

@@ -6,11 +6,13 @@ layout(location = 3) in vec4 a_tangents;
 
 uniform mat4 u_model;
 uniform mat4 u_viewproj;
+uniform uint u_materialidx;
 
 out vec3 position; //in world coordinates
 out vec2 texcoord;
 out vec3 normal;
 out mat3 tbn;
+flat out uint matidx;
 
 void main()
 {
@@ -18,6 +20,7 @@ void main()
     position = worldpos.xyz;
     texcoord = a_texcoord;
     normal = a_normal;
+    matidx = u_materialidx;
 
     vec3 T = normalize(vec3(u_model * vec4(a_tangents.xyz, 0.0)));//worldspace
     vec3 N = normalize(vec3(u_model * vec4(a_normal, 0.0)));//worldspace

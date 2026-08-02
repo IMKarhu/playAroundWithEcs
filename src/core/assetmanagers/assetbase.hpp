@@ -66,10 +66,10 @@ namespace Lumos
         uint64_t basecolor;
         uint64_t normal;
         uint64_t metallicroughness;
-        glm::vec3 basecolorfactor = glm::vec3(1.0f);
-        float metallicfactor = 1.0f;
-        float roughnessfactor = 1.0f;
-        uint32_t flags = MaterialNone;
+        // glm::vec4 basecolorfactor = glm::vec4(1.0f);
+        // float metallicfactor = 1.0f;
+        // float roughnessfactor = 1.0f;
+        // uint32_t flags = MaterialNone;
     };
 
     struct TextureSource

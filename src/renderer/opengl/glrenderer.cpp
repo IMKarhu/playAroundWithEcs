@@ -139,10 +139,12 @@ namespace Lumos
                     shader->setUniformMat4("u_viewproj", info.viewproj);
                     if (info.mesh) {
                         GLMesh* glmesh = static_cast<Lumos::GLMesh*>(info.mesh);
+                        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, assetmanager.getMaterialManager().ssboHandle());
                         for (size_t i = 0; i < glmesh->getSubMeshCount(); i++) {
                             RenderPacket packet = glmesh->getSubMeshPacket(i);
                             MaterialResource* res = assetmanager.getMaterialManager().get(packet.handle);
-                            shader->setUniformInt("u_materialidx", res->index);
+                            shader->setUniformUint32("u_materialidx", res->index);
+                            // std::println("material index: {}", res->index);
                             glmesh->prepareSubMesh(i);
                             glDrawElements(GL_TRIANGLES, glmesh->getIndexCount(i), GL_UNSIGNED_INT, 0);
                         }

@@ -19,6 +19,7 @@ namespace Lumos
             void setUniformVec3(const std::string& name, const glm::vec3& vec3);
             void setUniformTexture(const std::string& name, int value);
             void setUniformInt(const std::string& name, const int& value);
+            void setUniformUint32(const std::string& name, const uint32_t& value);
             void setUniformfloat(const std::string& name, const int& value);
 
         private:
